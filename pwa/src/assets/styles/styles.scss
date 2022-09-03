@@ -37,10 +37,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-header {
-  background: #B388FF;
-  height: 15vh;
-}
+
 
 main {
   display: flex;
@@ -62,7 +59,7 @@ aside {
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  padding: 1em;
+  padding: 2em;
   background: #1DE9B6;
 }
 
