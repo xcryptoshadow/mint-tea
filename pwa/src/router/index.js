@@ -1,7 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-
+/* Async Components */
+const HomeView = () => import("../views/HomeView.vue");
+const MarketplaceView = () => import("../views/MarketplaceView.vue");
+/* Create our Router */
 const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return window.scrollTo({
+        top: document.querySelector(to.hash).offsetTop - 135,
+        behavior: "smooth",
+      });
+    } else {
+      return savedPosition || { top: 0, left: 0 };
+    }
+  },
   history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes: [
     {
@@ -9,14 +21,11 @@ const router = createRouter({
       name: "home",
       component: HomeView,
     },
-    // {
-    //   path: "/about",
-    //   name: "about",
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import("../views/AboutView.vue"),
-    // },
+    {
+      path: "/marketplace",
+      name: "marketplace",
+      component: MarketplaceView,
+    },
   ],
 });
 
