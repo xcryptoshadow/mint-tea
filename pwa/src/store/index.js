@@ -1,6 +1,11 @@
+// import { ethers } from "ethers";
 import { defineStore } from "pinia";
-
-export const useCounterStore = defineStore({
+/* Import Smart Contract ABI */
+// import contractAbi from "../../../artifacts/contracts/MintTeaCore.sol/MintTeaCore.json";
+/* Get our Mint Tea Contract Address */
+// const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+/* LFG */
+export const useStore = defineStore({
   id: "store",
   state: () => ({
     loading: false,
