@@ -73,18 +73,33 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
             )
         );
         _safeMint(to, tokenId);
-        //To do : add a prorer setTokenUri
+        //To do : add a proper setTokenUri
         _setTokenURI(tokenId, uri);
         _tokenIdCounter.increment();
         return tokenId;
     }
 
+    /**
+     * @dev View the contract’s metadata table
+     */
+    function metadataURI() public view returns (string memory) {
+        string memory base = _baseURI();
+        return string.concat(
+            base, 
+            "SELECT%20*%20FROM%20",
+            _metadataTable
+        );
+    }
+
     // Ensures the contract owner can easily update the project's baseURI
-    function setBaseURI(string memory baseURI)external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setBaseURI(string memory baseURI)external onlyRole(DEFAULT_ADMIN_ROLE) {
         _baseURIString = baseURI;
     }
+
+
     /* ========== INTERNAL METHODS ========== */
-    function _baseURI() internal pure override returns (string memory) {
+    
+    function _baseURI() internal view override returns (string memory) {
         return _baseURIString;
     }
 
