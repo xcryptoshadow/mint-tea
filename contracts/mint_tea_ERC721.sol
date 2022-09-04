@@ -5,28 +5,90 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@tableland/evm/contracts/ITablelandTables.sol";
 
 contract MTEA is ERC721, ERC721URIStorage, AccessControl {
     using Counters for Counters.Counter;
+    // The testnet gateway URI plus query parameter
+    string private _baseURIString = "https://testnet.tableland.network/query?s=";
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("MTEA", "MT") {
+    //Tableland 
+    ITablelandTables private _tableland;
+    string private _metadataTable;
+    uint256 private _metadataTableId;
+    string private _tablePrefix = "Mint_TEA";
+
+    constructor( address registry) ERC721("MTEA", "MT") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
-    }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://testnet.tableland.network/query?mode=list&s=";
-    }
+        /* 
+        * The Tableland address on your current chain
+        */
+        _tableland = ITablelandTables(registry);
 
-    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) {
+        /*
+        * Stores the unique ID for the newly created table.
+        */
+        _metadataTableId = _tableland.createTable(
+            address(this),
+            string.concat(
+                "CREATE TABLE ",
+                _tablePrefix,
+                "_",
+                Strings.toString(block.chainid),
+                //TO DO : I need to change the columns
+                " (id int, external_link text, x int, y int);"
+            )
+        );
+
+        /*
+        * Stores the full tablename for the new table. 
+        * {prefix}_{chainid}_{tableid}
+        */
+        _metadataTable = string.concat(
+            _tablePrefix,
+			"_",
+            Strings.toString(block.chainid),
+            "_",
+            Strings.toString(_metadataTableId)
+        );
+    }
+    
+     /* ========== PUBLIC METHODS ========== */
+    function safeMint(address to, string memory uri) public returns (uint256) {
         uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+       
+        _tableland.runSQL(
+            address(this),
+            _metadataTableId,
+            string.concat(
+                "INSERT INTO ",
+                _metadataTable,
+                " (id, external_link, x, y) VALUES (",
+                Strings.toString(tokenId),
+                ", 'not.implemented.xyz', 0, 0)"
+            )
+        );
         _safeMint(to, tokenId);
+        //To do : add a prorer setTokenUri
         _setTokenURI(tokenId, uri);
+        _tokenIdCounter.increment();
+        return tokenId;
     }
+
+    // Ensures the contract owner can easily update the project's baseURI
+    function setBaseURI(string memory baseURI)external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseURIString = baseURI;
+    }
+    /* ========== INTERNAL METHODS ========== */
+    function _baseURI() internal pure override returns (string memory) {
+        return _baseURIString;
+    }
+
+   
 
     // The following functions are overrides required by Solidity.
 
@@ -40,6 +102,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
         override(ERC721, ERC721URIStorage)
         returns (string memory)
     {
+        require(_exists(tokenId), "ERC721URIStorage: URI query for nonexistent token");
         return super.tokenURI(tokenId);
     }
 
