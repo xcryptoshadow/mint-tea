@@ -1,9 +1,12 @@
 // import { ethers } from "ethers";
 import { defineStore } from "pinia";
+import authNFT from "../services/authNFT.js";
+
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/MintTeaCore.sol/MintTeaCore.json";
 /* Get our Mint Tea Contract Address */
 // const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+
 /* LFG */
 export const useStore = defineStore({
   id: "store",
@@ -77,7 +80,7 @@ export const useStore = defineStore({
     //       const signer = provider.getSigner();
     //       const contract = new ethers.Contract(
     //         contractAddress,
-    //         contractAbi.abi,
+    //         // contractAbi.abi,
     //         signer
     //       );
     //       const count = await contract.getBalance();
@@ -105,17 +108,71 @@ export const useStore = defineStore({
       console.log("Search contract:", contract);
       console.log("Search name:", name);
       console.log("Search chainid:", chainid);
+
       this.loading = true;
-      // const response = await fetch("/tracks/new-arrivals.json");
-      // try {
-      //   const result = await response.json();
-      //   this.newArrivals = result;
-      // } catch (err) {
-      //   this.newArrivals = [];
-      //   console.error("Error loading new arrivals:", err);
-      //   return err;
-      // }
+
+      const authAccount = new authNFT();
+
+      /* Ethereum */
+      let ethereumTokens = await authAccount.fetchAccountNfts(1, contract);
+      this.addEthereumTokens(...ethereumTokens);
+      let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
+        5,
+        contract
+      );
+      this.addEthereumTokens(...ethereumTestnetTokens);
+
+      /* Polygon */
+      let polygonTokens = await authAccount.fetchAccountNfts(137, contract);
+      this.addPolygonTokens(...polygonTokens);
+      let polygonTestnetTokens = await authAccount.fetchAccountNfts(
+        80001,
+        contract
+      );
+      this.addPolygonTokens(...polygonTestnetTokens);
+
+      /* Optimism */
+      // let optimismTokens = await authAccount.fetchAccountNfts(10, contract);
+      // this.addOptimismTokens(...optimismTokens);
+      // let optimismTestnetTokens = await authAccount.fetchAccountNfts(
+      //   69,
+      //   contract
+      // );
+      // this.addOptimismTokens(...optimismTestnetTokens);
+
+      /* Arbitrum */
+      // let arbitrumTokens = await authAccount.fetchAccountNfts(42161, contract);
+      // this.addArbitrumTokens(...arbitrumTokens);
+      // let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
+      //   42161,
+      //   contract
+      // );
+      // this.addArbitrumTokens(...arbitrumTestnetTokens);
+
       this.loading = false;
+    },
+
+    /**
+     * Fetch NFTs
+     * @param {String} contract
+     * @param {String} name
+     */
+    async fetchAnneNFTs(contract, name, chainid) {
+      console.log("Search contract:", contract);
+      console.log("Search name:", name);
+      console.log("Search chainid:", chainid);
+
+      this.loading = true;
+
+      const authAccount = new authNFT();
+      /* Polygon */
+      let polygonTokens = await authAccount.fetchAccountNfts(137, contract);
+      this.addPolygonTokens(...polygonTokens);
+      let polygonTestnetTokens = await authAccount.fetchAccountNfts(
+        80001,
+        contract
+      );
+      this.addPolygonTokens(...polygonTestnetTokens);
     },
   },
 });

@@ -1,6 +1,8 @@
 import axios from "axios";
-/* Get our Mojo Contract Address */
+
+/* Get our Mint Tea Contract Address */
 const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+/* Services api keys */
 const etherScapAPI = import.meta.env.VITE_ETHERSCAN_API_KEY;
 const polygonScapAPI = import.meta.env.VITE_POLYSCAN_API_KEY;
 const infuraKey = import.meta.env.VITE_INFURA_API_KEY;

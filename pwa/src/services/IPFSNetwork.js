@@ -27,7 +27,9 @@ export default class IPFSNetwork {
     const request = await fetch(url.toString(), {
       method: "POST",
       headers: new Headers({
-        Authorization: "Basic " + encode(infuraKey.toString() + ":" + infuraSecret.toString()),
+        Authorization:
+          "Basic " +
+          encode(infuraKey.toString() + ":" + infuraSecret.toString()),
         "Content-Type": "application/json",
       }),
       body: formData,

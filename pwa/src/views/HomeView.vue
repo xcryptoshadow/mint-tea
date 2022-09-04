@@ -3,14 +3,9 @@
     <article>
       <section id="content">
         <div class="form-container">
-          <h2>1. Create NFT</h2>
+          <h2>Mint NFT</h2>
           <div class="input-row">
-            <input
-              type="file"
-              multiple
-              ref="fileRef"
-              @change="uploadFileHandler"
-            />
+            <input type="file" ref="fileRef" @change="uploadFileHandler" />
           </div>
           <div class="input-row">
             <input
@@ -48,7 +43,7 @@
             <input type="text" placeholder="Token ID" v-model="tokenId" />
           </div>
           <div class="input-row hidden">
-            <input type="text" placeholder="Content ID" v-model="cid" />
+            <input type="text" placeholder="IPFS CID" v-model="cid" />
           </div>
           <div class="input-row">
             <input type="text" placeholder="Name" v-model="name" />
@@ -80,7 +75,53 @@
         </div>
       </section>
     </article>
-    <aside><TheWelcome /></aside>
+    <aside>
+      <section id="marketplace">
+        <!-- Ethereum -->
+        <h2 v-if="ethereumTokens.length > 0">Ethereum NFT Tokens</h2>
+        {{ ethereumTokens }}
+        <!-- <div v-if="ethereumTokens.length > 0" class="row token-list">
+          <NftCard
+            v-for="token in ethereumTokens"
+            :key="token.tokenId"
+            :token="token"
+          />
+        </div> -->
+
+        <!-- Polygon -->
+        <h2 v-if="polygonTokens.length > 0">Polygon NFT Tokens</h2>
+        {{ polygonTokens }}
+        <!-- <div v-if="polygonTokens.length > 0" class="row token-list">
+          <NftCard
+            v-for="token in polygonTokens"
+            :key="token.tokenId"
+            :token="token"
+          />
+        </div> -->
+
+        <!-- Optimism -->
+        <!-- {{ optimismTokens }}
+        <h2 v-if="optimismTokens.length > 0">Optimism NFT Tokens</h2>
+        <div v-if="optimismTokens.length > 0" class="row token-list">
+          <NftCard
+            v-for="token in optimismTokens"
+            :key="token.tokenId"
+            :token="token"
+          />
+        </div> -->
+
+        <!-- Arbitrum -->
+        <!-- {{ arbitrumTokens }}
+        <h2 v-if="arbitrumTokens.length > 0">Arbitrum NFT Tokens</h2>
+        <div v-if="arbitrumTokens.length > 0" class="row token-list">
+          <NftCard
+            v-for="token in arbitrumTokens"
+            :key="token.tokenId"
+            :token="token"
+          />
+        </div> -->
+      </section>
+    </aside>
   </main>
 </template>
 <script setup>
@@ -97,7 +138,8 @@ import { fileSize, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
 
 /* Components */
-import TheWelcome from "@/components/TheWelcome.vue";
+// import NftCard from "@/components/NftCard.vue";
+
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/Lock.sol/Lock.json";
 /* Manually set our Contract Address */
@@ -119,6 +161,7 @@ console.log(
 
 // Init Store
 const store = useStore();
+
 // Store Values and Methods
 const {
   account,
@@ -133,7 +176,6 @@ const {
 
 // File Uploader
 const fileRef = ref(null);
-const finished = ref(0);
 // const isUploading = ref(false);
 
 // NFT Form Metadata fields
@@ -164,15 +206,18 @@ async function checkIfWalletIsConnected() {
     }
     /* Get our Current Account */
     const accounts = await ethereum.request({ method: "eth_accounts" });
+
     /* Update our Current Account in the Store */
-    if (accounts.length !== 0) store.updateAccount(accounts[0]);
+    if (accounts.length !== 0) {
+      store.updateAccount(accounts[0]);
+    }
   } catch (error) {
     console.log(error);
   }
 }
 
 /* Fetch new NFT audio/media by Category or Name */
-async function fetchData() {
+async function fetchTokens() {
   try {
     await store.fetchNFTs(
       "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
@@ -180,25 +225,27 @@ async function fetchData() {
       "137"
     );
 
-    /* Console log with some style */
     const stylesEthereum = ["color: black", "background: grey"].join(";");
     console.log(
       "%c📻 Ethereum NFTs fetched : %s 📻",
       stylesEthereum,
       JSON.stringify(ethereumTokens.value)
     );
+
     const stylesPolygon = ["color: black", "background: purple"].join(";");
     console.log(
       "%c📻 Polygon NFTs fetched : %s 📻",
       stylesPolygon,
       JSON.stringify(polygonTokens.value)
     );
+
     const stylesOptimism = ["color: black", "background: red"].join(";");
     console.log(
       "%c📻 Optimism NFTs fetched : %s 📻",
       stylesOptimism,
       JSON.stringify(optimismTokens.value)
     );
+
     const stylesArbitrum = ["color: black", "background: yellow"].join(";");
     console.log(
       "%c📻 Arbitrum NFTs fetched : %s 📻",
@@ -219,8 +266,6 @@ const uploadFileHandler = async (file) => {
    * @dev Can try NFT.Storage here instead
    */
   const uploadResult = await uploadBlob(file);
-
-  finished.value++;
   const { error } = uploadResult;
   if (error && error instanceof Error) {
     console.log(error.message);
@@ -240,6 +285,7 @@ const uploadFileHandler = async (file) => {
   audioVideoType.value = uploadResult.data.file.type;
   size.value = fileSize(uploadResult.data.file.size);
   createdAt.value = uploadResult.data.file.created_at;
+
   return uploadResult;
 };
 
@@ -385,9 +431,9 @@ const mintNFT = async () => {
   }
 };
 
-onMounted(() => {
-  fetchData();
-  checkIfWalletIsConnected();
+onMounted(async () => {
+  await checkIfWalletIsConnected();
+  await fetchTokens();
 });
 </script>
 
@@ -429,11 +475,11 @@ section#content {
   input {
     color: #1a1a1a;
     background-color: #fdfdfd;
-    border: 2px solid #000;
+    border: 2px solid #e0e0e0;
     border-radius: 10px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 240px;
+    width: 260px;
     margin-bottom: 10px;
     padding: 10px;
     text-align: center;

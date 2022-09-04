@@ -33,15 +33,6 @@ import { generateLink } from "../services/helpers";
 export default {
   name: "NftCard",
   props: ["token"],
-  data() {
-    return {
-      playbackTime: 0,
-      audioDuration: 100,
-      listenerActive: false,
-      audioLoaded: false,
-      isPlaying: false,
-    };
-  },
   methods: {
     getUrlProtocol(url) {
       let protocol = url.endsWith("mp4") ? 5 : 0;
@@ -85,17 +76,17 @@ export default {
   padding: 0;
   float: left;
 
-  @include breakpoint($breakpoint-sm) {
+  @include breakpoint($break-sm) {
     float: left;
     margin: 0 10px 20px 10px;
   }
 
-  @include breakpoint($breakpoint-md) {
+  @include breakpoint($break-md) {
     float: left;
     margin: 0 10px 20px 10px;
   }
 
-  @include breakpoint($breakpoint-xl) {
+  @include breakpoint($break-xl) {
     float: left;
     margin: 0 20px 20px 0;
   }
@@ -127,7 +118,7 @@ export default {
     padding: 0;
     overflow: hidden;
 
-    @include breakpoint($breakpoint-md) {
+    @include breakpoint($break-md) {
       width: 96%;
       padding: 2%;
     }
