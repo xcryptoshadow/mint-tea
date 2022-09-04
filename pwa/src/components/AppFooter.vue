@@ -1,17 +1,11 @@
 <template>
   <footer id="footer">
     <div class="footer-title">
-      <span>Brew up cross-chain NFT's with Mint Tea 🍵</span>
+      <span>Brew up cross-chain NFT's with 🍵 Mint Tea </span>
     </div>
     <div class="footer-menu">
       <nav class="footer-navbar">
-        <a
-          href="https://ethglobal.com/showcase/mojo-11hkx"
-          alt="HackFS"
-          target="_blank"
-          rel="noopener"
-          >ETH Online</a
-        >
+        <a href="#" alt="ETHOnline" target="_blank" rel="noopener">ETHOnline</a>
         <a
           href="https://github.com/Mint-Tea-ETHOnline"
           alt="GitHub"
@@ -33,21 +27,19 @@ export default {
 @import "../assets/styles/mixins.scss";
 
 footer {
+  height: 15vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: border-top 0.5s ease;
-  border-top: 1px solid #000000;
   padding: 1em;
 
-  background: #01579b;
-  height: 15vh;
   color: #fff;
+  background: #01579b;
 
   .footer-title {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
     span {
       font-size: 1rem;
