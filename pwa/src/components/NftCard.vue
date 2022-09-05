@@ -36,6 +36,7 @@ export default {
   methods: {
     getUrlProtocol(url) {
       let protocol = url.endsWith("mp4") ? 5 : 0;
+      if (protocol == 0) protocol = url.endsWith("gif") ? 6 : 0;
       if (protocol == 0) protocol = url.startsWith("http://") ? 1 : 0;
       if (protocol == 0) protocol = url.startsWith("https://") ? 2 : 0;
       if (protocol == 0) protocol = url.startsWith("ipfs://") ? 3 : 0;
@@ -51,6 +52,8 @@ export default {
           return generateLink(url);
         case 5:
           return "mp4";
+        case 6:
+          return url;
         case 0:
           return "Not http or https";
       }
