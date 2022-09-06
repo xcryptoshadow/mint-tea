@@ -45,22 +45,20 @@ header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: 10vh;
 
   .header-menu {
     display: flex;
     align-items: flex-end;
+    margin: 25px 55px 0 0;
 
     nav {
       display: flex;
       align-items: flex-end;
       text-align: right;
-      padding: 0.3em;
-
       a {
-        color: var(--contrast-color);
+        color: $mint-black;
         margin-right: 20px;
-        padding-bottom: 6px;
+        padding-bottom: 5px;
         text-decoration: none;
         border-bottom: 1px solid;
         cursor: pointer;
@@ -69,16 +67,14 @@ header {
         }
       }
       .balance-button {
-        min-width: 40px;
+        min-width: 30px;
+        height: 30px;
         color: $mint-black;
         background-color: #fff;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
-        width: auto;
-        height: 40px;
         border: 1px solid $mint-black;
         border-radius: 40px;
-        margin-right: 10px;
       }
     }
   }

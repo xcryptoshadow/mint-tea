@@ -66,18 +66,17 @@ export default {
 @import "../assets/styles/mixins.scss";
 
 .nft {
-  display: block;
+  display: inline;
+  float: left;
   box-sizing: border-box;
   width: 230px;
-  height: auto;
-  min-height: 350px;
+  min-height: 365px;
   background: #f4f4f4;
   border: 2px solid #f4f4f4;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 0 20px 20px 20px;
-  padding: 10px;
-  float: left;
+  border-radius: 15px;
+  overflow: scroll;
+  margin: 0 15px 20px 15px;
+  padding: 15px 15px 10px 15px;
 
   @include breakpoint($break-sm) {
     float: left;
