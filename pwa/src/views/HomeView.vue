@@ -2,8 +2,9 @@
   <main>
     <article>
       <section id="content">
+        <!-- Connect Tab -->
         <div v-if="!account" class="form-container">
-          <h1>Mint Tea <span class="emoji">🍵</span></h1>
+          <h1>Mint Tea</h1>
           <div class="input-row">
             <p>Lorem ipsum here</p>
           </div>
@@ -20,20 +21,46 @@
             </button>
           </div>
         </div>
+        <!-- Brew & Bridge Tab -->
         <div v-if="account && formTab === 'brew'" class="form-container">
-          <h1>Brew Tea <span class="emoji">🍵</span></h1>
+          <h1>Brew NFT</h1>
           <div class="input-row">
-            <p>Brew your fresh NFT here</p>
+            <p>
+              Brew your NFT and send a wrapped version to your selected chains.
+              The NFT will be locked and a new wrapped version minted on the
+              parent chain for use.
+            </p>
           </div>
-
-          <div class="button-container">
-            <button class="bridge-button" @click="bridgeNFT()">Bridge</button>
+          <div class="button-container mb-10">
+            <button class="back-button" @click="switchTab('mint')">Back</button>
             <button class="brew-button" @click="brewNFT()">Brew</button>
           </div>
+          <div class="button-container">
+            <button class="bridge-button" @click="switchTab('bridge')">
+              Bridge
+            </button>
+          </div>
         </div>
-
+        <!-- Bridge Tab -->
+        <div v-if="account && formTab === 'bridge'" class="form-container">
+          <h1>Bridge NFT</h1>
+          <div class="input-row">
+            <p>
+              Bridge your NFT to different chains, your token will be minted on
+              the destination chain and burned on source chain
+            </p>
+          </div>
+          <div class="button-container mb-10">
+            <button class="back-button" @click="switchTab('brew')">Back</button>
+            <button class="bridge-button" @click="bridgeNFT()">Bridge</button>
+          </div>
+          <div class="button-container">
+            <button class="brew-button" @click="switchTab('brew')">Brew</button>
+          </div>
+        </div>
+        <!-- Mint Tab -->
         <div v-if="account && formTab === 'mint'" class="form-container">
-          <h1>Mint Tea <span class="emoji">🍵</span></h1>
+          <h1>Mint Tea</h1>
           <div class="input-row">
             <input type="file" ref="fileRef" @change="uploadFileHandler" />
           </div>
@@ -92,7 +119,8 @@
               v-model="externalUrl"
             />
           </div>
-          <div class="button-container">
+          <div class="button-container mb-10">
+            <button class="tab-button" @click="switchTab('brew')">Brew</button>
             <button
               v-if="!tokenId"
               :disabled="!account"
@@ -102,13 +130,19 @@
               Mint
             </button>
           </div>
+          <div class="button-container">
+            <button class="bridge-button" @click="switchTab('bridge')">
+              Bridge
+            </button>
+          </div>
         </div>
+        <!-- END Mint Tab -->
       </section>
     </article>
     <aside>
       <section id="marketplace">
         <!-- Ethereum -->
-        <h2 v-if="ethereumTokens.length > 0">Ethereum NFT Tokens</h2>
+        <!-- <h2 v-if="ethereumTokens.length > 0">Ethereum NFT Tokens</h2> -->
         <div v-if="ethereumTokens.length > 0" class="row token-list">
           <template v-for="token in ethereumTokens" :key="token.contract">
             <NftCard
@@ -119,7 +153,7 @@
         </div>
 
         <!-- Polygon -->
-        <h2 v-if="polygonTokens.length > 0">Polygon NFT Tokens</h2>
+        <!-- <h2 v-if="polygonTokens.length > 0">Polygon NFT Tokens</h2> -->
         <div v-if="polygonTokens.length > 0" class="row token-list">
           <template v-for="token in polygonTokens" :key="token.contract">
             <NftCard
@@ -159,14 +193,18 @@ import { ref, onMounted } from "vue";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import moment from "moment";
+
 /* Import our Pinia Store & Refs */
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
+
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
 
+/* SVGs */
+// import brewImg from "../assets/images/brew.png";
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 
@@ -212,15 +250,24 @@ const fileRef = ref(null);
 // NFT Form Metadata fields
 const tokenId = ref("");
 const cid = ref("");
+
 // Visible on form, above hidden on form
 const name = ref("");
 const description = ref("");
 const externalUrl = ref("");
 const imageUrl = ref(null);
+
 // Calculated on Mint and IPFS upload
 const size = ref("");
 const createdAt = ref("");
 const audioVideoType = ref("");
+
+/**
+ * Switch Tab
+ */
+const switchTab = (value) => {
+  formTab.value = value;
+};
 
 /**
  * Check if our Wallet is Connected to 🦊 Metamask
@@ -258,6 +305,7 @@ const getAccount = async () => {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length !== 0) {
       store.updateAccount(accounts[0]);
+
       const stylesAccounts = ["color: black", "background: cyan"].join(";");
       console.log("%c🧰 Web3 Account %s 🧰", stylesAccounts, account.value);
     } else {
@@ -532,6 +580,7 @@ section#content {
   align-items: center;
 
   .form-container {
+    width: 340px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -539,10 +588,8 @@ section#content {
     align-content: center;
     background: #fff;
     border: 4px solid var(--gradient-100);
-    border-top-left-radius: 1em;
-    border-top-right-radius: 1em;
-    border-bottom-left-radius: 1em;
-    border-bottom-right-radius: 1em;
+    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 30px;
     padding: 30px;
 
     h1 {
@@ -556,6 +603,23 @@ section#content {
       span.emoji {
         font-size: 2.2rem;
       }
+    }
+
+    a {
+      color: $mint-black;
+      font-weight: bold;
+      border-bottom: 1px solid $mint-black;
+      text-decoration: none;
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .mb-10 {
+      margin-bottom: 10px;
     }
   }
 
@@ -639,17 +703,34 @@ section#content {
     display: none;
   }
 
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .tab-button {
+    color: $white;
+    background-color: $mint-orange;
+    font-size: 18px;
+    font-weight: bold;
+    height: 55px;
+    border: 0;
+    border-radius: 10px;
+    margin-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    cursor: pointer;
+  }
+
   .mint-button {
-    color: #fff;
-    background-color: #08d0a5;
+    color: $white;
+    background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
     width: 100%;
-    max-width: 360px;
     height: 55px;
     border: 0;
-    padding-left: 97px;
-    padding-right: 97px;
     border-radius: 10px;
     cursor: pointer;
   }
@@ -660,44 +741,51 @@ section#content {
     cursor: not-allowed;
   }
 
-  .button-container {
-    display: flex;
-    flex-direction: row;
-  }
   .connect-button {
-    min-width: 300px;
     color: #000;
     background-color: #08d0a5;
     font-size: 18px;
     font-weight: bold;
-    width: auto;
+    width: 100%;
     height: 55px;
     border: 0;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
   }
-  .balance-button {
-    min-width: 50px;
-    color: #000;
-    background-color: #fff;
+
+  .back-button {
+    color: $white;
+    background-color: $mint-green;
     font-size: 18px;
     font-weight: bold;
-    width: auto;
     height: 55px;
     border: 0;
-    border-radius: 5px;
+    border-radius: 10px;
     margin-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
-  .profile-button {
-    min-width: 300px;
-    color: #000;
-    background-color: #08d0a5;
+  .brew-button {
+    color: $white;
+    background-color: $mint-orange;
     font-size: 18px;
     font-weight: bold;
-    width: auto;
+    width: 100%;
     height: 55px;
     border: 0;
-    border-radius: 5px;
+    border-radius: 10px;
+    margin-right: 1%;
+    cursor: pointer;
+  }
+  .bridge-button {
+    color: $white;
+    background-color: $mint-blue;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    height: 55px;
+    border: 0;
+    border-radius: 10px;
     cursor: pointer;
   }
 }
@@ -709,7 +797,8 @@ section#marketplace {
   align-content: center;
   align-items: center;
   justify-content: center;
-  padding: 0 10px;
+  margin: 0 auto;
+  padding: 2em 0 2em 3em;
   overflow: scroll;
 
   .row {
@@ -754,19 +843,6 @@ section#marketplace {
     background: #c6c6c6;
     color: $mint-orange;
     cursor: not-allowed;
-  }
-
-  a {
-    color: $mint-black;
-    font-weight: bold;
-    border-bottom: 1px solid $mint-black;
-    text-decoration: none;
-  }
-
-  p {
-    line-height: 1.7;
-    margin-bottom: 20px;
-    text-align: center;
   }
 }
 

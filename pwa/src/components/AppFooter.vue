@@ -5,7 +5,13 @@
     </div>
     <div class="footer-menu">
       <nav class="footer-navbar">
-        <a href="#" alt="ETHOnline" target="_blank" rel="noopener">ETHOnline</a>
+        <a
+          href="https://ethglobal.com/showcase/mint-tea-2nn7k"
+          alt="ETHOnline"
+          target="_blank"
+          rel="noopener"
+          >ETHOnline</a
+        >
         <a
           href="https://github.com/Mint-Tea-ETHOnline"
           alt="GitHub"
@@ -30,9 +36,9 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1em;
-  color: $mint-green;
-  background: $mint-black;
+  padding: 2em;
+  color: $white;
+  background: $mint-blue;
 
   .footer-title {
     display: flex;
@@ -43,7 +49,7 @@ footer {
       font-size: 1rem;
       a {
         font-size: 1rem;
-        color: var(--contrast-color);
+        color: $white;
         cursor: pointer;
 
         &.active {
@@ -64,8 +70,8 @@ footer {
       font-size: 1rem;
 
       a {
-        font-size: 0.9rem;
-        color: $mint-green;
+        font-size: 1rem;
+        color: $white;
         margin: 0 20px 0 0;
         cursor: pointer;
         &.active {
