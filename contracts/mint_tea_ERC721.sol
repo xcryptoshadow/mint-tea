@@ -47,7 +47,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
                 "_",
                 Strings.toString(block.chainid),
                 //TO DO : I need to change the columns
-                " (tokenid,name, description, image);"
+                " (tokenid, name, description, image);"
             )
         );
 
@@ -73,7 +73,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
                 "attributes",
                 "_",
                 Strings.toString(block.chainid),
-                " (maintable_tokenid,trait_type ,value);"
+                " (maintable_tokenid, trait_type, value);"
             )
         );
         attributesTable = string.concat(
@@ -95,7 +95,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 mainTable,
-                " (id, external_link, x, y) VALUES (",
+                " (tokenid, name, description, image) VALUES (",
                 Strings.toString(tokenId),
                 ", 'not.implemented.xyz', 0, 0)"
             )

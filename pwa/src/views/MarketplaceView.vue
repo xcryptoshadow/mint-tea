@@ -209,6 +209,54 @@ async function searchTokens() {
         page_size.value,
         page_number.value
       );
+      //       Body
+      // application/json
+      // response
+      // string
+      // required
+      // Response status, either OK or NOK.
+
+      // Allowed values:
+      // OK
+      // NOK
+      // search_results
+      // array[TextSearchNft]
+      // chain
+      // string
+      // required
+      // Blockchain where the NFT has been minted.
+
+      // Allowed values:
+      // polygon
+      // ethereum
+      // contract_address
+      // string
+      // required
+      // The contract address of the NFT.
+
+      // token_id
+      // string
+      // required
+      // A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+
+      // cached_file_url
+      // string
+      // required
+      // Cached file (image, video, etc) in NFTPort's cloud with no access restrictions and without IPFS issues.
+
+      // name
+      // string
+      // required
+      // Name of the NFT in the metadata.
+
+      // description
+      // string
+      // required
+      // Description of the NFT in the metadata.
+
+      // mint_date
+      // string
+      // Date when the NFT was minted (ISO).
       const stylesResults = ["color: black", "background: grey"].join(";");
       console.log(
         "%c📻 NFT Port Search fetched : %s",

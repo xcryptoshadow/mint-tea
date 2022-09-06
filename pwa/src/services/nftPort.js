@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const nftPortApiKey = import.meta.env.VITE_NFT_PORT_API_KEY;
+console.log("nftPortApiKey", nftPortApiKey);
 
 export default class nftPort {
   constructor() {
