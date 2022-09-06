@@ -1,69 +1,161 @@
 <template>
-  <section id="content">
-    <div class="main">
-      <section id="marketplace">
+  <main>
+    <section id="marketplace">
+      <div class="row">
         <h2>Marketplace</h2>
-        <!-- Ethereum -->
+        <div class="search">
+          <select v-model="chainId">
+            <option
+              v-for="option in options"
+              :value="option.label"
+              :key="option.key"
+            >
+              {{ option.text }}
+            </option>
+          </select>
+          <input
+            type="text"
+            v-model="contract"
+            placeholder="Filter by contract"
+            @input="searchTokens()"
+          />
+          <input
+            type="text"
+            v-model="name"
+            placeholder="Search by name"
+            @input="searchTokens()"
+          />
+          <input
+            type="text"
+            v-model="image"
+            placeholder="Search by image url"
+            @input="searchTokens()"
+          />
+          <button
+            :disabled="searchResults.length === 0"
+            class="clear-button"
+            @click="clearSearch()"
+          >
+            X
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtered List -->
+      {{ searchResults }}
+      <div v-if="searchResults.length > 0" class="row">
+        <h2>Token Search Results</h2>
+        <div v-if="searchResults.length > 0" class="row token-list">
+          <template v-for="token in searchResults" :key="token.tokenId">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
+
+      <!-- Ethereum -->
+      <div class="row">
         <h2 v-if="ethereumTokens.length > 0">Ethereum NFT Tokens</h2>
-        {{ ethereumTokens }}
-        <!-- <div v-if="ethereumTokens.length > 0" class="row token-list">
-          <NftCard
-            v-for="token in ethereumTokens"
-            :key="token.tokenId"
-            :token="token"
-          />
-        </div> -->
+        <div v-if="ethereumTokens.length > 0" class="row token-list">
+          <template v-for="token in ethereumTokens" :key="token.tokenId">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
 
-        <!-- Polygon -->
+      <!-- Polygon -->
+      <div class="row">
         <h2 v-if="polygonTokens.length > 0">Polygon NFT Tokens</h2>
-        {{ polygonTokens }}
-        <!-- <div v-if="polygonTokens.length > 0" class="row token-list">
-          <NftCard
-            v-for="token in polygonTokens"
-            :key="token.tokenId"
-            :token="token"
-          />
-        </div> -->
+        <div v-if="polygonTokens.length > 0" class="row token-list">
+          <template v-for="token in polygonTokens" :key="token.tokenId">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
 
-        <!-- Optimism -->
-        <!-- {{ optimismTokens }}
+      <!-- Optimism -->
+      <div class="row">
         <h2 v-if="optimismTokens.length > 0">Optimism NFT Tokens</h2>
         <div v-if="optimismTokens.length > 0" class="row token-list">
-          <NftCard
-            v-for="token in optimismTokens"
-            :key="token.tokenId"
-            :token="token"
-          />
-        </div> -->
+          <template v-for="token in optimismTokens" :key="token.tokenId">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
 
-        <!-- Arbitrum -->
-        <!-- {{ arbitrumTokens }}
+      <!-- Arbitrum -->
+      <div class="row">
         <h2 v-if="arbitrumTokens.length > 0">Arbitrum NFT Tokens</h2>
         <div v-if="arbitrumTokens.length > 0" class="row token-list">
-          <NftCard
-            v-for="token in arbitrumTokens"
-            :key="token.tokenId"
-            :token="token"
-          />
-        </div> -->
-      </section>
-    </div>
-  </section>
+          <template v-for="token in arbitrumTokens" :key="token.tokenId">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
 /* Import our Pinia Store */
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
+
+/* NFT Port Service */
+import nftPort from "../services/nftPort.js";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 
 /* Init Store Values and Methods */
 const store = useStore();
-const { ethereumTokens, polygonTokens, optimismTokens, arbitrumTokens } =
-  storeToRefs(store);
+const {
+  // searchChainId,
+  // searchContract,
+  // searchName,
+  // searchImage,
+  searchResults,
+  ethereumTokens,
+  polygonTokens,
+  optimismTokens,
+  arbitrumTokens,
+} = storeToRefs(store);
+
+const contract = ref("");
+const name = ref("");
+const image = ref("");
+const sort_order = ref("desc");
+const order_by = ref("relevance");
+const page_size = ref(50);
+const page_number = ref(1);
+
+const chainId = ref("all");
+const options = ref([
+  { value: 0, label: "all", text: "All" },
+  { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
+  { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  { value: 137, label: "polygon", text: "Polygon Mainnet" },
+  { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  { value: 10, label: "optimism", text: "Optimism Mainnet" },
+  { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
+  { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+]);
 
 /**
  * Check if our Wallet is Connected to 🦊 Metamask
@@ -84,152 +176,194 @@ async function checkIfWalletIsConnected() {
     /* Update our Current Account in the Store */
     if (accounts.length !== 0) {
       store.updateAccount(accounts[0]);
-      await fetchTokens();
     }
   } catch (error) {
     console.log(error);
   }
 }
+
+/**
+ * NFTPort Search
+ */
 /* Fetch new NFT audio/media by Category or Name */
-async function fetchTokens() {
-  try {
-    const nfts = await store.fetchNFTs(
-      "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
-      "shokumotsu-foodlove",
-      "137"
-    );
+async function searchTokens() {
+  console.log("name:", name.value);
 
-    console.log("nfts", nfts);
+  if (name.value.length > 3) {
+    console.log("contract:", contract.value);
+    console.log("chainId:", chainId.value);
+    console.log("sort_order:", sort_order.value);
+    console.log("order_by:", order_by.value);
+    console.log("page_size:", page_size.value);
+    console.log("page_number:", page_number.value);
 
-    const stylesEthereum = ["color: black", "background: grey"].join(";");
-    console.log(
-      "%c📻 Ethereum NFTs fetched : %s 📻",
-      stylesEthereum,
-      JSON.stringify(ethereumTokens.value)
-    );
+    try {
+      /* Init NftPort Class */
+      const nftPortApi = new nftPort();
+      let results = await nftPortApi.nftSearch(
+        name.value,
+        contract.value,
+        chainId.value,
+        sort_order.value,
+        order_by.value,
+        page_size.value,
+        page_number.value
+      );
+      //       Body
+      // application/json
+      // response
+      // string
+      // required
+      // Response status, either OK or NOK.
 
-    const stylesPolygon = ["color: black", "background: purple"].join(";");
-    console.log(
-      "%c📻 Polygon NFTs fetched : %s 📻",
-      stylesPolygon,
-      JSON.stringify(polygonTokens.value)
-    );
+      // Allowed values:
+      // OK
+      // NOK
+      // search_results
+      // array[TextSearchNft]
+      // chain
+      // string
+      // required
+      // Blockchain where the NFT has been minted.
 
-    const stylesOptimism = ["color: black", "background: red"].join(";");
-    console.log(
-      "%c📻 Optimism NFTs fetched : %s 📻",
-      stylesOptimism,
-      JSON.stringify(optimismTokens.value)
-    );
+      // Allowed values:
+      // polygon
+      // ethereum
+      // contract_address
+      // string
+      // required
+      // The contract address of the NFT.
 
-    const stylesArbitrum = ["color: black", "background: yellow"].join(";");
-    console.log(
-      "%c📻 Arbitrum NFTs fetched : %s 📻",
-      stylesArbitrum,
-      JSON.stringify(arbitrumTokens.value)
-    );
-  } catch (error) {
-    console.log(error);
+      // token_id
+      // string
+      // required
+      // A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+
+      // cached_file_url
+      // string
+      // required
+      // Cached file (image, video, etc) in NFTPort's cloud with no access restrictions and without IPFS issues.
+
+      // name
+      // string
+      // required
+      // Name of the NFT in the metadata.
+
+      // description
+      // string
+      // required
+      // Description of the NFT in the metadata.
+
+      // mint_date
+      // string
+      // Date when the NFT was minted (ISO).
+      const stylesResults = ["color: black", "background: grey"].join(";");
+      console.log(
+        "%c📻 NFT Port Search fetched : %s",
+        stylesResults,
+        JSON.stringify(results)
+      );
+      if (results.length > 0) store.addSearchResults(...results);
+    } catch (error) {
+      console.log(error);
+    }
   }
+}
+
+/* Clear our Search Results */
+function clearSearch() {
+  store.clearSearchResults();
 }
 
 onMounted(async () => {
   await checkIfWalletIsConnected();
+  await searchTokens();
 });
 </script>
 <style lang="scss" scoped>
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
 
-section#content {
-  position: relative;
-  height: 100%;
+section#marketplace {
+  color: #212121;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1080px;
+  display: inline-block;
+  margin: 0 auto;
   overflow: scroll;
 
-  .main {
+  .row {
     width: 100%;
-    height: 100%;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
     padding: 0;
+  }
 
-    section#marketplace {
-      color: #212121;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-content: center;
-      align-items: center;
-      justify-content: center;
-      padding: 0 10px;
-      overflow: scroll;
+  .token-list {
+    width: 100%;
+    max-width: 1080px;
+    display: inline-block;
+    margin: 0 auto;
+  }
 
-      .row {
-        display: flex;
-        flex-direction: column;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-      }
+  h2 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-block-start: 0;
+    margin-block-end: 0.2em;
+  }
 
-      .token-list {
-        width: 100%;
-        max-width: 1029px;
-        display: inline-block;
-        margin: 0 auto;
-      }
+  .mint-button {
+    color: #fff;
+    background-color: #08d0a5;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    max-width: 360px;
+    height: 55px;
+    border: 0;
+    padding-left: 87px;
+    padding-right: 87px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 
-      h2 {
-        font-size: 1.8rem;
-        text-align: center;
-        margin-block-start: 0;
-        margin-block-end: 0.2em;
-      }
+  .mint-button:disabled {
+    background: #c6c6c6;
+    color: #101010;
+    cursor: not-allowed;
+  }
 
-      .mint-button {
-        color: #fff;
-        background-color: #08d0a5;
-        font-size: 18px;
-        font-weight: bold;
-        width: 100%;
-        max-width: 360px;
-        height: 55px;
-        border: 0;
-        padding-left: 87px;
-        padding-right: 87px;
-        border-radius: 10px;
-        cursor: pointer;
-      }
+  a {
+    color: #1a1a1a;
+    font-weight: bold;
+    border-bottom: 1px solid #1a1a1a;
+    text-decoration: none;
 
-      .mint-button:disabled {
-        background: #c6c6c6;
-        color: #101010;
-        cursor: not-allowed;
-      }
+    &.author {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background-color: var(--gradient-100);
+      color: var(--icon-color);
+      font-size: 0.85rem;
 
-      a {
-        color: #1a1a1a;
-        font-weight: bold;
-        border-bottom: 1px solid #1a1a1a;
-        text-decoration: none;
-
-        &.author {
-          padding: 6px 12px;
-          border-radius: 8px;
-          background-color: var(--gradient-100);
-          color: var(--icon-color);
-          font-size: 0.85rem;
-
-          border-bottom: none;
-        }
-      }
-
-      p {
-        line-height: 1.7;
-        margin-bottom: 20px;
-        text-align: center;
-      }
+      border-bottom: none;
     }
+  }
+
+  p {
+    line-height: 1.7;
+    margin-bottom: 20px;
+    text-align: center;
   }
 }
 

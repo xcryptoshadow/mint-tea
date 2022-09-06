@@ -30,41 +30,12 @@ export const fileSize = (bytes, si = false, dp = 1) => {
 };
 
 /**
- * Copy text to clipboard
- * @param {String} value
- * @returns {Void}
- */
-export const copyToClipboard = (value) => {
-  const textArea = document.createElement("textarea");
-  textArea.value = value;
-  document.body.appendChild(textArea);
-  textArea.select();
-  document.execCommand("copy");
-  textArea.remove();
-};
-
-/**
  * Check is file type is video
  * @param {String} type
  * @returns {Boolean}
  **/
 export const isVideo = (type) => {
   return type.indexOf("video") >= 0;
-};
-
-/**
- * Generate IPFS URI for image according to IPFS best practises
- * https://docs.ipfs.io/how-to/best-practices-for-nft-data/#types-of-ipfs-links-and-when-to-use-them
- *
- * @typedef {Object} IFile
- * @property {String} cid
- * @property {Object} file
- * @property {String} file.type
- * @param {IFile} item
- * @returns {String}
- */
-export const generateNFTImageLink = (item) => {
-  return `ipfs://${item.cid}`;
 };
 
 /**
@@ -82,7 +53,9 @@ export const generateNFTImageLink = (item) => {
  */
 export const generateLink = (item, isShorten = false) => {
   if (isShorten && !!item.shorten) return item.shorten;
-  if (isVideo(item.file.type)) return `https://${item.cid}.ipfs.dweb.link`;
+  if (item.file && item.file.type !== undefined) {
+    if (isVideo(item.file.type)) return `https://${item.cid}.ipfs.dweb.link`;
+  }
   return `https://cloudflare-ipfs.com/ipfs/${item.cid}`;
 };
 

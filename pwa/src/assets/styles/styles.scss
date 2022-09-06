@@ -44,8 +44,14 @@ main {
   height: 100%;
   flex-direction: column;
 }
+@media only screen and (min-width: 839px) {
+  main {
+    flex-direction: row;
+  }
+}
 
 article {
+  max-width: 500px;
   flex: 1;
   flex-direction: column;
   justify-content: center;
@@ -55,7 +61,7 @@ article {
 }
 
 aside {
-  flex: 1;
+  flex: 1 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -63,11 +69,6 @@ aside {
   background: #1de9b6;
 }
 
-@media only screen and (min-width: 839px) {
-  main {
-    flex-direction: row;
-  }
-}
 
 a,
 .green {
