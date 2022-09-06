@@ -2,8 +2,38 @@
   <main>
     <article>
       <section id="content">
-        <div class="form-container">
-          <h2>Mint NFT</h2>
+        <div v-if="!account" class="form-container">
+          <h1>Mint Tea <span class="emoji">🍵</span></h1>
+          <div class="input-row">
+            <p>Lorem ipsum here</p>
+          </div>
+          <div class="button-container">
+            <button v-if="account" class="balance-button">
+              {{ balance ? balance : 0 }}
+            </button>
+            <button
+              v-if="!account"
+              @click="connectWallet"
+              class="connect-button"
+            >
+              Connect
+            </button>
+          </div>
+        </div>
+        <div v-if="account && formTab === 'brew'" class="form-container">
+          <h1>Brew Tea <span class="emoji">🍵</span></h1>
+          <div class="input-row">
+            <p>Brew your fresh NFT here</p>
+          </div>
+
+          <div class="button-container">
+            <button class="bridge-button" @click="bridgeNFT()">Bridge</button>
+            <button class="brew-button" @click="brewNFT()">Brew</button>
+          </div>
+        </div>
+
+        <div v-if="account && formTab === 'mint'" class="form-container">
+          <h1>Mint Tea <span class="emoji">🍵</span></h1>
           <div class="input-row">
             <input type="file" ref="fileRef" @change="uploadFileHandler" />
           </div>
@@ -165,6 +195,7 @@ const store = useStore();
 // Store Values and Methods
 const {
   account,
+  balance,
   ethereumTokens,
   polygonTokens,
   optimismTokens,
@@ -172,7 +203,7 @@ const {
 } = storeToRefs(store);
 
 // Set Form Tab
-// const formTab = ref("one");
+const formTab = ref("mint");
 
 // File Uploader
 const fileRef = ref(null);
@@ -213,6 +244,50 @@ async function checkIfWalletIsConnected() {
     }
   } catch (error) {
     console.log(error);
+  }
+}
+
+/**
+ * Get our current 🦊 Metamask Account
+ */
+const getAccount = async () => {
+  try {
+    const { ethereum } = window;
+    if (!ethereum) return;
+    /* Get our Account Details */
+    const accounts = await ethereum.request({ method: "eth_accounts" });
+    if (accounts.length !== 0) {
+      store.updateAccount(accounts[0]);
+      const stylesAccounts = ["color: black", "background: cyan"].join(";");
+      console.log("%c🧰 Web3 Account %s 🧰", stylesAccounts, account.value);
+    } else {
+      console.log("No authorized MetaMask accounts connected!");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* Connect Wallet */
+async function connectWallet() {
+  const { ethereum } = window;
+  store.setLoading(true);
+  try {
+    if (!ethereum) {
+      alert("Please connect 🦊 Metamask to continue!");
+      return;
+    }
+    const [accountAddress] = await ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    console.log("Account Address", accountAddress);
+    if (accountAddress) {
+      store.updateAccount(accountAddress);
+      store.setLoading(false);
+    }
+  } catch (error) {
+    console.log("Error", error);
+    store.setLoading(false);
   }
 }
 
@@ -435,6 +510,7 @@ const mintNFT = async () => {
 };
 
 onMounted(async () => {
+  getAccount();
   await checkIfWalletIsConnected();
   await fetchTokens(
     "0x09c0377BAdCa7349b20569f45f2D94398179Db0c",
@@ -460,23 +536,26 @@ section#content {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    align-content: center;
     background: #fff;
-    width: 300px;
     border: 4px solid var(--gradient-100);
     border-top-left-radius: 1em;
     border-top-right-radius: 1em;
     border-bottom-left-radius: 1em;
     border-bottom-right-radius: 1em;
-    padding: 20px;
+    padding: 30px;
 
-    h2 {
-      font-size: 1.4rem;
-      line-height: 1.5rem;
+    h1 {
+      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
+        sans-serif;
+      color: $mint-black;
+      font-size: 2rem;
+      line-height: 2rem;
       text-align: center;
-      padding-bottom: 2px;
-      text-decoration: none;
-      border-bottom: 1px solid;
-      margin: 0 auto 10px;
+      margin: 0 auto 15px;
+      span.emoji {
+        font-size: 2.2rem;
+      }
     }
   }
 
@@ -580,11 +659,51 @@ section#content {
     color: #101010;
     cursor: not-allowed;
   }
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .connect-button {
+    min-width: 300px;
+    color: #000;
+    background-color: #08d0a5;
+    font-size: 18px;
+    font-weight: bold;
+    width: auto;
+    height: 55px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .balance-button {
+    min-width: 50px;
+    color: #000;
+    background-color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    width: auto;
+    height: 55px;
+    border: 0;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  .profile-button {
+    min-width: 300px;
+    color: #000;
+    background-color: #08d0a5;
+    font-size: 18px;
+    font-weight: bold;
+    width: auto;
+    height: 55px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 }
 
 section#marketplace {
-  color: #212121;
-  background: #fff;
+  color: $mint-black;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -618,7 +737,7 @@ section#marketplace {
 
   .mint-button {
     color: #fff;
-    background-color: #08d0a5;
+    background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
     width: 100%;
@@ -633,25 +752,15 @@ section#marketplace {
 
   .mint-button:disabled {
     background: #c6c6c6;
-    color: #101010;
+    color: $mint-orange;
     cursor: not-allowed;
   }
 
   a {
-    color: #1a1a1a;
+    color: $mint-black;
     font-weight: bold;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid $mint-black;
     text-decoration: none;
-
-    &.author {
-      padding: 6px 12px;
-      border-radius: 8px;
-      background-color: var(--gradient-100);
-      color: var(--icon-color);
-      font-size: 0.85rem;
-
-      border-bottom: none;
-    }
   }
 
   p {

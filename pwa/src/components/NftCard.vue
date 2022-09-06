@@ -75,8 +75,8 @@ export default {
   border: 2px solid #f4f4f4;
   border-radius: 6px;
   overflow: hidden;
-  margin: 0 20px;
-  padding: 0;
+  margin: 0 20px 20px 20px;
+  padding: 10px;
   float: left;
 
   @include breakpoint($break-sm) {
