@@ -27,14 +27,12 @@ export default {
 @import "../assets/styles/mixins.scss";
 
 footer {
-  height: 15vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1em;
-
-  color: #fff;
-  background: #01579b;
+  color: $mint-green;
+  background: $mint-black;
 
   .footer-title {
     display: flex;
@@ -66,17 +64,13 @@ footer {
       font-size: 1rem;
 
       a {
-        font-size: 0.6rem;
-        color: var(--contrast-color);
+        font-size: 0.9rem;
+        color: $mint-green;
+        margin: 0 20px 0 0;
         cursor: pointer;
         &.active {
           font-weight: bold;
         }
-      }
-
-      svg {
-        cursor: pointer;
-        font-size: 2em;
       }
     }
   }

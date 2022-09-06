@@ -285,8 +285,7 @@ onMounted(async () => {
 @import "../assets/styles/mixins.scss";
 
 section#marketplace {
-  color: #212121;
-  background: #fff;
+  color: $mint-black;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -324,7 +323,7 @@ section#marketplace {
 
   .mint-button {
     color: #fff;
-    background-color: #08d0a5;
+    background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
     width: 100%;
@@ -339,25 +338,15 @@ section#marketplace {
 
   .mint-button:disabled {
     background: #c6c6c6;
-    color: #101010;
+    color: $mint-orange;
     cursor: not-allowed;
   }
 
   a {
-    color: #1a1a1a;
+    color: $mint-black;
     font-weight: bold;
     border-bottom: 1px solid #1a1a1a;
     text-decoration: none;
-
-    &.author {
-      padding: 6px 12px;
-      border-radius: 8px;
-      background-color: var(--gradient-100);
-      color: var(--icon-color);
-      font-size: 0.85rem;
-
-      border-bottom: none;
-    }
   }
 
   p {
