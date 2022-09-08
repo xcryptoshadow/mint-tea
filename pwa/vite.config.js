@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
+import eslint from "vite-plugin-eslint";
 import svgLoader from "vite-svg-loader";
 
 // https://vitejs.dev/config/
@@ -15,7 +16,7 @@ export default defineConfig(({ command, mode }) => {
       define: {
         __APP_ENV__: env.APP_ENV,
       },
-      plugins: [vue(), svgLoader()],
+      plugins: [vue(), eslint(), svgLoader()],
       resolve: {
         alias: {
           "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -29,7 +30,7 @@ export default defineConfig(({ command, mode }) => {
       define: {
         __APP_ENV__: env.APP_ENV,
       },
-      plugins: [vue(), svgLoader()],
+      plugins: [vue(), eslint(), svgLoader()],
       resolve: {
         alias: {
           "@": fileURLToPath(new URL("./src", import.meta.url)),
