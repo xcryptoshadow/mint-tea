@@ -1,6 +1,6 @@
 // import { ethers } from "ethers";
 import { defineStore } from "pinia";
-import authNFT from "../services/authNFT.js";
+import nftPort from "../services/nftPort.js";
 
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/MintTeaCore.sol/MintTeaCore.json";
@@ -23,9 +23,10 @@ export const useStore = defineStore({
     polygonTokens: [],
     optimismTokens: [],
     arbitrumTokens: [],
-    craigTokens: [],
     anneTokens: [],
     keremTokens: [],
+    topTokens: [],
+    latestTokens: [],
   }),
   getters: {
     isLoading(state) {
@@ -64,14 +65,17 @@ export const useStore = defineStore({
     getArbitrumTokens(state) {
       return state.arbitrumTokens;
     },
-    getCraigTokens(state) {
-      return state.craigTokens;
-    },
     getAnneTokens(state) {
       return state.anneTokens;
     },
     getKeremTokens(state) {
       return state.keremTokens;
+    },
+    getTopTokens(state) {
+      return state.topTokens;
+    },
+    getLatestTokens(state) {
+      return state.latestTokens;
     },
   },
   actions: {
@@ -118,14 +122,17 @@ export const useStore = defineStore({
     addArbitrumTokens(...tokens) {
       this.arbitrumTokens.push(...tokens);
     },
-    addCraigTokens(...tokens) {
-      this.craigTokens.push(...tokens);
-    },
     addAnneTokens(...tokens) {
       this.anneTokens.push(...tokens);
     },
     addKeremTokens(...tokens) {
       this.keremTokens.push(...tokens);
+    },
+    addTopTokens(...tokens) {
+      this.topTokens.push(...tokens);
+    },
+    addLatestTokens(...tokens) {
+      this.latestTokens.push(...tokens);
     },
 
     /**
@@ -163,115 +170,121 @@ export const useStore = defineStore({
     // },
 
     /**
-     * Fetch NFTs
-     * @param {String} contract
-     * @param {String} name
-     * @param {String} image
-     * @param {String} chainid
+     * NFT PORT API - Search NFTs by Name and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} text Required Search query
+     * @param {String} chain Allowed values: polygon / ethereum / all
+     * @param {String} sort_order Allowed values: desc / asc
+     * @param {String} order_by Allowed values: relevance / mint_date
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
      */
-    async fetchNFTs(contract, name, image, chainid) {
-      console.log("Fetch Contract address:", contract);
-      console.log("Fetch Name:", name);
-      console.log("Fetch Image:", image);
-      console.log("Fetch chainid:", chainid);
-
-      this.loading = true;
-
-      const authAccount = new authNFT();
-
-      /* Ethereum */
-      let ethereumTokens = await authAccount.fetchAccountNfts(1, contract);
-      this.addEthereumTokens(...ethereumTokens);
-      let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-        5,
-        contract
+    async searchNFTs(
+      contract,
+      text,
+      chain,
+      sort_order,
+      order_by,
+      page_size,
+      page_number
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.nftSearch(
+        text,
+        contract,
+        chain,
+        sort_order,
+        order_by,
+        page_size,
+        page_number
       );
-      this.addEthereumTokens(...ethereumTestnetTokens);
-
-      /* Polygon */
-      let polygonTokens = await authAccount.fetchAccountNfts(137, contract);
-      this.addPolygonTokens(...polygonTokens);
-      let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-        80001,
-        contract
-      );
-      this.addPolygonTokens(...polygonTestnetTokens);
-
-      /* Optimism */
-      // let optimismTokens = await authAccount.fetchAccountNfts(10, contract);
-      // this.addOptimismTokens(...optimismTokens);
-      // let optimismTestnetTokens = await authAccount.fetchAccountNfts(
-      //   69,
-      //   contract
-      // );
-      // this.addOptimismTokens(...optimismTestnetTokens);
-
-      /* Arbitrum */
-      // let arbitrumTokens = await authAccount.fetchAccountNfts(42161, contract);
-      // this.addArbitrumTokens(...arbitrumTokens);
-      // let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
-      //   42161,
-      //   contract
-      // );
-      // this.addArbitrumTokens(...arbitrumTestnetTokens);
-
-      this.loading = false;
+      return results;
     },
 
     /**
-     * Fetch NFTs
-     * @param {String} contract
-     * @param {String} name
-     * @param {String} image
-     * @param {String} chainid
+     * NFT PORT API - Fetch NFTs by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} chain Allowed values: polygon / ethereum / rinkeby
+     * @param {String} include Include optional data in the response. default Allowed values: default / metadata / all
+     * @param {Bool} refresh_metadata Queues and refreshes all the NFTs metadata inside the contract (i.e. all tokens)
+     * if they have changed since the updated_date. Useful for example, when NFT collections are revealed.
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
+     * @returns {Promise<String|Error>}
      */
-    async searchNFTs(contract, name, image, chainid) {
-      console.log("Search Contract address:", contract);
-      console.log("Search Name:", name);
-      console.log("Search Image:", image);
-      console.log("Search chainid:", chainid);
-
-      this.loading = true;
-
-      const authAccount = new authNFT();
-
-      /* Ethereum */
-      let ethereumTokens = await authAccount.fetchAccountNfts(1, contract);
-      this.addEthereumTokens(...ethereumTokens);
-      let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-        5,
-        contract
+    async contractNftSearch(
+      contract,
+      chain,
+      include,
+      refresh_metadata,
+      page_size,
+      page_number
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.contractNftSearch(
+        contract,
+        chain,
+        include,
+        refresh_metadata,
+        page_size,
+        page_number
       );
-      this.addEthereumTokens(...ethereumTestnetTokens);
+      return results;
+    },
 
-      /* Polygon */
-      let polygonTokens = await authAccount.fetchAccountNfts(137, contract);
-      this.addPolygonTokens(...polygonTokens);
-      let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-        80001,
-        contract
+    /**
+     * NFT PORT API - Fetch NFTs by Account Address
+     * @param {String} account Results will only include NFTs from this account address.
+     * @param {String} contract Filter by and return NFTs only from the given contract address.
+     * @param {String} continuation Continuation. Pass this value from the previous response to fetch the next page.
+     * @param {String} chain Allowed values: polygon / ethereum / rinkeby
+     * @param {String} include Include optional data in the response. default is the default response and metadata includes NFT metadata, like in Retrieve NFT details, and contract_information includes information of the NFT’s contract.
+     * Allowed values: default / metadata / contract_information  Default: default
+     * @param {String} exclude Exclude data from the response. erc721 excludes ERC721 tokens and erc1155 excludes ERC1155 tokens. Allowed values: erc721 / erc1155
+     * @param {Integer} page_size Required Search query
+     */
+    async accountNftSearch(
+      account,
+      contract,
+      continuation,
+      chain,
+      include,
+      exclude,
+      page_size
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.accountNftSearch(
+        account,
+        contract,
+        continuation,
+        chain,
+        include,
+        exclude,
+        page_size
       );
-      this.addPolygonTokens(...polygonTestnetTokens);
+      return results;
+    },
 
-      /* Optimism */
-      // let optimismTokens = await authAccount.fetchAccountNfts(10, contract);
-      // this.addOptimismTokens(...optimismTokens);
-      // let optimismTestnetTokens = await authAccount.fetchAccountNfts(
-      //   69,
-      //   contract
-      // );
-      // this.addOptimismTokens(...optimismTestnetTokens);
-
-      /* Arbitrum */
-      // let arbitrumTokens = await authAccount.fetchAccountNfts(42161, contract);
-      // this.addArbitrumTokens(...arbitrumTokens);
-      // let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
-      //   42161,
-      //   contract
-      // );
-      // this.addArbitrumTokens(...arbitrumTestnetTokens);
-
-      this.loading = false;
+    /**
+     * NFT PORT API - Fetch NFT Details by Contract and Token Id
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} token_id Results will only include NFTs from this contract address.
+     * @param {String} chain Allowed values: polygon / ethereum / rinkeby
+     * @param {Bool} refresh_metadata Queues and refreshes all the NFTs metadata inside the contract (i.e. all tokens)
+     */
+    async detailsNftSearch(contract, token_id, chain, refresh_metadata) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.detailsNftSearch(
+        contract,
+        token_id,
+        chain,
+        refresh_metadata
+      );
+      return results;
     },
   },
 });

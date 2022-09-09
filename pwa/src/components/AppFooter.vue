@@ -1,7 +1,7 @@
 <template>
   <footer id="footer">
     <div class="footer-title">
-      <span>Brew up cross-chain NFT's with 🍵 Mint Tea </span>
+      <span>Mint, brew &amp; bridge NFTs cross-chain</span>
     </div>
     <div class="footer-menu">
       <nav class="footer-navbar">
@@ -33,12 +33,15 @@ export default {
 @import "../assets/styles/mixins.scss";
 
 footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2em;
+  padding: 0.8em;
   color: $white;
-  background: $mint-blue;
+  background: $mint-black;
 
   .footer-title {
     display: flex;
@@ -46,9 +49,9 @@ footer {
     align-items: center;
 
     span {
-      font-size: 1rem;
+      font-size: 0.8rem;
       a {
-        font-size: 1rem;
+        font-size: 0.8rem;
         color: $white;
         cursor: pointer;
 
@@ -67,16 +70,20 @@ footer {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.8rem;
 
       a {
-        font-size: 1rem;
+        font-size: 0.8rem;
         color: $white;
-        margin: 0 20px 0 0;
+        margin: 0 15px 0 0;
         cursor: pointer;
-        &.active {
-          font-weight: bold;
-        }
+      }
+      a:hover {
+        color: $mint-orange !important;
+        font-weight: bold;
+      }
+      a:active {
+        font-weight: bold;
       }
     }
   }

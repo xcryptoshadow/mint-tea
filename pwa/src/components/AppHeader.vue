@@ -8,9 +8,16 @@
         <router-link :to="{ name: 'marketplace' }" active-class="active" exact
           >Marketplace</router-link
         >
-        <button v-if="account" class="balance-button">
+        <router-link
+          v-if="account"
+          :to="{ name: 'account' }"
+          active-class="active"
+          exact
+          >Account</router-link
+        >
+        <!-- <button v-if="account" class="balance-button">
           {{ balance ? balance : 0 }}
-        </button>
+        </button> -->
       </nav>
     </div>
   </header>

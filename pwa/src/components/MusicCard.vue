@@ -1,32 +1,19 @@
 <template>
-  <div class="nft">
-    <!-- {{ token }} -->
-    <div
-      v-if="getUrlProtocol(token.metadata.image) === 'mp4'"
-      class="nft-video"
-    >
-      <video width="320" height="240" controls>
-        <source :src="`${token.metadata.image}`" type="video/mp4" />
-        <!-- <source :src="`${token.metadata.image}`" type="video/ogg" /> -->
-        Your browser does not support the video tag.
-      </video>
-    </div>
-    <div v-else-if="token.metadata && token.metadata.image" class="nft-image">
-      <img
-        v-if="token.metadata.image"
-        :src="`${getUrlProtocol(token.metadata.image)}`"
-        :alt="`${token.metadata.name}`"
-      />
-    </div>
-    <div v-if="token.metadata && token.metadata.name" class="nft-title">
+  <div class="music-nft">
+    <div v-if="token.metadata && token.metadata.name" class="music-nft-title">
       {{ token.metadata.name }}
     </div>
-    <!-- <div
+    <div class="music-nft-video">
+      <video width="342" controls>
+        <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
+      </video>
+    </div>
+    <div
       v-if="token.metadata && token.metadata.description"
-      class="nft-description"
+      class="music-nft-description"
     >
       {{ token.metadata.description }}
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
@@ -54,7 +41,7 @@ export default {
         case 4:
           return generateLink(url);
         case 5:
-          return "mp4";
+          return "https://ipfs.io/ipfs/" + url.substring(7);
         case 6:
           return url;
         case 0:
@@ -68,60 +55,41 @@ export default {
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
 
-.nft {
+.music-nft {
   display: inline;
   float: left;
   box-sizing: border-box;
-  width: 230px;
-  background: #f4f4f4;
-  border: 2px solid #f4f4f4;
+  width: 340px;
+  background: $mint-black;
   border-radius: 15px;
-  margin: 0 15px 25px 15px;
-  padding: 15px 15px 10px 15px;
+  margin: 0 15px 20px 15px;
+  padding: 0;
+  overflow: hidden;
 
-  &:hover {
-    border: 2px solid #8d50f5;
-  }
-
-  .nft-video {
+  .music-nft-video {
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #f4f4f4;
+    background: $mint-black;
   }
-  .nft-image {
+  .music-nft-title {
+    color: $white;
     width: 100%;
-    margin: 0 auto;
-    padding: 0;
-    overflow: hidden;
-
-    img,
-    svg {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      overflow: hidden;
-    }
-  }
-
-  .nft-title {
-    color: #1a1a1a;
-    width: 100%;
-    font-size: 14px;
+    font-size: 22px;
     font-weight: normal;
     text-transform: uppercase;
     text-align: center;
-    margin: 10px 0 0 0;
+    margin: 10px 0 5px 0;
   }
-
-  .nft-description {
-    color: #1a1a1a;
+  .music-nft-description {
+    color: $white;
     width: 100%;
     font-size: 12px;
     font-weight: normal;
     text-align: center;
     margin: 0;
+    padding: 10px 35px 15px;
   }
 }
 </style>

@@ -5,9 +5,15 @@
         <!-- Connect Tab -->
         <div v-if="!account" class="form-container">
           <h1>Mint Tea</h1>
-          <div class="input-row">
-            <p>Lorem ipsum here</p>
-          </div>
+          <p>
+            Mint and brew cross-chain NFTs using our custom bridge, send tokens
+            and NFTs to all your favourite blockchains.
+          </p>
+          <p>
+            Search and verify your NFTs for rarity by name, description and
+            image across all blockchains.
+          </p>
+
           <div class="button-container">
             <button v-if="account" class="balance-button">
               {{ balance ? balance : 0 }}
@@ -18,6 +24,11 @@
               class="connect-button"
             >
               Connect
+            </button>
+            <button class="marketplace-button">
+              <router-link :to="{ name: 'marketplace' }"
+                >Marketplace</router-link
+              >
             </button>
           </div>
         </div>
@@ -120,7 +131,6 @@
             />
           </div>
           <div class="button-container mb-10">
-            <button class="tab-button" @click="switchTab('brew')">Brew</button>
             <button
               v-if="!tokenId"
               :disabled="!account"
@@ -130,60 +140,55 @@
               Mint
             </button>
           </div>
-          <div class="button-container">
+          <div class="button-container mb-10">
             <button class="bridge-button" @click="switchTab('bridge')">
               Bridge
             </button>
           </div>
+          <div class="button-container">
+            <button class="brew-button" @click="switchTab('brew')">Brew</button>
+          </div>
         </div>
         <!-- END Mint Tab -->
+
+        <!-- Music NFT by Kerem -->
+        <div v-if="keremTokens && keremTokens.length > 0">
+          <template v-for="token in keremTokens" :key="token.contract">
+            <MusicCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
       </section>
     </article>
     <aside>
       <section id="marketplace">
-        <!-- Ethereum -->
-        <!-- <h2 v-if="ethereumTokens.length > 0">Ethereum NFT Tokens</h2> -->
-        <div v-if="ethereumTokens.length > 0" class="row token-list">
-          <template v-for="token in ethereumTokens" :key="token.contract">
+        <!-- <h2>Latest NFTs</h2> -->
+        <div class="row token-list">
+          <template v-for="token in latestTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
             />
           </template>
         </div>
-
-        <!-- Polygon -->
-        <!-- <h2 v-if="polygonTokens.length > 0">Polygon NFT Tokens</h2> -->
-        <div v-if="polygonTokens.length > 0" class="row token-list">
-          <template v-for="token in polygonTokens" :key="token.contract">
+        <div class="row token-list">
+          <template v-for="token in anneTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
             />
           </template>
         </div>
-
-        <!-- Optimism -->
-        <!-- <h2 v-if="optimismTokens.length > 0">Optimism NFT Tokens</h2>
-        <div v-if="optimismTokens.length > 0" class="row token-list">
-          <template v-for="token in optimismTokens" :key="token.contract">
+        <div class="row token-list">
+          <template v-for="token in topTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
             />
           </template>
-        </div> -->
-
-        <!-- Arbitrum -->
-        <!-- <h2 v-if="arbitrumTokens.length > 0">Arbitrum NFT Tokens</h2>
-        <div v-if="arbitrumTokens.length > 0" class="row token-list">
-          <template v-for="token in arbitrumTokens" :key="token.contract">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div> -->
+        </div>
       </section>
     </aside>
   </main>
@@ -202,11 +207,13 @@ import { useStore } from "../store";
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
+// import authNFT from "../services/authNFT.js";
 
 /* SVGs */
 // import brewImg from "../assets/images/brew.png";
 /* Components */
 import NftCard from "@/components/NftCard.vue";
+import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/Lock.sol/Lock.json";
@@ -216,7 +223,7 @@ const contractAddress = "0x6b9482bD2EEd7814EE5a88Cc93f687a3961D27Fb";
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
-  "%c🏦 Mojo Contract Address %s 🏦",
+  "%c🏦 Mint Tea Contract Address %s 🏦",
   stylesContract,
   contractAddress
 );
@@ -231,14 +238,8 @@ console.log(
 const store = useStore();
 
 // Store Values and Methods
-const {
-  account,
-  balance,
-  ethereumTokens,
-  polygonTokens,
-  optimismTokens,
-  arbitrumTokens,
-} = storeToRefs(store);
+const { account, balance, topTokens, latestTokens, anneTokens, keremTokens } =
+  storeToRefs(store);
 
 // Set Form Tab
 const formTab = ref("mint");
@@ -336,50 +337,6 @@ async function connectWallet() {
   } catch (error) {
     console.log("Error", error);
     store.setLoading(false);
-  }
-}
-
-/**
- * Fetch NFTs
- * @param {String} contract
- * @param {String} name
- * @param {String} image
- * @param {String} chainid
- */
-/* Fetch new NFT audio/media by Category or Name */
-async function fetchTokens(contract, name, image, chainid) {
-  try {
-    await store.fetchNFTs(contract, name, image, chainid);
-
-    const stylesEthereum = ["color: black", "background: grey"].join(";");
-    console.log(
-      "%c📻 Ethereum NFTs fetched : %s 📻",
-      stylesEthereum,
-      JSON.stringify(ethereumTokens.value)
-    );
-
-    const stylesPolygon = ["color: black", "background: purple"].join(";");
-    console.log(
-      "%c📻 Polygon NFTs fetched : %s 📻",
-      stylesPolygon,
-      JSON.stringify(polygonTokens.value)
-    );
-
-    const stylesOptimism = ["color: black", "background: red"].join(";");
-    console.log(
-      "%c📻 Optimism NFTs fetched : %s 📻",
-      stylesOptimism,
-      JSON.stringify(optimismTokens.value)
-    );
-
-    const stylesArbitrum = ["color: black", "background: yellow"].join(";");
-    console.log(
-      "%c📻 Arbitrum NFTs fetched : %s 📻",
-      stylesArbitrum,
-      JSON.stringify(arbitrumTokens.value)
-    );
-  } catch (error) {
-    console.log(error);
   }
 }
 
@@ -558,14 +515,77 @@ const mintNFT = async () => {
 };
 
 onMounted(async () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "smooth",
+  });
   getAccount();
   await checkIfWalletIsConnected();
-  await fetchTokens(
-    "0x09c0377BAdCa7349b20569f45f2D94398179Db0c",
-    "shokumotsu-foodlove",
-    "",
-    "137"
-  );
+
+  /* Kerems Music NFT Video */
+  if (keremTokens.value.length === 0) {
+    let keremTokens = await store.detailsNftSearch(
+      "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+      "52806",
+      "ethereum",
+      true
+    );
+    if (keremTokens.nft) {
+      store.addKeremTokens(...[keremTokens.nft]);
+    }
+    let keremTokens2 = await store.detailsNftSearch(
+      "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
+      "108227",
+      "ethereum",
+      true
+    );
+    if (keremTokens2.nft) {
+      store.addKeremTokens(...[keremTokens2.nft]);
+    }
+  }
+
+  if (topTokens.value.length === 0) {
+    let topTokens = await store.contractNftSearch(
+      "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
+      "ethereum",
+      "metadata",
+      "true",
+      8,
+      1
+    );
+    if (topTokens.nfts && topTokens.total > 0) {
+      store.addTopTokens(...topTokens.nfts);
+    }
+  }
+
+  if (latestTokens.value.length === 0) {
+    let latestTokens = await store.contractNftSearch(
+      "0x1A92f7381B9F03921564a437210bB9396471050C",
+      "ethereum",
+      "metadata",
+      "true",
+      12,
+      1
+    );
+    if (latestTokens.nfts && latestTokens.total > 0) {
+      store.addLatestTokens(...latestTokens.nfts);
+    }
+  }
+
+  if (anneTokens.value.length === 0) {
+    let anneTokens = await store.contractNftSearch(
+      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+      "ethereum",
+      "metadata",
+      "true",
+      8,
+      1
+    );
+    if (anneTokens.nfts) {
+      store.addAnneTokens(...anneTokens.nfts);
+    }
+  }
 });
 </script>
 
@@ -574,6 +594,7 @@ onMounted(async () => {
 @import "../assets/styles/mixins.scss";
 
 section#content {
+  height: inherit;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -590,7 +611,8 @@ section#content {
     border: 4px solid var(--gradient-100);
     box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
     border-radius: 30px;
-    padding: 30px;
+    margin-bottom: 20px;
+    padding: 25px;
 
     h1 {
       font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
@@ -630,8 +652,8 @@ section#content {
     border-radius: 10px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 260px;
-    margin-bottom: 10px;
+    width: 280px;
+    margin-bottom: 5px;
     padding: 10px;
     text-align: center;
   }
@@ -674,8 +696,8 @@ section#content {
     border-radius: 10px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 300px;
-    margin-bottom: 10px;
+    width: 280px;
+    margin-bottom: 5px;
     padding: 10px;
     text-align: center;
   }
@@ -705,7 +727,7 @@ section#content {
 
   .button-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
   }
 
@@ -720,6 +742,7 @@ section#content {
     margin-right: 10px;
     padding-left: 15px;
     padding-right: 15px;
+    transition: 0.4s;
     cursor: pointer;
   }
 
@@ -732,6 +755,7 @@ section#content {
     height: 55px;
     border: 0;
     border-radius: 10px;
+    transition: 0.4s;
     cursor: pointer;
   }
 
@@ -742,15 +766,39 @@ section#content {
   }
 
   .connect-button {
-    color: #000;
-    background-color: #08d0a5;
+    color: $white;
+    background-color: $mint-blue;
     font-size: 18px;
     font-weight: bold;
     width: 100%;
     height: 55px;
     border: 0;
     border-radius: 10px;
+    margin: 10px 0;
+    transition: 0.4s;
     cursor: pointer;
+    &:hover {
+      color: $black;
+    }
+  }
+
+  .marketplace-button {
+    color: $white;
+    background-color: $mint-orange;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    height: 55px;
+    border: 0;
+    border-radius: 10px;
+    a {
+      color: $white;
+      text-decoration: none;
+      border-bottom: none;
+      &:hover {
+        color: $black;
+      }
+    }
   }
 
   .back-button {
@@ -775,6 +823,7 @@ section#content {
     border: 0;
     border-radius: 10px;
     margin-right: 1%;
+    transition: 0.4s;
     cursor: pointer;
   }
   .bridge-button {
@@ -786,11 +835,50 @@ section#content {
     height: 55px;
     border: 0;
     border-radius: 10px;
+    transition: 0.4s;
     cursor: pointer;
+  }
+
+  .music-nft-container {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    background: $mint-orange;
+    border: 4px solid var(--gradient-100);
+    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 30px;
+    padding: 0;
+
+    h1 {
+      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
+        sans-serif;
+      color: $mint-black;
+      font-size: 1.7rem;
+      line-height: 1.8rem;
+      text-align: left;
+      margin: 0 auto 15px;
+    }
+
+    a {
+      color: $mint-black;
+      font-weight: bold;
+      border-bottom: 1px solid $mint-black;
+      text-decoration: none;
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 10px;
+      text-align: center;
+    }
   }
 }
 
 section#marketplace {
+  height: inherit;
   color: $mint-black;
   display: flex;
   flex-direction: column;
@@ -798,12 +886,12 @@ section#marketplace {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 2em 0 2em 3em;
+  padding: 1.5em 0 4em 3em;
   overflow: scroll;
 
   .row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-content: center;
     justify-content: center;
     align-items: center;
@@ -818,10 +906,16 @@ section#marketplace {
   }
 
   h2 {
-    font-size: 1.8rem;
-    text-align: center;
+    width: 100%;
+    font-size: 1.7rem;
+    font-weight: 400;
+    text-align: left;
+    color: $mint-black;
+    text-decoration: underline;
+    text-underline-offset: 10px;
+    padding: 0 0 20px 40px;
     margin-block-start: 0;
-    margin-block-end: 0.2em;
+    margin-block-end: 0;
   }
 
   .mint-button {
@@ -836,6 +930,7 @@ section#marketplace {
     padding-left: 87px;
     padding-right: 87px;
     border-radius: 10px;
+    transition: 0.4s;
     cursor: pointer;
   }
 

@@ -204,7 +204,8 @@ export default class authNFT {
           }
         );
         const data = response.data;
-        return data.assets;
+        console.log("data", data);
+        return data;
       } catch (error) {
         console.error(error);
         throw error;
@@ -249,7 +250,7 @@ export default class authNFT {
     if (chainId && contractAddress) {
       try {
         const response = await axios.get(
-          `https://nft.api.infura.io/networks/${chainId}/nfts/${contractAddress}/tokens}`,
+          `https://nft.api.infura.io/networks/${chainId}/nfts/${contractAddress}/tokens`,
           {
             headers: {},
             auth: {
