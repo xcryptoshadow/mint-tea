@@ -70,7 +70,7 @@ contract MTEA is ERC721, AccessControl {
             address(this),
             string.concat(
                 "CREATE TABLE ",
-                "attributes",
+                _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
                 " (maintable_tokenid int, trait_type text, value int);"
@@ -104,15 +104,15 @@ contract MTEA is ERC721, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 mainTable,
-                " (tokenid,name, description, image) VALUES (",
+                " (tokenid, name, description, image) VALUES ('",
                 Strings.toString(tokenId),
-                ",",
+                "', '",
                 _name,
-                ",",
+                "', '",
                 _description,
-                ",",
+                "', '",
                 _image_url,
-                ")"
+                "')"
             )
         );
         //insert into attributesTable
@@ -122,13 +122,13 @@ contract MTEA is ERC721, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 attributesTable,
-                " (maintable_tokenid,trait_type ,value) VALUES (",
+                " (maintable_tokenid, trait_type, value) VALUES ('",
                 Strings.toString(tokenId),
-                ",",
+                "', '",
                 _trait_type,
-                ",",
+                "', '",
                 Strings.toString(_value),
-                ")"
+                "')"
             )
         );
         _safeMint(to, tokenId);
