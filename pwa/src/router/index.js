@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 /* Async Components */
 const HomeView = () => import("../views/HomeView.vue");
 const MarketplaceView = () => import("../views/MarketplaceView.vue");
+const AccountView = () => import("../views/AccountView.vue");
 
 /* Create our Router */
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/marketplace",
       name: "marketplace",
       component: MarketplaceView,
+    },
+    {
+      path: "/account",
+      name: "account",
+      component: AccountView,
     },
   ],
 });

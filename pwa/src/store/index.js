@@ -1,6 +1,5 @@
 // import { ethers } from "ethers";
 import { defineStore } from "pinia";
-import authNFT from "../services/authNFT.js";
 import nftPort from "../services/nftPort.js";
 
 /* Import Smart Contract ABI */
@@ -24,9 +23,10 @@ export const useStore = defineStore({
     polygonTokens: [],
     optimismTokens: [],
     arbitrumTokens: [],
-    craigTokens: [],
     anneTokens: [],
     keremTokens: [],
+    topTokens: [],
+    latestTokens: [],
   }),
   getters: {
     isLoading(state) {
@@ -65,14 +65,17 @@ export const useStore = defineStore({
     getArbitrumTokens(state) {
       return state.arbitrumTokens;
     },
-    getCraigTokens(state) {
-      return state.craigTokens;
-    },
     getAnneTokens(state) {
       return state.anneTokens;
     },
     getKeremTokens(state) {
       return state.keremTokens;
+    },
+    getTopTokens(state) {
+      return state.topTokens;
+    },
+    getLatestTokens(state) {
+      return state.latestTokens;
     },
   },
   actions: {
@@ -119,14 +122,17 @@ export const useStore = defineStore({
     addArbitrumTokens(...tokens) {
       this.arbitrumTokens.push(...tokens);
     },
-    addCraigTokens(...tokens) {
-      this.craigTokens.push(...tokens);
-    },
     addAnneTokens(...tokens) {
       this.anneTokens.push(...tokens);
     },
     addKeremTokens(...tokens) {
       this.keremTokens.push(...tokens);
+    },
+    addTopTokens(...tokens) {
+      this.topTokens.push(...tokens);
+    },
+    addLatestTokens(...tokens) {
+      this.latestTokens.push(...tokens);
     },
 
     /**
@@ -164,90 +170,40 @@ export const useStore = defineStore({
     // },
 
     /**
-     * Fetch NFTs
-     * @param {String} contract
-     * @param {String} name
-     * @param {String} image
-     * @param {String} chainid
-     */
-    async fetchNFTs(contract, name, image, chainid) {
-      console.log("Fetch Contract address:", contract);
-      console.log("Fetch Name:", name);
-      console.log("Fetch Image:", image);
-      console.log("Fetch chainid:", chainid);
-
-      this.loading = true;
-
-      const authAccount = new authNFT();
-
-      /* Ethereum */
-      let ethereumTokens = await authAccount.fetchAccountNfts(1, contract);
-      this.addEthereumTokens(...ethereumTokens);
-      let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-        5,
-        contract
-      );
-      this.addEthereumTokens(...ethereumTestnetTokens);
-
-      /* Polygon */
-      let polygonTokens = await authAccount.fetchAccountNfts(137, contract);
-      this.addPolygonTokens(...polygonTokens);
-      let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-        80001,
-        contract
-      );
-      this.addPolygonTokens(...polygonTestnetTokens);
-
-      /* Optimism */
-      // let optimismTokens = await authAccount.fetchAccountNfts(10, contract);
-      // this.addOptimismTokens(...optimismTokens);
-      // let optimismTestnetTokens = await authAccount.fetchAccountNfts(
-      //   69,
-      //   contract
-      // );
-      // this.addOptimismTokens(...optimismTestnetTokens);
-
-      /* Arbitrum */
-      // let arbitrumTokens = await authAccount.fetchAccountNfts(42161, contract);
-      // this.addArbitrumTokens(...arbitrumTokens);
-      // let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
-      //   42161,
-      //   contract
-      // );
-      // this.addArbitrumTokens(...arbitrumTestnetTokens);
-
-      this.loading = false;
-    },
-
-    /**
-     * Fetch NFTs
+     * NFT PORT API - Search NFTs by Name and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
      * @param {String} text Required Search query
      * @param {String} chain Allowed values: polygon / ethereum / all
-     * @param {String} contract Results will only include NFTs from this contract address.
      * @param {String} sort_order Allowed values: desc / asc
      * @param {String} order_by Allowed values: relevance / mint_date
      * @param {Integer} page_size Required Search query
      * @param {Integer} page_number Required Search query
      */
-    async searchNFTs(contract, text, chain, order_by) {
-      console.log("Search Text:", text);
-      console.log("Filter by Contract:", contract);
-      console.log("Search Chain:", chain);
-      console.log("Search order_by:", order_by);
-
+    async searchNFTs(
+      contract,
+      text,
+      chain,
+      sort_order,
+      order_by,
+      page_size,
+      page_number
+    ) {
       /* NFT Port API Search */
       const nftPortApi = new nftPort();
       const results = await nftPortApi.nftSearch(
         text,
         contract,
         chain,
-        order_by
+        sort_order,
+        order_by,
+        page_size,
+        page_number
       );
       return results;
     },
 
     /**
-     * Fetch NFTs by Contract
+     * NFT PORT API - Fetch NFTs by Contract Address
      * @param {String} contract Results will only include NFTs from this contract address.
      * @param {String} chain Allowed values: polygon / ethereum / rinkeby
      * @param {String} include Include optional data in the response. default Allowed values: default / metadata / all
@@ -279,7 +235,7 @@ export const useStore = defineStore({
     },
 
     /**
-     * Fetch NFTs by Account
+     * NFT PORT API - Fetch NFTs by Account Address
      * @param {String} account Results will only include NFTs from this account address.
      * @param {String} contract Filter by and return NFTs only from the given contract address.
      * @param {String} continuation Continuation. Pass this value from the previous response to fetch the next page.
@@ -313,7 +269,7 @@ export const useStore = defineStore({
     },
 
     /**
-     * Fetch NFT Details by Contract and TokenId
+     * NFT PORT API - Fetch NFT Details by Contract and Token Id
      * @param {String} contract Results will only include NFTs from this contract address.
      * @param {String} token_id Results will only include NFTs from this contract address.
      * @param {String} chain Allowed values: polygon / ethereum / rinkeby

@@ -20,58 +20,61 @@ export default class nftPort {
    * @returns {Promise<String|Error>}
    *
    */
-  async nftSearch(text, filter_by_contract_address, chain, order_by) {
-    if (text !== "") {
-      const options = {
-        method: "GET",
-        url: this.endpoint + "search",
-        params: {
-          text: text,
-          filter_by_contract_address: filter_by_contract_address,
-          chain: chain,
-          order_by: order_by,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: nftPortApiKey,
-        },
-      };
+  async nftSearch(
+    text,
+    filter_by_contract_address,
+    chain,
+    sort_order,
+    order_by,
+    page_size,
+    page_number
+  ) {
+    console.log("Filter by Contract:", filter_by_contract_address);
+    console.log("Search Text:", text);
+    console.log("Search Chain:", chain);
+    console.log("Search sort_order:", sort_order);
+    console.log("Search order_by:", order_by);
+    console.log("Search page_size:", page_size);
+    console.log("Search page_number:", page_number);
+    const options = {
+      method: "GET",
+      url: this.endpoint + "search",
+      params: {
+        text: text,
+        filter_by_contract_address: filter_by_contract_address,
+        chain: chain,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: nftPortApiKey,
+      },
+    };
 
-      const results = await axios
-        .request(options)
-        .then(function (response) {
-          const data = response.data;
-          console.log("data", data);
-          return data;
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
+    const results = await axios
+      .request(options)
+      .then(function (response) {
+        const data = response.data;
+        return data;
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
 
-      console.log("results", results);
-
-      const nftCollection = {
-        search_results: results.search_results,
-        response: results.response,
-      };
-      // {
-      //   "response": "OK",
-      //   "search_results": [
-      //     {
-      //       "chain": "ethereum",
-      //       "contract_address": "0x12f28e2106ce8fd8464885b80ea865e98b465149",
-      //       "token_id": "100030071",
-      //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x12f28e2106ce8fd8464885b80ea865e98b465149_t_100030071_raw_asset.png",
-      //       "name": "Name field value in NFT metadata",
-      //       "description": "Description field value in NFT metadata",
-      //       "mint_date": "2020-10-29T15:03:54.838612"
-      //     }
-      //   ]
-      // }
-      console.log("nftCollection", nftCollection);
-      return nftCollection;
-    }
-    return;
+    // {
+    //   "response": "OK",
+    //   "search_results": [
+    //     {
+    //       "chain": "ethereum",
+    //       "contract_address": "0x12f28e2106ce8fd8464885b80ea865e98b465149",
+    //       "token_id": "100030071",
+    //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x12f28e2106ce8fd8464885b80ea865e98b465149_t_100030071_raw_asset.png",
+    //       "name": "Name field value in NFT metadata",
+    //       "description": "Description field value in NFT metadata",
+    //       "mint_date": "2020-10-29T15:03:54.838612"
+    //     }
+    //   ]
+    // }
+    return results;
   }
 
   /**

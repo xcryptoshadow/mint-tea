@@ -1,5 +1,6 @@
 <template>
   <div class="nft">
+    <!-- {{ token }} -->
     <div
       v-if="getUrlProtocol(token.metadata.image) === 'mp4'"
       class="nft-video"
@@ -11,7 +12,6 @@
       </video>
     </div>
     <div v-else-if="token.metadata && token.metadata.image" class="nft-image">
-      <!-- {{ getUrlProtocol(token.metadata.image) }} -->
       <img
         v-if="token.metadata.image"
         :src="`${getUrlProtocol(token.metadata.image)}`"
@@ -21,7 +21,10 @@
     <div v-if="token.metadata && token.metadata.name" class="nft-title">
       {{ token.metadata.name }}
     </div>
-    <!-- <div v-if="token.metadata && token.metadata.description" class="nft-time">
+    <!-- <div
+      v-if="token.metadata && token.metadata.description"
+      class="nft-description"
+    >
       {{ token.metadata.description }}
     </div> -->
   </div>
@@ -70,28 +73,11 @@ export default {
   float: left;
   box-sizing: border-box;
   width: 230px;
-  min-height: 365px;
   background: #f4f4f4;
   border: 2px solid #f4f4f4;
   border-radius: 15px;
-  overflow: scroll;
-  margin: 0 15px 20px 15px;
+  margin: 0 15px 25px 15px;
   padding: 15px 15px 10px 15px;
-
-  @include breakpoint($break-sm) {
-    float: left;
-    margin: 0 10px 20px 10px;
-  }
-
-  @include breakpoint($break-md) {
-    float: left;
-    margin: 0 10px 20px 10px;
-  }
-
-  @include breakpoint($break-xl) {
-    float: left;
-    margin: 0 20px 20px 0;
-  }
 
   &:hover {
     border: 2px solid #8d50f5;
@@ -104,26 +90,11 @@ export default {
     overflow: hidden;
     background: #f4f4f4;
   }
-
-  // .nft-image {
-  //   display: flex;
-  //   align-content: center;
-  //   justify-content: center;
-  //   align-items: center;
-  //   width: 100%;
-  //   height: 118px;
-  //   background: #f4f4f4;
-  // }
   .nft-image {
     width: 100%;
     margin: 0 auto;
     padding: 0;
     overflow: hidden;
-
-    @include breakpoint($break-md) {
-      width: 96%;
-      padding: 2%;
-    }
 
     img,
     svg {
@@ -141,22 +112,16 @@ export default {
     font-weight: normal;
     text-transform: uppercase;
     text-align: center;
-    margin: 20px 0;
+    margin: 10px 0 0 0;
+  }
+
+  .nft-description {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
   }
 }
-
-// .nft:nth-child(2n) {
-//   margin: 0 0 20px 0;
-//   @include breakpoint($medium) {
-//     margin: 0 20px 20px 0;
-//   }
-// }
-
-// .nft:nth-child(3n) {
-//   margin: 0 20px 20px 0;
-//   @include breakpoint($medium) {
-//     margin: 0 20px 20px 0;
-//     margin: 0 0 20px 0;
-//   }
-// }
 </style>

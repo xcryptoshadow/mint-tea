@@ -131,7 +131,6 @@
             />
           </div>
           <div class="button-container mb-10">
-            <button class="tab-button" @click="switchTab('brew')">Brew</button>
             <button
               v-if="!tokenId"
               :disabled="!account"
@@ -141,10 +140,13 @@
               Mint
             </button>
           </div>
-          <div class="button-container">
+          <div class="button-container mb-10">
             <button class="bridge-button" @click="switchTab('bridge')">
               Bridge
             </button>
+          </div>
+          <div class="button-container">
+            <button class="brew-button" @click="switchTab('brew')">Brew</button>
           </div>
         </div>
         <!-- END Mint Tab -->
@@ -162,22 +164,25 @@
     </article>
     <aside>
       <section id="marketplace">
-        <!-- <h2>Anne NFT Tokens</h2> -->
-        <div v-if="anneTokens && anneTokens.length > 0" class="row token-list">
-          <template v-for="token in anneTokens" :key="token.contract">
+        <!-- <h2>Latest NFTs</h2> -->
+        <div class="row token-list">
+          <template v-for="token in latestTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
             />
           </template>
         </div>
-
-        <!-- <h2>Craig NFT Tokens</h2> -->
-        <div
-          v-if="craigTokens && craigTokens.length > 0"
-          class="row token-list"
-        >
-          <template v-for="token in craigTokens" :key="token.contract">
+        <div class="row token-list">
+          <template v-for="token in anneTokens" :key="token.token_id">
+            <NftCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+        <div class="row token-list">
+          <template v-for="token in topTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
@@ -202,6 +207,7 @@ import { useStore } from "../store";
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
+// import authNFT from "../services/authNFT.js";
 
 /* SVGs */
 // import brewImg from "../assets/images/brew.png";
@@ -217,7 +223,7 @@ const contractAddress = "0x6b9482bD2EEd7814EE5a88Cc93f687a3961D27Fb";
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
-  "%c🏦 Mojo Contract Address %s 🏦",
+  "%c🏦 Mint Tea Contract Address %s 🏦",
   stylesContract,
   contractAddress
 );
@@ -232,7 +238,7 @@ console.log(
 const store = useStore();
 
 // Store Values and Methods
-const { account, balance, craigTokens, anneTokens, keremTokens } =
+const { account, balance, topTokens, latestTokens, anneTokens, keremTokens } =
   storeToRefs(store);
 
 // Set Form Tab
@@ -509,47 +515,76 @@ const mintNFT = async () => {
 };
 
 onMounted(async () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "smooth",
+  });
   getAccount();
   await checkIfWalletIsConnected();
 
   /* Kerems Music NFT Video */
-  let keremTokens = await store.detailsNftSearch(
-    "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-    "52806",
-    "ethereum",
-    true
-  );
-  // console.log("keremTokens", keremTokens);
-  if (keremTokens.nft) {
-    store.addKeremTokens(...[keremTokens.nft]);
+  if (keremTokens.value.length === 0) {
+    let keremTokens = await store.detailsNftSearch(
+      "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+      "52806",
+      "ethereum",
+      true
+    );
+    if (keremTokens.nft) {
+      store.addKeremTokens(...[keremTokens.nft]);
+    }
+    let keremTokens2 = await store.detailsNftSearch(
+      "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
+      "108227",
+      "ethereum",
+      true
+    );
+    if (keremTokens2.nft) {
+      store.addKeremTokens(...[keremTokens2.nft]);
+    }
   }
 
-  /* Anne NFT Collection */
-  // let anneTokens = await store.contractNftSearch(
-  //   "0xEa5C5F34D1fc40EDFa8cF2cfE334D229495cc9A7",
-  //   "polygon",
-  //   "metadata",
-  //   true,
-  //   50,
-  //   1
-  // );
-  // console.log("Anne tokens", anneTokens);
-  // if (anneTokens.nfts && anneTokens.total > 0) {
-  //   store.addAnneTokens(...anneTokens.nfts);
-  // }
+  if (topTokens.value.length === 0) {
+    let topTokens = await store.contractNftSearch(
+      "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
+      "ethereum",
+      "metadata",
+      "true",
+      8,
+      1
+    );
+    if (topTokens.nfts && topTokens.total > 0) {
+      store.addTopTokens(...topTokens.nfts);
+    }
+  }
 
-  /* Craig NFT Collection */
-  let craigTokens = await store.accountNftSearch(
-    "0x09c0377BAdCa7349b20569f45f2D94398179Db0c",
-    "",
-    "",
-    "ethereum",
-    "metadata",
-    "erc1155",
-    50
-  );
-  if (craigTokens.nfts && craigTokens.total > 0) {
-    store.addCraigTokens(...craigTokens.nfts);
+  if (latestTokens.value.length === 0) {
+    let latestTokens = await store.contractNftSearch(
+      "0x1A92f7381B9F03921564a437210bB9396471050C",
+      "ethereum",
+      "metadata",
+      "true",
+      12,
+      1
+    );
+    if (latestTokens.nfts && latestTokens.total > 0) {
+      store.addLatestTokens(...latestTokens.nfts);
+    }
+  }
+
+  if (anneTokens.value.length === 0) {
+    let anneTokens = await store.contractNftSearch(
+      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+      "ethereum",
+      "metadata",
+      "true",
+      8,
+      1
+    );
+    if (anneTokens.nfts) {
+      store.addAnneTokens(...anneTokens.nfts);
+    }
   }
 });
 </script>
@@ -823,7 +858,7 @@ section#content {
       color: $mint-black;
       font-size: 1.7rem;
       line-height: 1.8rem;
-      text-align: center;
+      text-align: left;
       margin: 0 auto 15px;
     }
 
@@ -851,12 +886,12 @@ section#marketplace {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 2em 0 2em 3em;
+  padding: 1.5em 0 4em 3em;
   overflow: scroll;
 
   .row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-content: center;
     justify-content: center;
     align-items: center;
@@ -871,10 +906,16 @@ section#marketplace {
   }
 
   h2 {
-    font-size: 1.8rem;
-    text-align: center;
+    width: 100%;
+    font-size: 1.7rem;
+    font-weight: 400;
+    text-align: left;
+    color: $mint-black;
+    text-decoration: underline;
+    text-underline-offset: 10px;
+    padding: 0 0 20px 40px;
     margin-block-start: 0;
-    margin-block-end: 0.2em;
+    margin-block-end: 0;
   }
 
   .mint-button {
