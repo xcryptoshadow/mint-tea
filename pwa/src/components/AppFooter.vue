@@ -3,11 +3,14 @@
     <div class="footer-title">
       <span>Mint, brew &amp; bridge NFTs cross-chain</span>
     </div>
+    <div class="footer-logo">
+      <GreenLogo />
+    </div>
     <div class="footer-menu">
       <nav class="footer-navbar">
         <a
           href="https://ethglobal.com/showcase/mint-tea-2nn7k"
-          alt="ETHOnline"
+          alt="ETH Online 2022"
           target="_blank"
           rel="noopener"
           >ETHOnline</a
@@ -23,22 +26,19 @@
     </div>
   </footer>
 </template>
-<script>
-export default {
-  name: "AppFooter",
-};
+<script setup>
+/* Import SVG */
+import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
 </script>
 <style lang="scss">
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
 
 footer {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  align-content: center;
   padding: 0.8em;
   color: $white;
   background: $mint-black;
@@ -47,6 +47,8 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+    align-content: center;
+    width: 45%;
 
     span {
       font-size: 0.8rem;
@@ -62,9 +64,27 @@ footer {
     }
   }
 
+  .footer-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 10%;
+
+    img,
+    svg {
+      width: 70px;
+      object-fit: contain;
+      overflow: hidden;
+    }
+  }
+
   .footer-menu {
     display: flex;
+    justify-content: center;
     align-items: center;
+    align-content: center;
+    width: 45%;
 
     .footer-navbar {
       display: flex;

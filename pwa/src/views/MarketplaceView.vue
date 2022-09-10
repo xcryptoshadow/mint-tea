@@ -24,7 +24,6 @@
             v-model="contract"
             class="search-contract"
             placeholder="Filter by contract"
-            @input="searchTokens('contract')"
           />
           <input
             type="text"
@@ -46,6 +45,7 @@
     </section>
     <Transition name="slide-fade">
       <section v-show="show" id="search-results">
+        <OrangeLogo class="search-logo" />
         <div class="search-results-row">
           <h2>Search Results</h2>
           <div class="row token-list">
@@ -103,13 +103,14 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
 /* Components */
+import OrangeLogo from "../assets/svgs/OrangeLogo.vue?url";
 import NftCard from "@/components/NftCard.vue";
 /* Init Store Values and Methods */
 const store = useStore();
 const { searchResults, topTokens, latestTokens, anneTokens } =
   storeToRefs(store);
 
-const chain = ref("ethereum");
+const chain = ref("all");
 const options = ref([
   { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
   { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
@@ -170,75 +171,100 @@ async function searchTokens(type) {
   console.log("order_by:", order_by.value);
   console.log("page_size:", page_size.value);
   console.log("page_number:", page_number.value);
+  if (type === "name") {
+    try {
+      const results = await store.searchNFTs(
+        contract.value,
+        name.value,
+        chain.value,
+        sort_order.value,
+        order_by.value,
+        page_size.value,
+        page_number.value
+      );
+      //       Body
+      // application/json
+      // response
+      // string
+      // required
+      // Response status, either OK or NOK.
 
-  try {
-    const results = await store.searchNFTs(
-      contract.value,
-      name.value,
-      chain.value,
-      sort_order.value,
-      order_by.value,
-      page_size.value,
-      page_number.value
-    );
-    //       Body
-    // application/json
-    // response
-    // string
-    // required
-    // Response status, either OK or NOK.
+      // Allowed values:
+      // OK
+      // NOK
+      // search_results
+      // array[TextSearchNft]
+      // chain
+      // string
+      // required
+      // Blockchain where the NFT has been minted.
 
-    // Allowed values:
-    // OK
-    // NOK
-    // search_results
-    // array[TextSearchNft]
-    // chain
-    // string
-    // required
-    // Blockchain where the NFT has been minted.
+      // Allowed values:
+      // polygon
+      // ethereum
+      // contract_address
+      // string
+      // required
+      // The contract address of the NFT.
 
-    // Allowed values:
-    // polygon
-    // ethereum
-    // contract_address
-    // string
-    // required
-    // The contract address of the NFT.
+      // token_id
+      // string
+      // required
+      // A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
 
-    // token_id
-    // string
-    // required
-    // A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+      // cached_file_url
+      // string
+      // required
+      // Cached file (image, video, etc) in NFTPort's cloud with no access restrictions and without IPFS issues.
 
-    // cached_file_url
-    // string
-    // required
-    // Cached file (image, video, etc) in NFTPort's cloud with no access restrictions and without IPFS issues.
+      // name
+      // string
+      // required
+      // Name of the NFT in the metadata.
 
-    // name
-    // string
-    // required
-    // Name of the NFT in the metadata.
+      // description
+      // string
+      // required
+      // Description of the NFT in the metadata.
 
-    // description
-    // string
-    // required
-    // Description of the NFT in the metadata.
-
-    // mint_date
-    // string
-    // Date when the NFT was minted (ISO).
-    const stylesResults = ["color: black", "background: grey"].join(";");
-    console.log("%c📻 NFT Port Search fetched : %s", stylesResults, results);
-    if (results.error) {
-      console.log("Error", results.error);
+      // mint_date
+      // string
+      // Date when the NFT was minted (ISO).
+      const stylesResults = ["color: black", "background: grey"].join(";");
+      console.log("%c📻 NFT Port Search fetched : %s", stylesResults, results);
+      if (results.error) {
+        console.log("Error", results.error);
+      }
+      if (results.search_results && results.search_results.length > 0) {
+        store.addSearchResults(...results.search_results);
+      }
+    } catch (error) {
+      console.log(error);
     }
-    if (results.search_results && results.search_results.length > 0) {
-      store.addSearchResults(...results.search_results);
+  } else {
+    /* Image Search */
+    try {
+      const results = await store.searchNFTs(
+        contract.value,
+        name.value,
+        chain.value,
+        sort_order.value,
+        order_by.value,
+        page_size.value,
+        page_number.value
+      );
+
+      const stylesResults = ["color: black", "background: grey"].join(";");
+      console.log("%c📻 NFT Port Search fetched : %s", stylesResults, results);
+      if (results.error) {
+        console.log("Error", results.error);
+      }
+      if (results.search_results && results.search_results.length > 0) {
+        store.addSearchResults(...results.search_results);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
 }
 
@@ -508,6 +534,20 @@ section#search-results {
   width: 100%;
   height: 500px;
   padding: 10px 0 10px;
+
+  img,
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    overflow: hidden;
+  }
+
+  .search-logo {
+    position: relative;
+    top: 60px;
+    left: 30px;
+  }
   .search-results-row {
     max-width: 1279px;
     display: inline-block;
