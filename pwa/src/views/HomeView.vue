@@ -4,7 +4,8 @@
       <section id="content">
         <!-- Connect Tab -->
         <div v-if="!account" class="form-container">
-          <h1>Mint Tea</h1>
+          <!-- <h1>Mint Tea</h1> -->
+          <BlueLogo class="header-logo" />
           <p>
             Mint and brew cross-chain NFTs using our custom bridge, send tokens
             and NFTs to all your favourite blockchains.
@@ -209,8 +210,8 @@ import { fileSize, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
 // import authNFT from "../services/authNFT.js";
 
-/* SVGs */
-// import brewImg from "../assets/images/brew.png";
+/* Import SVG */
+import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 import MusicCard from "@/components/MusicCard.vue";
@@ -614,6 +615,17 @@ section#content {
     margin-bottom: 20px;
     padding: 25px;
 
+    img,
+    svg {
+      margin-top: -20px;
+      width: 180px;
+      object-fit: contain;
+      overflow: hidden;
+    }
+    .header-logo {
+      margin: 0 auto 20px;
+    }
+
     h1 {
       font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
         sans-serif;
@@ -635,7 +647,7 @@ section#content {
     }
 
     p {
-      line-height: 1.7;
+      line-height: 1.6;
       margin-bottom: 10px;
       text-align: center;
     }

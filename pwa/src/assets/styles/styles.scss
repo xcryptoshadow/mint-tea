@@ -51,10 +51,14 @@ body {
 
 main {
   display: flex;
-  height: 100%;
-  flex-direction: column;
+  // flex-direction: column;
+  justify-content: space-between;
+  // height: 100%;
+  // width: 100%;
+  // margin: 0;
+  // padding: 0;
 }
-@media only screen and (min-width: 839px) {
+@media only screen and (max-width: 839px) {
   main {
     flex-direction: row;
   }
@@ -69,7 +73,7 @@ article {
   padding: 1.5em 2em 3em;
 }
 aside {
-  flex: 1 1;
+  flex: 1 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
