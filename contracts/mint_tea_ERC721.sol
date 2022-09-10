@@ -10,7 +10,7 @@ import "@tableland/evm/contracts/ITablelandTables.sol";
 contract MTEA is ERC721, AccessControl {
     using Counters for Counters.Counter;
     // The testnet gateway URI plus query parameter
-    string private _baseURIString = "https://testnet.tableland.network/query?s=";
+    string private _baseURIString = "https://testnet.tableland.network/query?";
 
     Counters.Counter private _tokenIdCounter;
 
@@ -168,15 +168,15 @@ contract MTEA is ERC721, AccessControl {
     /**
      * @dev tokenURI that points to the NFT’s metadata. This response must conform to the ERC721 format
      */
-    function tokenURI(uint256 tokenId)
+    function tokenURI(uint256 _tokenId)
         public
         view
         virtual
-        override(ERC721)
+        override
         returns (string memory)
     {
         require(
-            _exists(tokenId),
+            _exists(_tokenId),
             "ERC721Metadata: URI query for nonexistent token"
         );
         string memory baseURI = _baseURI();
@@ -190,15 +190,15 @@ contract MTEA is ERC721, AccessControl {
         */
         string memory query = string(
             abi.encodePacked(
-                "SELECT%20json_object%28%27id%27%2Cid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
+                "SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
                 mainTable,
                 "%20JOIN%20",
                 attributesTable,
                 "%20ON%20",
                 mainTable,
-                "%2Eid%20%3D%20",
+                "%2Etokenid%20%3D%20",
                 attributesTable,
-                "%2Emain_id%20WHERE%20id%3D"
+                "%2Emaintable_tokenid%20WHERE%20tokenid%3D"
             )
         );
         // Return the baseURI with a query string, which looks up the token id in a row.
@@ -207,10 +207,10 @@ contract MTEA is ERC721, AccessControl {
             string(
                 abi.encodePacked(
                     baseURI,
-                    "&mode=list",
+                    "mode=list&s=",
                     query,
-                    Strings.toString(tokenId),
-                    "%20group%20by%20id"
+                    Strings.toString(_tokenId),
+                    "%20group%20by%20tokenid"
                 )
             );
     }
