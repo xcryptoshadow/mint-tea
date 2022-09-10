@@ -217,9 +217,9 @@ import NftCard from "@/components/NftCard.vue";
 import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
-// import contractAbi from "../../../artifacts/contracts/Lock.sol/Lock.json";
+import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Manually set our Contract Address */
-const contractAddress = "0x6b9482bD2EEd7814EE5a88Cc93f687a3961D27Fb";
+const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -228,12 +228,12 @@ console.log(
   stylesContract,
   contractAddress
 );
-// const stylesAbi = ["color: black", "background: cyan"].join(";");
-// console.log(
-//   "%c🧭 Contract ABI Source %s 🧭",
-//   stylesAbi,
-//   contractAbi.sourceName
-// );
+const stylesAbi = ["color: black", "background: cyan"].join(";");
+console.log(
+  "%c🧭 Contract ABI Source %s 🧭",
+  stylesAbi,
+  contractAbi.sourceName
+);
 
 // Init Store
 const store = useStore();
@@ -415,7 +415,7 @@ const mintNFT = async () => {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(
         contractAddress,
-        // contractAbi.abi,
+        contractAbi.abi,
         signer
       );
 
@@ -444,33 +444,38 @@ const mintNFT = async () => {
       });
 
       /* Store NFT Metadata on NFT.Storage */
-      const nftStorageTMetadataURI = await nftStorage(
+      // const nftStorageTMetadataURI = await nftStorage(
+      //   name.value,
+      //   description.value,
+      //   imageUrl.value,
+      //   size.value,
+      //   createdAt.value,
+      //   audioVideoType.value
+      // );
+      // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
+      //   ";"
+      // );
+      // console.log(
+      //   "%c💾 NFT.Storage ipfs:// link :  %s 💾",
+      //   stylesNFTStorage,
+      //   nftStorageTMetadataURI
+      // );
+      // /* Check our Transaction results */
+      // if (!nftStorageTMetadataURI) return;
+
+      /* Mint our NFT using custom structure */
+      // let nftTxn = await contract.safeMint(
+      //   signer.getAddress(),
+      //   nftStorageTMetadataURI
+      // );
+      let nftTxn = await contract.safeMint(
+        signer.getAddress(),
         name.value,
         description.value,
         imageUrl.value,
-        size.value,
-        createdAt.value,
+        "Audio/Video Type",
         audioVideoType.value
       );
-      /* Console log with some style */
-      const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
-        ";"
-      );
-      console.log(
-        "%c💾 NFT.Storage ipfs:// link :  %s 💾",
-        stylesNFTStorage,
-        nftStorageTMetadataURI
-      );
-
-      /* Check our Transaction results */
-      if (!nftStorageTMetadataURI) return;
-
-      /* Mint our NFT using custom structure */
-      let nftTxn = await contract.safeMint(
-        signer.getAddress(),
-        nftStorageTMetadataURI
-      );
-      // let nftTxn = await contract.safeMint(signer.getAddress());
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
       console.log("%c⛏ Mining...please wait!  %s ⛏", stylesMining, nftTxn.hash);

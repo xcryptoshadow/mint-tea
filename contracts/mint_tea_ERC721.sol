@@ -2,16 +2,15 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@tableland/evm/contracts/ITablelandTables.sol";
 
-contract MTEA is ERC721, ERC721URIStorage, AccessControl {
+contract MTEA is ERC721, AccessControl {
     using Counters for Counters.Counter;
     // The testnet gateway URI plus query parameter
-    string private _baseURIString = "https://testnet.tableland.network/query?s=";
+    string private _baseURIString = "https://testnet.tableland.network/query?";
 
     Counters.Counter private _tokenIdCounter;
 
@@ -19,6 +18,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
     ITablelandTables private _tableland;
     //string private _metadataTable;
     uint256 private _metadataTableId;
+    uint256 private _attributesTableId;
     string private _tablePrefix = "Mint_TEA";
 
     /// The name of the main metadata table in Tableland
@@ -47,7 +47,7 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
                 "_",
                 Strings.toString(block.chainid),
                 //TO DO : I need to change the columns
-                " (tokenid, name, description, image);"
+                " (tokenid int, name text, description text, image text);"
             )
         );
 
@@ -66,14 +66,14 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
          /*
         * create a new attribute table. 
         */
-        uint256 attributesTableId = _tableland.createTable(
+        _attributesTableId = _tableland.createTable(
             address(this),
             string.concat(
                 "CREATE TABLE ",
-                "attributes",
+                _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
-                " (maintable_tokenid, trait_type, value);"
+                " (maintable_tokenid int, trait_type text, value int);"
             )
         );
         attributesTable = string.concat(
@@ -81,28 +81,57 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
 			"_",
             Strings.toString(block.chainid),
             "_",
-            Strings.toString(attributesTableId)
+            Strings.toString(_attributesTableId)
         );
     }
     
      /* ========== PUBLIC METHODS ========== */
-    function safeMint(address to, string memory uri) public returns (uint256) {
+    function safeMint(
+        address to, 
+        string memory _name, 
+        string memory _description,
+        string memory _image_url,
+        string memory _trait_type,
+        uint256 _value  
+        ) public returns (uint256) {
+
+
         uint256 tokenId = _tokenIdCounter.current();
-       //TO DO : fill the attributes as well
+        //insert into maintable
         _tableland.runSQL(
             address(this),
             _metadataTableId,
             string.concat(
                 "INSERT INTO ",
                 mainTable,
-                " (tokenid, name, description, image) VALUES (",
+                " (tokenid, name, description, image) VALUES ('",
                 Strings.toString(tokenId),
-                ", 'not.implemented.xyz', 0, 0)"
+                "', '",
+                _name,
+                "', '",
+                _description,
+                "', '",
+                _image_url,
+                "')"
+            )
+        );
+        //insert into attributesTable
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "INSERT INTO ",
+                attributesTable,
+                " (maintable_tokenid, trait_type, value) VALUES ('",
+                Strings.toString(tokenId),
+                "', '",
+                _trait_type,
+                "', '",
+                Strings.toString(_value),
+                "')"
             )
         );
         _safeMint(to, tokenId);
-        //To do : add a proper setTokenUri
-        _setTokenURI(tokenId, uri);
         _tokenIdCounter.increment();
         return tokenId;
     }
@@ -139,15 +168,15 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
     /**
      * @dev tokenURI that points to the NFT’s metadata. This response must conform to the ERC721 format
      */
-    function tokenURI(uint256 tokenId)
+    function tokenURI(uint256 _tokenId)
         public
         view
         virtual
-        override(ERC721, ERC721URIStorage)
+        override
         returns (string memory)
     {
         require(
-            _exists(tokenId),
+            _exists(_tokenId),
             "ERC721Metadata: URI query for nonexistent token"
         );
         string memory baseURI = _baseURI();
@@ -161,15 +190,15 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
         */
         string memory query = string(
             abi.encodePacked(
-                "SELECT%20json_object%28%27id%27%2Cid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
+                "SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
                 mainTable,
                 "%20JOIN%20",
                 attributesTable,
                 "%20ON%20",
                 mainTable,
-                "%2Eid%20%3D%20",
+                "%2Etokenid%20%3D%20",
                 attributesTable,
-                "%2Emain_id%20WHERE%20id%3D"
+                "%2Emaintable_tokenid%20WHERE%20tokenid%3D"
             )
         );
         // Return the baseURI with a query string, which looks up the token id in a row.
@@ -178,10 +207,10 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
             string(
                 abi.encodePacked(
                     baseURI,
-                    "&mode=list",
+                    "mode=list&s=",
                     query,
-                    Strings.toString(tokenId),
-                    "%20group%20by%20id"
+                    Strings.toString(_tokenId),
+                    "%20group%20by%20tokenid"
                 )
             );
     }
@@ -196,11 +225,6 @@ contract MTEA is ERC721, ERC721URIStorage, AccessControl {
    
 
     // The following functions are overrides required by Solidity.
-
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
 
     function supportsInterface(bytes4 interfaceId)
         public
