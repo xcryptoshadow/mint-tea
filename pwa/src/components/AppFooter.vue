@@ -1,16 +1,19 @@
 <template>
   <footer id="footer">
     <div class="footer-title">
-      <span>Brew up cross-chain NFT's with Mint Tea 🍵</span>
+      <span>Mint, brew &amp; bridge NFTs cross-chain</span>
+    </div>
+    <div class="footer-logo">
+      <GreenLogo />
     </div>
     <div class="footer-menu">
       <nav class="footer-navbar">
         <a
-          href="https://ethglobal.com/showcase/mojo-11hkx"
-          alt="HackFS"
+          href="https://ethglobal.com/showcase/mint-tea-2nn7k"
+          alt="ETH Online 2022"
           target="_blank"
           rel="noopener"
-          >ETH Online</a
+          >ETHOnline</a
         >
         <a
           href="https://github.com/Mint-Tea-ETHOnline"
@@ -23,10 +26,9 @@
     </div>
   </footer>
 </template>
-<script>
-export default {
-  name: "AppFooter",
-};
+<script setup>
+/* Import SVG */
+import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
 </script>
 <style lang="scss">
 @import "../assets/styles/variables.scss";
@@ -36,24 +38,23 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: border-top 0.5s ease;
-  border-top: 1px solid #000000;
-  padding: 1em;
-
-  background: #01579b;
-  height: 15vh;
-  color: #fff;
+  align-content: center;
+  padding: 0.8em;
+  color: $white;
+  background: $mint-black;
 
   .footer-title {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 45%;
 
     span {
-      font-size: 1rem;
+      font-size: 0.8rem;
       a {
-        font-size: 1rem;
-        color: var(--contrast-color);
+        font-size: 0.8rem;
+        color: $white;
         cursor: pointer;
 
         &.active {
@@ -63,28 +64,46 @@ footer {
     }
   }
 
+  .footer-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 10%;
+
+    img,
+    svg {
+      width: 70px;
+      object-fit: contain;
+      overflow: hidden;
+    }
+  }
+
   .footer-menu {
     display: flex;
+    justify-content: center;
     align-items: center;
+    align-content: center;
+    width: 45%;
 
     .footer-navbar {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.8rem;
 
       a {
-        font-size: 0.6rem;
-        color: var(--contrast-color);
+        font-size: 0.8rem;
+        color: $white;
+        margin: 0 15px 0 0;
         cursor: pointer;
-        &.active {
-          font-weight: bold;
-        }
       }
-
-      svg {
-        cursor: pointer;
-        font-size: 2em;
+      a:hover {
+        color: $mint-orange !important;
+        font-weight: bold;
+      }
+      a:active {
+        font-weight: bold;
       }
     }
   }
