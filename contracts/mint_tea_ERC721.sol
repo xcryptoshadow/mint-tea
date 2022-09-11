@@ -47,7 +47,7 @@ contract MTEA is ERC721, AccessControl {
                 "_",
                 Strings.toString(block.chainid),
                 //TO DO : I need to change the columns
-                " (tokenid int, name text, description text, image text);"
+                " (tokenid int, name text, description text, image text, external_url text);"
             )
         );
 
@@ -73,7 +73,7 @@ contract MTEA is ERC721, AccessControl {
                 _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
-                " (maintable_tokenid int, trait_type text, value int);"
+                " (maintable_tokenid int, icon text, display_type text, trait_type text, value int);"
             )
         );
         attributesTable = string.concat(
@@ -91,6 +91,9 @@ contract MTEA is ERC721, AccessControl {
         string memory _name, 
         string memory _description,
         string memory _image_url,
+        string memory _external_url,
+        string memory _icon,
+        string memory _display_type,
         string memory _trait_type,
         uint256 _value  
         ) public returns (uint256) {
@@ -104,7 +107,7 @@ contract MTEA is ERC721, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 mainTable,
-                " (tokenid, name, description, image) VALUES ('",
+                " (tokenid, name, description, image, external_url) VALUES ('",
                 Strings.toString(tokenId),
                 "', '",
                 _name,
@@ -112,6 +115,8 @@ contract MTEA is ERC721, AccessControl {
                 _description,
                 "', '",
                 _image_url,
+                "', '",
+                _external_url,
                 "')"
             )
         );
@@ -122,8 +127,12 @@ contract MTEA is ERC721, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 attributesTable,
-                " (maintable_tokenid, trait_type, value) VALUES ('",
+                " (maintable_tokenid, icon, display_type, trait_type, value) VALUES ('",
                 Strings.toString(tokenId),
+                "', '",
+                _icon,
+                "', '",
+                _display_type,
                 "', '",
                 _trait_type,
                 "', '",
@@ -190,7 +199,7 @@ contract MTEA is ERC721, AccessControl {
         */
         string memory query = string(
             abi.encodePacked(
-                "SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
+                "SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
                 mainTable,
                 "%20JOIN%20",
                 attributesTable,
