@@ -1,4 +1,3 @@
-// import IPFSNetwork from "../services/IPFSNetwork";
 import { storeBlob } from "../services/nftStorage";
 
 /**
@@ -12,7 +11,6 @@ import { storeBlob } from "../services/nftStorage";
  * @returns {Promise<SafeAsync>}
  */
 export const uploadBlob = async (file) => {
-  // const client = new IPFSNetwork();
   let detail = getCidDetail({ cid: null, file });
 
   /* Max 50MB Upload size*/
@@ -21,11 +19,7 @@ export const uploadBlob = async (file) => {
   }
 
   try {
-    // const cid = await client.storeBlob(file);
     const cid = await storeBlob(file);
-
-    console.log("NFT.Storage CID: ", cid);
-
     detail = getCidDetail({ cid, file });
     return { error: false, data: detail };
   } catch (error) {

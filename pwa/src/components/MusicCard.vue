@@ -4,7 +4,7 @@
       {{ token.metadata.name }}
     </div>
     <div class="music-nft-video">
-      <video width="342" controls>
+      <video width="400" controls>
         <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
       </video>
     </div>
@@ -59,10 +59,10 @@ export default {
   display: inline;
   float: left;
   box-sizing: border-box;
-  width: 340px;
+  max-width: 380px;
   background: $mint-black;
   border-radius: 15px;
-  margin: 0 15px 20px 15px;
+  margin: 0 0 20px 0;
   padding: 0;
   overflow: hidden;
 

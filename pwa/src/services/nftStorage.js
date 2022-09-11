@@ -1,7 +1,8 @@
 /* Import the NFTStorage class and File constructor from the 'nft.storage' package */
-import { NFTStorage } from "nft.storage";
+import { NFTStorage, Blob } from "nft.storage";
 
 const NFT_STORAGE_KEY = import.meta.env.VITE_NFT_STORAGE_KEY;
+console.log("NFT_STORAGE_KEY", NFT_STORAGE_KEY);
 
 /**
  * Store NFT Metadata in custom Attribute structure
@@ -11,20 +12,9 @@ export const nftStorage = async (
   name,
   description,
   imageUrl,
-  size,
-  createdAt,
-  audioVideoType,
-  title,
-  category,
-  license,
-  website,
-  longDescription,
-  preview,
-  audioVideoURL,
-  animationURL,
-  youtubeURL,
-  resolution,
-  duration
+  externalUrl,
+  attributes,
+  audioVideoType
 ) => {
   /*
    * Create a blob to validate TypeError: property `image` must be a Blob or File
@@ -40,83 +30,29 @@ export const nftStorage = async (
     decimals: 0,
     description,
     image: blob,
-    properties: {
-      type: "mNFT",
-      authors: [{ name: "Mint Tea NFT" }],
-      content: {
-        "text/markdown": longDescription,
-      },
-    },
-    attributes: [
-      {
-        trait_type: "Title",
-        value: title,
-      },
-      {
-        trait_type: "Category",
-        value: category,
-      },
-      {
-        trait_type: "License",
-        value: license,
-      },
-      {
-        trait_type: "Website Link",
-        value: website,
-      },
-      {
-        trait_type: "Preview Link",
-        value: preview,
-      },
-      {
-        trait_type: "Audio/Video Link",
-        value: audioVideoURL,
-      },
-      {
-        trait_type: "Audio/Video Type",
-        value: audioVideoType,
-      },
-      {
-        trait_type: "Animation Link",
-        value: animationURL,
-      },
-      {
-        trait_type: "Youtube Link",
-        value: youtubeURL,
-      },
-      {
-        trait_type: "Resolution",
-        value: resolution,
-      },
-      {
-        trait_type: "Duration",
-        value: duration,
-      },
-      {
-        trait_type: "Size",
-        value: size,
-      },
-      {
-        display_type: "date",
-        trait_type: "duration",
-        value: createdAt,
-      },
-    ],
+    external_url: externalUrl,
+    attributes: attributes,
   };
-
+  /* Init NFT.Storage Client */
   const client = new NFTStorage({ token: NFT_STORAGE_KEY });
   const metadata = await client.store(nft);
 
+  /* Return our NFT.Storage CID */
   return metadata.url;
 };
 
+/**
+ * Store Blob method to upload a file to NFT.Storage
+ * @returns {MetadataURL}
+ */
 export const storeBlob = async (file) => {
-  console.log("storeBlob File: ", file);
   if (file.size === 0) {
     throw new Error("Content size is 0, make sure to provide some content");
   }
-  // const content = new Blob(file);
+  /* Init NFT.Storage Client */
   const client = new NFTStorage({ token: NFT_STORAGE_KEY });
   const cid = await client.storeBlob(file);
+
+  /* Return our File NFT.Storage CID */
   return cid;
 };

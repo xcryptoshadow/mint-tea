@@ -62,9 +62,9 @@
     </Transition>
     <section id="marketplace">
       <div class="row">
-        <h2>Top NFTs</h2>
+        <h2>Latest NFTs</h2>
         <div class="row token-list">
-          <template v-for="token in topTokens" :key="token.tokenId">
+          <template v-for="token in latestTokens" :key="token.tokenId">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"
@@ -73,9 +73,9 @@
         </div>
       </div>
       <div class="row">
-        <h2>Latest NFTs</h2>
+        <h2>Top NFTs</h2>
         <div class="row token-list">
-          <template v-for="token in latestTokens" :key="token.tokenId">
+          <template v-for="token in topTokens" :key="token.tokenId">
             <NftCard
               v-if="token.metadata && token.metadata.image"
               :token="token"

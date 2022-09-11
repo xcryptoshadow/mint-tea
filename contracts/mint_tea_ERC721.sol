@@ -28,6 +28,13 @@ contract MTEA is ERC721, AccessControl {
     // Schema: main_id int not null, trait_type text not null, value text
     string public attributesTable;
 
+    /* Events */
+    event NewNftMinted(
+      address indexed from,
+      uint256 timestamp,
+      uint256 tokenId
+    );
+
     constructor( address registry) ERC721("MTEA", "MT") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
@@ -142,6 +149,7 @@ contract MTEA is ERC721, AccessControl {
         );
         _safeMint(to, tokenId);
         _tokenIdCounter.increment();
+        emit NewNftMinted(msg.sender, block.timestamp, tokenId);
         return tokenId;
     }
 

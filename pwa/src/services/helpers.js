@@ -30,6 +30,20 @@ export const fileSize = (bytes, si = false, dp = 1) => {
 };
 
 /**
+ * Copy text to clipboard
+ * @param {String} value
+ * @returns {Void}
+ */
+export const copyToClipboard = (value) => {
+  const textArea = document.createElement("textarea");
+  textArea.value = value;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("copy");
+  textArea.remove();
+};
+
+/**
  * Check is file type is video
  * @param {String} type
  * @returns {Boolean}
@@ -57,12 +71,4 @@ export const generateLink = (item, isShorten = false) => {
     if (isVideo(item.file.type)) return `https://${item.cid}.ipfs.dweb.link`;
   }
   return `https://cloudflare-ipfs.com/ipfs/${item.cid}`;
-};
-
-/**
- * Check if website is running on PWA mode
- * @returns {Boolean}
- */
-export const isRunningOnPWA = () => {
-  return window.matchMedia("(display-mode: standalone)").matches;
 };
