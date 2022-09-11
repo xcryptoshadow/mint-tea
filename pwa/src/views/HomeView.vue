@@ -462,10 +462,10 @@ const uploadFileHandler = async () => {
   /* Set our NFT Metadata Form Values using IPFS best practises */
   cid.value = uploadResult.data.cid;
   /* Strip image type off our name eg, .png, .jpeg, .gif */
-  name.value = uploadResult.data.file.name.substring(
-    0,
-    uploadResult.data.file.name.lastIndexOf(".")
-  );
+  // name.value = uploadResult.data.file.name.substring(
+  //   0,
+  //   uploadResult.data.file.name.lastIndexOf(".")
+  // );
   /* Generate and IPFS URI for NFT's */
   imageUrl.value = generateLink(uploadResult.data);
 
@@ -576,12 +576,6 @@ const mintNFT = async () => {
       //   nftStorageTMetadataURI
       // );
 
-      /**
-       * @dev We just creating the first Attribute, the other can get created via sdk
-       */
-      const createdAt = new Date().toISOString().slice(0, 10);
-      console.log("createdAt", createdAt);
-
       let nftTxn = await contract.safeMint(
         signer.getAddress(),
         name.value,
@@ -589,9 +583,9 @@ const mintNFT = async () => {
         imageUrl.value,
         externalUrl.value,
         "https://cloudflare-ipfs.com/ipfs/bafkreibx3akdct6syqhkis3dqsnekukhh5ib5pdwepfki7hf45viv4ylp4",
-        "Made by 🍵 Mint Tea",
-        "created",
-        createdAt
+        "date",
+        "🍵 Mint Tea version #",
+        1
       );
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
