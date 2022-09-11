@@ -1,11 +1,11 @@
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import { defineStore } from "pinia";
 import nftPort from "../services/nftPort.js";
 
 /* Import Smart Contract ABI */
-import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+// import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Get our Mint Tea Contract Address */
-const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+// const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
 
 /* LFG */
 export const useStore = defineStore({
@@ -138,36 +138,36 @@ export const useStore = defineStore({
     /**
      * Get User 🦊 Metamask Account Balance
      */
-    async getBalance() {
-      this.setLoading(true);
-      try {
-        /*
-         * First make sure we have access to window.ethereum
-         */
-        const { ethereum } = window;
-        if (ethereum) {
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
-          const contract = new ethers.Contract(
-            contractAddress,
-            contractAbi.abi,
-            signer
-          );
-          const count = await contract.getBalance();
-          const amount = ethers.utils.formatEther(count);
+    // async getBalance() {
+    //   this.setLoading(true);
+    //   try {
+    //     /*
+    //      * First make sure we have access to window.ethereum
+    //      */
+    //     const { ethereum } = window;
+    //     if (ethereum) {
+    //       const provider = new ethers.providers.Web3Provider(ethereum);
+    //       const signer = provider.getSigner();
+    //       const contract = new ethers.Contract(
+    //         contractAddress,
+    //         contractAbi.abi,
+    //         signer
+    //       );
+    //       const count = await contract.getBalance();
+    //       const amount = ethers.utils.formatEther(count);
 
-          /* Console log with some style */
-          const stylesAmount = ["color: black", "background: green"].join(";");
-          console.log("%c💰 Get Balance Amount %s 💰", stylesAmount, amount);
+    //       /* Console log with some style */
+    //       const stylesAmount = ["color: black", "background: green"].join(";");
+    //       console.log("%c💰 Get Balance Amount %s 💰", stylesAmount, amount);
 
-          this.balance = amount;
-          this.setLoading(false);
-        }
-      } catch (error) {
-        this.setLoading(false);
-        console.log("getBalance Error:", error);
-      }
-    },
+    //       this.balance = amount;
+    //       this.setLoading(false);
+    //     }
+    //   } catch (error) {
+    //     this.setLoading(false);
+    //     console.log("getBalance Error:", error);
+    //   }
+    // },
 
     /**
      * NFT PORT API - Search NFTs by Name and filter by Contract Address

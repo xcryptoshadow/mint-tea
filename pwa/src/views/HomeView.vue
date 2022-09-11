@@ -16,9 +16,6 @@
           </p>
 
           <div class="button-container">
-            <button v-if="account" class="balance-button">
-              {{ balance ? balance : 0 }}
-            </button>
             <button
               v-if="!account"
               @click="connectWallet"
@@ -74,62 +71,63 @@
         <div v-if="account && formTab === 'mint'" class="form-container">
           <h1>Mint Tea</h1>
           <div class="input-row">
-            <input type="file" ref="fileRef" @change="uploadFileHandler" />
-          </div>
-          <div class="input-row">
+            <label for="file">Upload file</label>
             <input
-              type="text"
-              placeholder="Image Url"
-              v-model="imageUrl"
-              readonly
+              type="file"
+              name="file"
+              ref="fileRef"
+              placeholder="PNG, JPG, GIF, SVG or MP4"
+              @change="uploadFileHandler()"
             />
           </div>
+          <!-- <div class="input-row">
+            <label for="imageUrl">Image URL</label>
+            <input type="text" name="imageUrl" v-model="imageUrl" readonly />
+          </div>
           <div class="input-row">
+            <label for="audioVideoType">Audio/Video Type</label>
             <input
               type="text"
-              placeholder="Audio/Video Type"
+              name="audioVideoType"
               v-model="audioVideoType"
               readonly
             />
           </div>
           <div class="input-row">
-            <input
-              type="text"
-              placeholder="File Size"
-              v-model="size"
-              readonly
-            />
+            <label for="size">File Size</label>
+            <input type="text" name="size" v-model="size" readonly />
           </div>
           <div class="input-row">
-            <input
-              type="text"
-              placeholder="Created"
-              v-model="createdAt"
-              readonly
-            />
+            <label for="createdAt">Created At</label>
+            <input type="text" name="createdAt" v-model="createdAt" readonly />
           </div>
           <div class="input-row">
-            <input type="text" placeholder="Token ID" v-model="tokenId" />
-          </div>
-          <div class="input-row hidden">
-            <input type="text" placeholder="IPFS CID" v-model="cid" />
+            <label for="tokenId">Token ID</label>
+            <input type="text" name="tokenId" v-model="tokenId" />
           </div>
           <div class="input-row">
-            <input type="text" placeholder="Name" v-model="name" />
+            <label for="cid">IPFS CID</label>
+            <input type="text" name="cid" v-model="cid" />
+          </div> -->
+          <div class="input-row">
+            <label for="name">Name</label>
+            <input type="text" name="name" v-model="name" />
           </div>
           <div class="input-row">
-            <input
-              type="text"
-              placeholder="Enter a description"
-              v-model="description"
-            />
+            <label for="description">Description</label>
+            <textarea type="text" name="description" v-model="description" />
           </div>
-          <div class="input-row">
-            <input
-              type="text"
-              placeholder="Add an external link"
-              v-model="externalUrl"
-            />
+          <div class="input-row mb-10">
+            <label for="externalUrl">External URL</label>
+            <input type="text" name="externalUrl" v-model="externalUrl" />
+          </div>
+          <div class="input-row mb-10 hidden">
+            <label for="animationUrl">Animation URL</label>
+            <input type="text" name="animationUrl" v-model="animationUrl" />
+          </div>
+          <div class="input-row mb-10 hidden">
+            <label for="youtubeUrl">Youtube URL</label>
+            <input type="text" name="youtubeUrl" v-model="youtubeUrl" />
           </div>
           <div class="button-container mb-10">
             <button
@@ -141,19 +139,19 @@
               Mint
             </button>
           </div>
-          <div class="button-container mb-10">
+          <div class="button-container">
             <button class="bridge-button" @click="switchTab('bridge')">
               Bridge
             </button>
-          </div>
-          <div class="button-container">
-            <button class="brew-button" @click="switchTab('brew')">Brew</button>
           </div>
         </div>
         <!-- END Mint Tab -->
 
         <!-- Music NFT by Kerem -->
-        <div v-if="keremTokens && keremTokens.length > 0">
+        <div
+          v-if="keremTokens && keremTokens.length > 0"
+          class="music-nft-container"
+        >
           <template v-for="token in keremTokens" :key="token.contract">
             <MusicCard
               v-if="token.metadata && token.metadata.image"
@@ -164,9 +162,73 @@
       </section>
     </article>
     <aside>
+      <section id="nft-modal">
+        <div v-if="imageUrl" class="nft-modal-card">
+          <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
+            <video width="320" height="240" controls>
+              <source :src="`${imageUrl}`" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div v-else-if="imageUrl" class="nft-modal-image">
+            <img
+              v-if="imageUrl"
+              :src="`${getUrlProtocol(imageUrl)}`"
+              :alt="`${name}`"
+            />
+          </div>
+          <div class="nft-modal-title">
+            {{ name }}
+          </div>
+          <div class="nft-modal-description">
+            {{ description }}
+          </div>
+          <div class="nft-modal-description">
+            {{ externalUrl }}
+          </div>
+          <!-- <div class="nft-modal-description">
+            {{ animationUrl }}
+          </div> -->
+          <!-- <div class="nft-modal-description">
+            {{ youtubeUrl }}
+          </div> -->
+          <div class="nft-modal-attributes">
+            <template v-for="(index, attr) in attributes" :key="index">
+              <div class="nft-attribute">
+                <div class="nft-attribute-icon">{{ attr.icon }}</div>
+                <div class="nft-attribute-display-type">
+                  {{ attr.display_type }}
+                </div>
+                <div class="nft-attribute-trait-type">
+                  {{ attr.trait_type }}
+                </div>
+                <div class="nft-attribute-value">{{ attr.value }}</div>
+              </div>
+            </template>
+          </div>
+
+          <div class="nft-modal-image-url">
+            <div class="file-image-url">
+              <a
+                title="Copy to clipboard"
+                target="_blank"
+                @click="copyFileLink(imageUrl)"
+              >
+                Copy Link
+              </a>
+            </div>
+          </div>
+          <div class="nft-modal-file-type">
+            <div class="file-type">{{ audioVideoType }}</div>
+          </div>
+          <div class="nft-modal-file-size">
+            <div class="file-size">{{ size }}</div>
+          </div>
+        </div>
+      </section>
       <section id="marketplace">
         <!-- <h2>Latest NFTs</h2> -->
-        <div class="row token-list">
+        <!-- <div class="row token-list">
           <template v-for="token in latestTokens" :key="token.token_id">
             <NftCard
               v-if="token.metadata && token.metadata.image"
@@ -189,7 +251,7 @@
               :token="token"
             />
           </template>
-        </div>
+        </div> -->
       </section>
     </aside>
   </main>
@@ -206,14 +268,14 @@ import { useStore } from "../store";
 
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
-import { fileSize, generateLink } from "../services/helpers";
-import { nftStorage } from "../services/nftStorage.js";
+import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
+// import { nftStorage } from "../services/nftStorage.js";
 // import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 /* Components */
-import NftCard from "@/components/NftCard.vue";
+// import NftCard from "@/components/NftCard.vue";
 import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
@@ -239,8 +301,7 @@ console.log(
 const store = useStore();
 
 // Store Values and Methods
-const { account, balance, topTokens, latestTokens, anneTokens, keremTokens } =
-  storeToRefs(store);
+const { account, anneTokens, keremTokens } = storeToRefs(store);
 
 // Set Form Tab
 const formTab = ref("mint");
@@ -256,8 +317,11 @@ const cid = ref("");
 // Visible on form, above hidden on form
 const name = ref("");
 const description = ref("");
-const externalUrl = ref("");
 const imageUrl = ref(null);
+const externalUrl = ref("");
+const animationUrl = ref("");
+const youtubeUrl = ref("");
+const attributes = ref([]);
 
 // Calculated on Mint and IPFS upload
 const size = ref("");
@@ -269,6 +333,15 @@ const audioVideoType = ref("");
  */
 const switchTab = (value) => {
   formTab.value = value;
+};
+
+/**
+ * Copy to Clipboard function
+ */
+const copyFileLink = (url) => {
+  copyToClipboard(url);
+  // notyf.success("Link copied to clipboard!");
+  console.log("Link copied to clipboard!");
 };
 
 /**
@@ -341,18 +414,49 @@ async function connectWallet() {
   }
 }
 
+function getUrlProtocol(url) {
+  let protocol = url.endsWith("mp4") ? 5 : 0;
+  if (protocol == 0) protocol = url.endsWith("gif") ? 6 : 0;
+  if (protocol == 0) protocol = url.startsWith("http://") ? 1 : 0;
+  if (protocol == 0) protocol = url.startsWith("https://") ? 2 : 0;
+  if (protocol == 0) protocol = url.startsWith("ipfs://") ? 3 : 0;
+  if (protocol == 0) protocol = url !== "" ? 4 : 0;
+  switch (protocol) {
+    case 1:
+      return url;
+    case 2:
+      return url;
+    case 3:
+      return "https://ipfs.io/ipfs/" + url.substring(7);
+    case 4:
+      return generateLink(url);
+    case 5:
+      return "mp4";
+    case 6:
+      return url;
+    case 0:
+      return "Not http or https";
+  }
+}
+
 /**
  * @param {File} file
  * @returns {Object}
  */
-const uploadFileHandler = async (file) => {
+const uploadFileHandler = async () => {
   /**
-   * @dev Can try NFT.Storage here instead
+   * Upload file and store using NFT.Storage
    */
-  const uploadResult = await uploadBlob(file);
+  const file = fileRef.value.files;
+  console.log("file:", file[0]);
+  store.setLoading(true);
+  const uploadResult = await uploadBlob(file[0]);
+  console.log("uploadResult:", uploadResult);
+
   const { error } = uploadResult;
   if (error && error instanceof Error) {
     console.log(error.message);
+    store.setLoading(false);
     return uploadResult;
   }
   /* Set our NFT Metadata Form Values using IPFS best practises */
@@ -369,6 +473,7 @@ const uploadFileHandler = async (file) => {
   audioVideoType.value = uploadResult.data.file.type;
   size.value = fileSize(uploadResult.data.file.size);
   createdAt.value = uploadResult.data.file.created_at;
+  store.setLoading(false);
 
   return uploadResult;
 };
@@ -421,7 +526,7 @@ const mintNFT = async () => {
 
       const styles = ["color: black", "background: green"].join(";");
       console.log(
-        "%c🍵 Mint Tea Core Smart Contract Address:  %s ",
+        "%c🍵 Mint Tea Smart Contract Address:  %s ",
         styles,
         contractAddress
       );
@@ -448,8 +553,10 @@ const mintNFT = async () => {
       //   name.value,
       //   description.value,
       //   imageUrl.value,
-      //   size.value,
-      //   createdAt.value,
+      //   externalUrl.value,
+      //   animationUrl.value,
+      //   youtubeUrl.value,
+      //   attributes.value,
       //   audioVideoType.value
       // );
       // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
@@ -460,7 +567,7 @@ const mintNFT = async () => {
       //   stylesNFTStorage,
       //   nftStorageTMetadataURI
       // );
-      // /* Check our Transaction results */
+      /* Check our Transaction results */
       // if (!nftStorageTMetadataURI) return;
 
       /* Mint our NFT using custom structure */
@@ -468,13 +575,23 @@ const mintNFT = async () => {
       //   signer.getAddress(),
       //   nftStorageTMetadataURI
       // );
+
+      /**
+       * @dev We just creating the first Attribute, the other can get created via sdk
+       */
+      const createdAt = new Date().toISOString().slice(0, 10);
+      console.log("createdAt", createdAt);
+
       let nftTxn = await contract.safeMint(
         signer.getAddress(),
         name.value,
         description.value,
         imageUrl.value,
-        "Audio/Video Type",
-        audioVideoType.value
+        externalUrl.value,
+        "https://cloudflare-ipfs.com/ipfs/bafkreibx3akdct6syqhkis3dqsnekukhh5ib5pdwepfki7hf45viv4ylp4",
+        "Made by 🍵 Mint Tea",
+        "created",
+        createdAt
       );
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
@@ -551,34 +668,6 @@ onMounted(async () => {
     }
   }
 
-  if (topTokens.value.length === 0) {
-    let topTokens = await store.contractNftSearch(
-      "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
-      "ethereum",
-      "metadata",
-      "true",
-      8,
-      1
-    );
-    if (topTokens.nfts && topTokens.total > 0) {
-      store.addTopTokens(...topTokens.nfts);
-    }
-  }
-
-  if (latestTokens.value.length === 0) {
-    let latestTokens = await store.contractNftSearch(
-      "0x1A92f7381B9F03921564a437210bB9396471050C",
-      "ethereum",
-      "metadata",
-      "true",
-      12,
-      1
-    );
-    if (latestTokens.nfts && latestTokens.total > 0) {
-      store.addLatestTokens(...latestTokens.nfts);
-    }
-  }
-
   if (anneTokens.value.length === 0) {
     let anneTokens = await store.contractNftSearch(
       "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
@@ -607,7 +696,7 @@ section#content {
   align-items: center;
 
   .form-container {
-    width: 340px;
+    width: 380px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -618,7 +707,7 @@ section#content {
     box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
     border-radius: 30px;
     margin-bottom: 20px;
-    padding: 25px;
+    padding: 21px;
 
     img,
     svg {
@@ -662,17 +751,69 @@ section#content {
     }
   }
 
+  .input-row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 5px;
+    width: 100%;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  label {
+    color: #23073c;
+    font-family: "RalewayBold";
+    font-style: bold;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 23px;
+    margin-bottom: 4px;
+  }
+
+  input[type="file"] {
+    color: #1a1a1a;
+    background-color: #fdfdfd;
+    border: 1px dashed #fde2db;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 7px;
+    cursor: pointer;
+  }
+  ::-webkit-file-upload-button {
+    background: #23073c;
+    border: none;
+    border-radius: 35px;
+    color: #ffffff;
+    padding: 8px 10px;
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: flex-end;
+    text-align: center;
+  }
+
   input {
     color: #1a1a1a;
     background-color: #fdfdfd;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
+    border: 1px dashed #fde2db;
+    border-radius: 2px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 280px;
+    width: 100%;
     margin-bottom: 5px;
-    padding: 10px;
-    text-align: center;
+    padding: 7px;
+    text-align: left;
   }
 
   input::placeholder {
@@ -682,38 +823,24 @@ section#content {
 
   input:read-only {
     color: #1a1a1a;
-    border: 2px dashed #e0e0e0;
+    border: 1px dashed #e0e0e0;
     letter-spacing: 2px;
     cursor: not-allowed;
   }
 
   input:focus {
-    border: 2px solid #2bb5f0;
+    border: 1px solid #fde2db;
     outline: none;
-  }
-
-  .select-row {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  .grey {
-    color: #a8a8a8 !important;
-    letter-spacing: 1px;
   }
 
   textarea {
     color: #1a1a1a;
     background-color: #fdfdfd;
-    border: 2px solid var(--gradient-100);
-    border-radius: 10px;
+    border: 1px dashed #fde2db;
+    border-radius: 1px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 280px;
+    width: 100%;
     margin-bottom: 5px;
     padding: 10px;
     text-align: center;
@@ -725,21 +852,17 @@ section#content {
   }
 
   textarea:focus {
-    border: 2px solid #e9429b;
+    border: 1px solid #fde2db;
     outline: none;
   }
 
-  .input-row {
+  .select-row {
     position: relative;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .hidden {
-    display: none;
+    margin-bottom: 15px;
   }
 
   .button-container {
@@ -855,42 +978,137 @@ section#content {
     transition: 0.4s;
     cursor: pointer;
   }
+}
 
-  .music-nft-container {
-    width: 340px;
+.music-nft-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  padding: 0;
+
+  h1 {
+    font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
+      sans-serif;
+    color: $mint-black;
+    font-size: 1.7rem;
+    line-height: 1.8rem;
+    text-align: left;
+    margin: 0 auto 15px;
+  }
+
+  a {
+    color: $mint-black;
+    font-weight: bold;
+    border-bottom: 1px solid $mint-black;
+    text-decoration: none;
+  }
+
+  p {
+    line-height: 1.7;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+}
+
+section#nft-modal {
+  height: inherit;
+  color: $mint-black;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 1.5em 0 4em 3em;
+  overflow: scroll;
+
+  .nft-modal-card {
     display: flex;
     flex-direction: column;
+    align-content: center;
     justify-content: center;
     align-items: center;
-    align-content: center;
-    background: $mint-orange;
-    border: 4px solid var(--gradient-100);
-    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 30px;
+    box-sizing: border-box;
+    width: 600px;
+    background: #f4f4f4;
+    // border: 1px solid $mint-orange;
+    border-radius: 15px;
+    padding: 20px 20px 10px 20px;
+  }
+
+  .nft-modal-video {
+    width: 100%;
+    margin: 0 auto;
     padding: 0;
+    overflow: hidden;
+    background: #f4f4f4;
+  }
+  .nft-modal-image {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
 
-    h1 {
-      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
-        sans-serif;
-      color: $mint-black;
-      font-size: 1.7rem;
-      line-height: 1.8rem;
-      text-align: left;
-      margin: 0 auto 15px;
+    img,
+    svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      overflow: hidden;
     }
+  }
 
-    a {
-      color: $mint-black;
-      font-weight: bold;
-      border-bottom: 1px solid $mint-black;
-      text-decoration: none;
-    }
+  .nft-modal-title {
+    width: 100%;
+    color: $mint-black;
+    font-size: 1.7rem;
+    font-weight: 400;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0;
+  }
 
-    p {
-      line-height: 1.7;
-      margin-bottom: 10px;
-      text-align: center;
-    }
+  .nft-modal-description {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
+  }
+
+  .nft-modal-image-url {
+  }
+
+  .nft-modal-file-type {
+  }
+
+  .nft-modal-file-size {
+  }
+
+  .mint-button {
+    color: #fff;
+    background-color: $mint-black;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    max-width: 360px;
+    height: 55px;
+    border: 0;
+    padding-left: 87px;
+    padding-right: 87px;
+    border-radius: 10px;
+    transition: 0.4s;
+    cursor: pointer;
+  }
+
+  .mint-button:disabled {
+    background: #c6c6c6;
+    color: $mint-orange;
+    cursor: not-allowed;
   }
 }
 

@@ -1,5 +1,35 @@
 /* Inter Font */
 @font-face {
+  font-family: RalewayLight;
+  src: url(../fonts/Raleway/Raleway-Light.ttf);
+}
+@font-face {
+  font-family: Raleway;
+  src: url(../fonts/Raleway/Raleway-Regular.ttf);
+}
+@font-face {
+  font-family: RalewayMedium;
+  src: url(../fonts/Raleway/Raleway-Medium.ttf);
+}
+@font-face {
+  font-family: RalewayBold;
+  src: url(../fonts/Raleway/Raleway-Bold.ttf);
+}
+/* Declare a class which applies it */
+.RalewayLight {
+  font-family: 'RalewayLight';
+}
+.Raleway {
+  font-family: 'Raleway';
+}
+.RalewayMedium {
+  font-family: 'RalewayMedium';
+}
+.RalewayBold {
+  font-family: 'RalewayBold';
+}
+/* Inter Font */
+@font-face {
   font-family: InterLight;
   src: url(../fonts/Inter/Inter-Light.ttf);
 }
