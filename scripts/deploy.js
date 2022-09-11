@@ -29,7 +29,7 @@ async function main() {
 
   
   // Log the deployed address and call the getter on `baseURIString` (for demonstration purposes)
-	console.log(`\nTwoTablesNFT contract deployed on ${network.name} at: ${mint_tea.address}`);
+	console.log(`\Mint Tea NFT contract deployed on ${network.name} at: ${mint_tea.address}`);
 
   const mainTable = await mint_tea.mainTable();
 	console.log(`mainTable name is: ${mainTable}`);
@@ -37,9 +37,20 @@ async function main() {
 	console.log(`attributestable name is: ${attributesTable}`);
 
 
-  const tokenid = await mint_tea.safeMint( signer.address, "nft", "test nft table","null","type",15 );
+  const tokenid = await mint_tea.safeMint( signer.address, "nft", "test nft table","image url","external url","icon","15h30","duration",15 );
   console.log(`tokenid is: ${tokenid.value}`);
+  //wait for the transaction 
+  /*setTimeout(async function k(){
+  const tokenidstring = await mint_tea.tokenURI(tokenid.value);
+  console.log(`tokenidstring is: ${tokenidstring}`);
+  },50000);*/
+  
 
+  // Perform a read query, requesting all rows from the table
+  /*const readRes = await tableland.read(`SELECT * FROM ${mainTable};`);
+  console.log(`mainTable is: ${readRes}`);
+  const readRes1 = await tableland.read(`SELECT * FROM ${attributesTable};`);
+  console.log(`attributesTable is: ${readRes1}`);*/
 }
 
 // We recommend this pattern to be able to use async/await everywhere

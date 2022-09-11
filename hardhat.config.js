@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require('@openzeppelin/hardhat-upgrades');
+require("@nomiclabs/hardhat-ethers");
 require('dotenv').config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -74,12 +75,9 @@ module.exports = {
     },
     "polygon-mumbai": {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${
-        process.env.POLYGON_MUMBAI_API_KEY ?? ""
+        process.env.ALCHEMY_POLYGON_MUMBAI_API_KEY ?? ""
       }`,
-      accounts:
-        process.env.POLYGON_MUMBAI_PRIVATE_KEY !== undefined
-          ? [process.env.POLYGON_MUMBAI_PRIVATE_KEY]
-          : [],
+      accounts: [`${process.env.PRIVATE_KEY}`],
     },
     /* Development Networks */
     "optimism-kovan-staging": {
