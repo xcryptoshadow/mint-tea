@@ -374,7 +374,7 @@ section#search-bar {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100px;
+  height: auto;
   max-width: 1279px;
   display: inline-block;
   margin: 0 auto;
@@ -597,7 +597,7 @@ section#marketplace {
   justify-content: center;
   width: 100%;
   height: 100vh;
-  max-width: 1279px;
+  max-width: 1280px;
   display: inline-block;
   margin: 0 auto;
   padding-bottom: 4em;
@@ -615,7 +615,7 @@ section#marketplace {
 
   .token-list {
     width: 100%;
-    max-width: 1080px;
+    max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
   }

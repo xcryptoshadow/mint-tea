@@ -5,8 +5,11 @@
       <section id="content">
         <!-- Connect Tab -->
         <div v-if="!account" class="form-container">
-          <!-- <h1>Mint Tea</h1> -->
-          <BlueLogo class="header-logo" />
+          <h1>Let's go brew</h1>
+          <p>
+            Mint and brew cross-chain NFTs using our custom bridge, send tokens
+            and NFTs to all your favourite blockchains.
+          </p>
           <p>
             Mint and brew cross-chain NFTs using our custom bridge, send tokens
             and NFTs to all your favourite blockchains.
@@ -31,26 +34,7 @@
             </button>
           </div>
         </div>
-        <!-- Brew & Bridge Tab -->
-        <div v-if="account && formTab === 'brew'" class="form-container">
-          <h1>Brew NFT</h1>
-          <div class="input-row">
-            <p>
-              Brew your NFT and send a wrapped version to your selected chains.
-              The NFT will be locked and a new wrapped version minted on the
-              parent chain for use.
-            </p>
-          </div>
-          <div class="button-container mb-10">
-            <button class="back-button" @click="switchTab('mint')">Back</button>
-            <button class="brew-button" @click="brewNFT()">Brew</button>
-          </div>
-          <div class="button-container">
-            <button class="bridge-button" @click="switchTab('bridge')">
-              Bridge
-            </button>
-          </div>
-        </div>
+
         <!-- Bridge Tab -->
         <div v-if="account && formTab === 'bridge'" class="form-container">
           <h1>Bridge NFT</h1>
@@ -61,16 +45,16 @@
             </p>
           </div>
           <div class="button-container mb-10">
-            <button class="back-button" @click="switchTab('brew')">Back</button>
             <button class="bridge-button" @click="bridgeNFT()">Bridge</button>
           </div>
           <div class="button-container">
-            <button class="brew-button" @click="switchTab('brew')">Brew</button>
+            <button class="back-button" @click="switchTab('mint')">Back</button>
           </div>
         </div>
+
         <!-- Mint Tab -->
         <div v-if="account && formTab === 'mint'" class="form-container">
-          <h1>Mint Tea</h1>
+          <h1>Mint NFT</h1>
           <div class="input-row">
             <label for="file">Upload file</label>
             <input
@@ -147,25 +131,13 @@
           </div>
         </div>
         <!-- END Mint Tab -->
-
-        <!-- Music NFT by Kerem -->
-        <!-- <div
-          v-if="keremTokens && keremTokens.length > 0"
-          class="music-nft-container"
-        >
-          <template v-for="token in keremTokens" :key="token.contract">
-            <MusicCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div> -->
       </section>
     </article>
     <!-- END Left Side -->
     <!-- Right Side -->
     <aside>
       <section id="nft-modal">
+        <div v-if="!imageUrl" class="nft-modal-loading"><RippleEffectBG /></div>
         <div v-if="imageUrl" class="nft-modal-card">
           <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
             <video width="320" height="240" controls>
@@ -218,7 +190,6 @@
               </div>
             </template>
           </div>
-
           <div class="nft-modal-image-url">
             <div class="file-image-url">
               <a
@@ -238,35 +209,75 @@
           </div>
         </div>
       </section>
-      <section id="marketplace">
-        <!-- <h2>Latest NFTs</h2> -->
-        <!-- <div class="row token-list">
-          <template v-for="token in latestTokens" :key="token.token_id">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
-        <div class="row token-list">
-          <template v-for="token in anneTokens" :key="token.token_id">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
-        <div class="row token-list">
-          <template v-for="token in topTokens" :key="token.token_id">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div> -->
-      </section>
     </aside>
     <!-- END Right Side -->
+    <section id="collections">
+      <div class="row-header">
+        <h2>Latest Collections</h2>
+      </div>
+      <div class="row token-list">
+        <template v-for="token in latestTokens" :key="token.token_id">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
+      </div>
+      <div class="row token-list">
+        <template v-for="token in anneTokens" :key="token.token_id">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
+      </div>
+      <div class="row token-list">
+        <template v-for="token in topTokens" :key="token.token_id">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
+      </div>
+    </section>
+    <section id="music">
+      <div class="row-header">
+        <h2>Latest Sounds</h2>
+      </div>
+      <div class="row token-list">
+        <!-- Music NFT by Kerem -->
+        <div
+          v-if="keremTokens && keremTokens.length > 0"
+          class="music-nft-container"
+        >
+          <template v-for="token in keremTokens" :key="token.contract">
+            <MusicCard
+              v-if="token.metadata && token.metadata.image"
+              :token="token"
+            />
+          </template>
+        </div>
+      </div>
+    </section>
+    <section id="about">
+      <div class="row-header">
+        <h2>Team</h2>
+      </div>
+      <div class="row token-list">
+        <div class="about-box">
+          <div class="team-box">
+            <div class="team-image"><img src="" alt="Name" /></div>
+            <div class="team-name">Name here</div>
+            <div class="team-job">Job here</div>
+            <div class="team-links">
+              <a href="#">Link Here</a>
+              <a href="#">Link Here</a>
+              <a href="#">Link Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 <script setup>
@@ -286,10 +297,11 @@ import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 // import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
-import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
+import RippleEffectBG from "../assets/svgs/RippleEffectBG.vue?component";
+
 /* Components */
-// import NftCard from "@/components/NftCard.vue";
-// import MusicCard from "@/components/MusicCard.vue";
+import NftCard from "@/components/NftCard.vue";
+import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
@@ -299,30 +311,25 @@ const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
-  "%c🏦 Mint Tea Contract Address %s 🏦",
+  "%c🍵 Mint Tea Contract Address %s",
   stylesContract,
   contractAddress
 );
 const stylesAbi = ["color: black", "background: cyan"].join(";");
-console.log(
-  "%c🧭 Contract ABI Source %s 🧭",
-  stylesAbi,
-  contractAbi.sourceName
-);
+console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 
 // Init Store
 const store = useStore();
 
 // Store Values and Methods
-const { account } = storeToRefs(store);
-// const { account, anneTokens, keremTokens } = storeToRefs(store);
+const { account, topTokens, latestTokens, anneTokens, keremTokens } =
+  storeToRefs(store);
 
 // Set Form Tab
 const formTab = ref("mint");
 
 // File Uploader
 const fileRef = ref(null);
-// const isUploading = ref(false);
 
 // NFT Form Metadata fields
 const tokenId = ref("");
@@ -664,46 +671,65 @@ onMounted(async () => {
   await checkIfWalletIsConnected();
 
   /* Kerems Music NFT Video */
-  // if (keremTokens.value.length === 0) {
-  //   let keremTokens = await store.detailsNftSearch(
-  //     "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-  //     "52806",
-  //     "ethereum",
-  //     true
-  //   );
-  //   if (keremTokens.nft) {
-  //     store.addKeremTokens(...[keremTokens.nft]);
-  //   }
-  //   let keremTokens2 = await store.detailsNftSearch(
-  //     "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
-  //     "108227",
-  //     "ethereum",
-  //     true
-  //   );
-  //   if (keremTokens2.nft) {
-  //     store.addKeremTokens(...[keremTokens2.nft]);
-  //   }
-  // }
+  if (keremTokens.value.length === 0) {
+    let keremTokens = await store.detailsNftSearch(
+      "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+      "52806",
+      "ethereum",
+      true
+    );
+    if (keremTokens.nft) {
+      store.addKeremTokens(...[keremTokens.nft]);
+    }
+    let keremTokens2 = await store.detailsNftSearch(
+      "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
+      "108227",
+      "ethereum",
+      true
+    );
+    if (keremTokens2.nft) {
+      store.addKeremTokens(...[keremTokens2.nft]);
+    }
+  }
 
-  // if (anneTokens.value.length === 0) {
-  //   let anneTokens = await store.contractNftSearch(
-  //     "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
-  //     "ethereum",
-  //     "metadata",
-  //     "true",
-  //     8,
-  //     1
-  //   );
-  //   if (anneTokens.nfts) {
-  //     store.addAnneTokens(...anneTokens.nfts);
-  //   }
-  // }
+  if (anneTokens.value.length === 0) {
+    let anneTokens = await store.contractNftSearch(
+      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+      "ethereum",
+      "metadata",
+      "true",
+      10,
+      1
+    );
+    if (anneTokens.nfts) {
+      store.addAnneTokens(...anneTokens.nfts);
+    }
+  }
 });
 </script>
 
 <style lang="scss" scoped>
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
+
+article {
+  width: 40%;
+  flex-grow: 1 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3em 5em;
+}
+aside {
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0 0 0 50px;
+  background: #fbe2ff;
+}
 
 section#content {
   height: inherit;
@@ -723,8 +749,8 @@ section#content {
     border: 4px solid var(--gradient-100);
     box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
     border-radius: 30px;
-    margin-bottom: 20px;
-    padding: 21px;
+    margin: 30px auto;
+    padding: 30px 30px 20px;
 
     img,
     svg {
@@ -883,9 +909,10 @@ section#content {
   }
 
   .button-container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .tab-button {
@@ -905,7 +932,7 @@ section#content {
 
   .mint-button {
     color: $white;
-    background-color: $mint-black;
+    background-color: $mint-green;
     font-size: 18px;
     font-weight: bold;
     width: 100%;
@@ -927,11 +954,11 @@ section#content {
     background-color: $mint-blue;
     font-size: 18px;
     font-weight: bold;
-    width: 100%;
+    width: 48%;
     height: 55px;
     border: 0;
     border-radius: 10px;
-    margin: 10px 0;
+    margin: 10px 1% 10px 0;
     transition: 0.4s;
     cursor: pointer;
     &:hover {
@@ -944,10 +971,11 @@ section#content {
     background-color: $mint-orange;
     font-size: 18px;
     font-weight: bold;
-    width: 100%;
+    width: 48%;
     height: 55px;
     border: 0;
     border-radius: 10px;
+    margin: 10px 1% 10px 0;
     a {
       color: $white;
       text-decoration: none;
@@ -960,15 +988,18 @@ section#content {
 
   .back-button {
     color: $white;
-    background-color: $mint-green;
+    background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
+    width: 100%;
+    height: 55px;
+    border: 0;
+    width: 100%;
     height: 55px;
     border: 0;
     border-radius: 10px;
-    margin-right: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
+    transition: 0.4s;
+    cursor: pointer;
   }
   .brew-button {
     color: $white;
@@ -997,39 +1028,6 @@ section#content {
   }
 }
 
-.music-nft-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  padding: 0;
-
-  h1 {
-    font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
-      sans-serif;
-    color: $mint-black;
-    font-size: 1.7rem;
-    line-height: 1.8rem;
-    text-align: left;
-    margin: 0 auto 15px;
-  }
-
-  a {
-    color: $mint-black;
-    font-weight: bold;
-    border-bottom: 1px solid $mint-black;
-    text-decoration: none;
-  }
-
-  p {
-    line-height: 1.7;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-}
-
 section#nft-modal {
   height: inherit;
   color: $mint-black;
@@ -1039,8 +1037,18 @@ section#nft-modal {
   align-items: flex-start;
   justify-content: center;
   margin: 0 auto;
-  padding: 1.5em 0 4em 3em;
+  padding: 0 0 4em 3em;
   overflow: scroll;
+
+  .nft-modal-loading {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    width: 700px;
+    padding: 0;
+  }
 
   .nft-modal-card {
     display: flex;
@@ -1051,8 +1059,7 @@ section#nft-modal {
     box-sizing: border-box;
     width: 600px;
     background: #f4f4f4;
-    // border: 1px solid $mint-orange;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 20px 20px 10px 20px;
   }
 
@@ -1106,6 +1113,77 @@ section#nft-modal {
   .nft-modal-file-size {
   }
 
+  // .mint-button {
+  //   color: #fff;
+  //   background-color: $mint-black;
+  //   font-size: 18px;
+  //   font-weight: bold;
+  //   width: 100%;
+  //   max-width: 360px;
+  //   height: 55px;
+  //   border: 0;
+  //   padding-left: 87px;
+  //   padding-right: 87px;
+  //   border-radius: 10px;
+  //   transition: 0.4s;
+  //   cursor: pointer;
+  // }
+
+  // .mint-button:disabled {
+  //   background: #c6c6c6;
+  //   color: $mint-orange;
+  //   cursor: not-allowed;
+  // }
+}
+
+section#collections {
+  width: 100%;
+  color: $mint-black;
+  background: $mint-blue;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  padding: 3em 0;
+
+  .row-header {
+    width: 100%;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    h2 {
+      width: 100%;
+      font-size: 1.7rem;
+      font-weight: 400;
+      text-align: left;
+      color: $mint-black;
+      text-decoration: underline;
+      text-underline-offset: 10px;
+      padding: 0 0 20px 40px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
+
+  .token-list {
+    width: 100%;
+    max-width: 1280px;
+    display: inline-block;
+    margin: 0 auto;
+  }
+
   .mint-button {
     color: #fff;
     background-color: $mint-black;
@@ -1129,17 +1207,37 @@ section#nft-modal {
   }
 }
 
-section#marketplace {
-  height: inherit;
+section#music {
+  width: 100%;
   color: $mint-black;
   display: flex;
   flex-direction: column;
   align-content: center;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  padding: 1.5em 0 4em 3em;
-  overflow: scroll;
+  padding: 3em 0;
+
+  .row-header {
+    width: 100%;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    h2 {
+      width: 100%;
+      font-size: 1.7rem;
+      font-weight: 400;
+      text-align: left;
+      color: $mint-black;
+      text-decoration: underline;
+      text-underline-offset: 10px;
+      padding: 0 0 20px 40px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+  }
 
   .row {
     display: flex;
@@ -1152,52 +1250,90 @@ section#marketplace {
 
   .token-list {
     width: 100%;
-    max-width: 1080px;
+    max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
   }
 
-  h2 {
+  .music-nft-container {
     width: 100%;
-    font-size: 1.7rem;
-    font-weight: 400;
-    text-align: left;
-    color: $mint-black;
-    text-decoration: underline;
-    text-underline-offset: 10px;
-    padding: 0 0 20px 40px;
-    margin-block-start: 0;
-    margin-block-end: 0;
-  }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    padding: 0;
 
-  .mint-button {
-    color: #fff;
-    background-color: $mint-black;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    max-width: 360px;
-    height: 55px;
-    border: 0;
-    padding-left: 87px;
-    padding-right: 87px;
-    border-radius: 10px;
-    transition: 0.4s;
-    cursor: pointer;
-  }
+    h1 {
+      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
+        sans-serif;
+      color: $mint-black;
+      font-size: 1.7rem;
+      line-height: 1.8rem;
+      text-align: left;
+      margin: 0 auto 15px;
+    }
 
-  .mint-button:disabled {
-    background: #c6c6c6;
-    color: $mint-orange;
-    cursor: not-allowed;
+    a {
+      color: $mint-black;
+      font-weight: bold;
+      border-bottom: 1px solid $mint-black;
+      text-decoration: none;
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 10px;
+      text-align: center;
+    }
   }
 }
 
-@media (min-width: 1024px) {
-  .marketplace {
-    min-height: 100vh;
+section#about {
+  width: 100%;
+  color: $mint-black;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  padding: 3em 0;
+
+  .row-header {
+    width: 100%;
+    max-width: 1280px;
     display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: center;
     align-items: center;
+    h2 {
+      width: 100%;
+      font-size: 1.7rem;
+      font-weight: 400;
+      text-align: left;
+      color: $mint-black;
+      text-decoration: underline;
+      text-underline-offset: 10px;
+      padding: 0 0 20px 40px;
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .token-list {
+    width: 100%;
+    max-width: 1280px;
+    display: inline-block;
+    margin: 0 auto;
   }
 }
 </style>

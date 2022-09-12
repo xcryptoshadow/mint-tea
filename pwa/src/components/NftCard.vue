@@ -88,7 +88,7 @@ export default {
   background: #f4f4f4;
   border: 2px solid #f4f4f4;
   border-radius: 15px;
-  margin: 0 15px 25px 15px;
+  margin: 0 13px 25px 13px;
   padding: 15px 15px 10px 15px;
 
   &:hover {
