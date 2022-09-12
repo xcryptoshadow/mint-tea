@@ -65,12 +65,12 @@ main {
 }
 
 article {
-  max-width: 400px;
+  max-width: 500px;
   flex: 1 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1.5em 2em 3em;
+  padding: 1.5em 0 3em 2em;
 }
 aside {
   flex: 1 100%;

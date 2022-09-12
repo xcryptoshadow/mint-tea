@@ -4,7 +4,7 @@
       {{ token.metadata.name }}
     </div>
     <div class="music-nft-video">
-      <video width="342" controls>
+      <video width="400" controls>
         <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
       </video>
     </div>
@@ -26,7 +26,8 @@ export default {
   methods: {
     getUrlProtocol(url) {
       let protocol = url.endsWith("mp4") ? 5 : 0;
-      if (protocol == 0) protocol = url.endsWith("gif") ? 6 : 0;
+      if (protocol == 0) protocol = url.endsWith("mp3") ? 6 : 0;
+      if (protocol == 0) protocol = url.endsWith("gif") ? 7 : 0;
       if (protocol == 0) protocol = url.startsWith("http://") ? 1 : 0;
       if (protocol == 0) protocol = url.startsWith("https://") ? 2 : 0;
       if (protocol == 0) protocol = url.startsWith("ipfs://") ? 3 : 0;
@@ -43,6 +44,8 @@ export default {
         case 5:
           return "https://ipfs.io/ipfs/" + url.substring(7);
         case 6:
+          return "mp3";
+        case 7:
           return url;
         case 0:
           return "Not http or https";
@@ -59,10 +62,10 @@ export default {
   display: inline;
   float: left;
   box-sizing: border-box;
-  width: 340px;
+  max-width: 380px;
   background: $mint-black;
   border-radius: 15px;
-  margin: 0 15px 20px 15px;
+  margin: 0 0 20px 0;
   padding: 0;
   overflow: hidden;
 
