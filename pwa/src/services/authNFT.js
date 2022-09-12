@@ -1,12 +1,13 @@
 import axios from "axios";
 
-/* Get our Mint Tea Contract Address */
-const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
 /* Services api keys */
 const etherScapAPI = import.meta.env.VITE_ETHERSCAN_API_KEY;
 const polygonScapAPI = import.meta.env.VITE_POLYSCAN_API_KEY;
 const infuraKey = import.meta.env.VITE_INFURA_API_KEY;
 const infuraSecret = import.meta.env.VITE_INFURA_API_SECRET;
+
+/* Mint Tea Contract Address */
+const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
 
 export default class authNFT {
   constructor() {
@@ -176,8 +177,7 @@ export default class authNFT {
   }
 
   /**
-   * https://docs.api.infura.io/nft/
-   * Gets NFT collection metadata
+   * Gets NFT collection metadata  - https://docs.api.infura.io/nft/
    * @param {String} chainId
    * @param {String} tokenAddress
    * @param {String} tokenId

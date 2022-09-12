@@ -1,5 +1,6 @@
 <template>
   <main>
+    <!-- Left Side -->
     <article>
       <section id="content">
         <!-- Connect Tab -->
@@ -148,7 +149,7 @@
         <!-- END Mint Tab -->
 
         <!-- Music NFT by Kerem -->
-        <div
+        <!-- <div
           v-if="keremTokens && keremTokens.length > 0"
           class="music-nft-container"
         >
@@ -158,15 +159,26 @@
               :token="token"
             />
           </template>
-        </div>
+        </div> -->
       </section>
     </article>
+    <!-- END Left Side -->
+    <!-- Right Side -->
     <aside>
       <section id="nft-modal">
         <div v-if="imageUrl" class="nft-modal-card">
           <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
             <video width="320" height="240" controls>
-              <source :src="`${imageUrl}`" type="video/mp4" />
+              <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div v-if="getUrlProtocol(imageUrl) === 'mp3'" class="nft-video">
+            <audio ref="player" width="320" height="240">
+              <source :src="imageUrl" type="audio/mpeg" />
+            </audio>
+            <video width="320" height="240" controls>
+              <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
@@ -254,6 +266,7 @@
         </div> -->
       </section>
     </aside>
+    <!-- END Right Side -->
   </main>
 </template>
 <script setup>
@@ -276,12 +289,12 @@ import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 /* Components */
 // import NftCard from "@/components/NftCard.vue";
-import MusicCard from "@/components/MusicCard.vue";
+// import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-/* Manually set our Contract Address */
-const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+/* Mint Tea Contract Address */
+const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -301,7 +314,8 @@ console.log(
 const store = useStore();
 
 // Store Values and Methods
-const { account, anneTokens, keremTokens } = storeToRefs(store);
+const { account } = storeToRefs(store);
+// const { account, anneTokens, keremTokens } = storeToRefs(store);
 
 // Set Form Tab
 const formTab = ref("mint");
@@ -416,7 +430,8 @@ async function connectWallet() {
 
 function getUrlProtocol(url) {
   let protocol = url.endsWith("mp4") ? 5 : 0;
-  if (protocol == 0) protocol = url.endsWith("gif") ? 6 : 0;
+  if (protocol == 0) protocol = url.endsWith("mp3") ? 6 : 0;
+  if (protocol == 0) protocol = url.endsWith("gif") ? 7 : 0;
   if (protocol == 0) protocol = url.startsWith("http://") ? 1 : 0;
   if (protocol == 0) protocol = url.startsWith("https://") ? 2 : 0;
   if (protocol == 0) protocol = url.startsWith("ipfs://") ? 3 : 0;
@@ -433,6 +448,8 @@ function getUrlProtocol(url) {
     case 5:
       return "mp4";
     case 6:
+      return "mp3";
+    case 7:
       return url;
     case 0:
       return "Not http or https";
@@ -576,6 +593,12 @@ const mintNFT = async () => {
       //   nftStorageTMetadataURI
       // );
 
+      const mintDate = new Date();
+      const mintDateTimestamp = mintDate.getTime();
+      // const mintDateBigNo = new BigNumber(mintDateTimestamp);
+
+      // console.log("mintDateBigNo:", mintDateBigNo);
+
       let nftTxn = await contract.safeMint(
         signer.getAddress(),
         name.value,
@@ -584,8 +607,8 @@ const mintNFT = async () => {
         externalUrl.value,
         "https://cloudflare-ipfs.com/ipfs/bafkreibx3akdct6syqhkis3dqsnekukhh5ib5pdwepfki7hf45viv4ylp4",
         "date",
-        "🍵 Mint Tea version #",
-        1
+        "🍵 Brewed by Mint Tea",
+        mintDateTimestamp
       );
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
@@ -641,40 +664,40 @@ onMounted(async () => {
   await checkIfWalletIsConnected();
 
   /* Kerems Music NFT Video */
-  if (keremTokens.value.length === 0) {
-    let keremTokens = await store.detailsNftSearch(
-      "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-      "52806",
-      "ethereum",
-      true
-    );
-    if (keremTokens.nft) {
-      store.addKeremTokens(...[keremTokens.nft]);
-    }
-    let keremTokens2 = await store.detailsNftSearch(
-      "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
-      "108227",
-      "ethereum",
-      true
-    );
-    if (keremTokens2.nft) {
-      store.addKeremTokens(...[keremTokens2.nft]);
-    }
-  }
+  // if (keremTokens.value.length === 0) {
+  //   let keremTokens = await store.detailsNftSearch(
+  //     "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+  //     "52806",
+  //     "ethereum",
+  //     true
+  //   );
+  //   if (keremTokens.nft) {
+  //     store.addKeremTokens(...[keremTokens.nft]);
+  //   }
+  //   let keremTokens2 = await store.detailsNftSearch(
+  //     "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
+  //     "108227",
+  //     "ethereum",
+  //     true
+  //   );
+  //   if (keremTokens2.nft) {
+  //     store.addKeremTokens(...[keremTokens2.nft]);
+  //   }
+  // }
 
-  if (anneTokens.value.length === 0) {
-    let anneTokens = await store.contractNftSearch(
-      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
-      "ethereum",
-      "metadata",
-      "true",
-      8,
-      1
-    );
-    if (anneTokens.nfts) {
-      store.addAnneTokens(...anneTokens.nfts);
-    }
-  }
+  // if (anneTokens.value.length === 0) {
+  //   let anneTokens = await store.contractNftSearch(
+  //     "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+  //     "ethereum",
+  //     "metadata",
+  //     "true",
+  //     8,
+  //     1
+  //   );
+  //   if (anneTokens.nfts) {
+  //     store.addAnneTokens(...anneTokens.nfts);
+  //   }
+  // }
 });
 </script>
 
