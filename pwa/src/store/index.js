@@ -4,8 +4,8 @@ import nftPort from "../services/nftPort.js";
 
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-/* Get our Mint Tea Contract Address */
-// const contractAddress = import.meta.env.VITE_MINT_TEA_CORE_CONTRACT;
+/* Mint Tea Contract Address */
+// const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
 
 /* LFG */
 export const useStore = defineStore({
@@ -138,7 +138,7 @@ export const useStore = defineStore({
     /**
      * Get User 🦊 Metamask Account Balance
      */
-    // async getBalance() {
+    // async loadBalance() {
     //   this.setLoading(true);
     //   try {
     //     /*
@@ -165,7 +165,7 @@ export const useStore = defineStore({
     //     }
     //   } catch (error) {
     //     this.setLoading(false);
-    //     console.log("getBalance Error:", error);
+    //     console.log("loadBalance Error:", error);
     //   }
     // },
 

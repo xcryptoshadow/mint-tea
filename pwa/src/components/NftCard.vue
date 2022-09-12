@@ -1,12 +1,21 @@
 <template>
   <div class="nft">
-    <!-- {{ token }} -->
     <div
       v-if="getUrlProtocol(token.metadata.image) === 'mp4'"
       class="nft-video"
     >
       <video width="320" height="240" controls>
-        <source :src="`${token.metadata.image}`" type="video/mp4" />
+        <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
+        <!-- <source :src="`${token.metadata.image}`" type="video/ogg" /> -->
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div
+      v-if="getUrlProtocol(token.metadata.image) === 'mp3'"
+      class="nft-video"
+    >
+      <video width="320" height="240" controls>
+        <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
         <!-- <source :src="`${token.metadata.image}`" type="video/ogg" /> -->
         Your browser does not support the video tag.
       </video>
@@ -39,7 +48,8 @@ export default {
   methods: {
     getUrlProtocol(url) {
       let protocol = url.endsWith("mp4") ? 5 : 0;
-      if (protocol == 0) protocol = url.endsWith("gif") ? 6 : 0;
+      if (protocol == 0) protocol = url.endsWith("mp3") ? 6 : 0;
+      if (protocol == 0) protocol = url.endsWith("gif") ? 7 : 0;
       if (protocol == 0) protocol = url.startsWith("http://") ? 1 : 0;
       if (protocol == 0) protocol = url.startsWith("https://") ? 2 : 0;
       if (protocol == 0) protocol = url.startsWith("ipfs://") ? 3 : 0;
@@ -56,6 +66,8 @@ export default {
         case 5:
           return "mp4";
         case 6:
+          return "mp3";
+        case 7:
           return url;
         case 0:
           return "Not http or https";
