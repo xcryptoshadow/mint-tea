@@ -22,10 +22,8 @@
             >
               Connect
             </button>
-            <button class="marketplace-button">
-              <router-link :to="{ name: 'marketplace' }"
-                >Marketplace</router-link
-              >
+            <button class="explore-button">
+              <router-link :to="{ name: 'explore' }">Explore</router-link>
             </button>
           </div>
         </div>
@@ -43,8 +41,8 @@
               <router-link :to="{ name: 'home' }">Home</router-link>
             </button>
           </div>
-          <button class="marketplace-button">
-            <router-link :to="{ name: 'marketplace' }">Marketplace</router-link>
+          <button class="explore-button">
+            <router-link :to="{ name: 'explore' }">Explore</router-link>
           </button>
         </div>
 
@@ -60,7 +58,7 @@
       </section>
     </article>
     <aside>
-      <section id="marketplace">
+      <section id="explore">
         <h2 v-if="ethereumTokens.length > 0">Ethereum NFTs</h2>
         <div v-if="ethereumTokens.length > 0" class="row token-list">
           <template v-for="token in ethereumTokens" :key="token.tokenId">
@@ -373,7 +371,7 @@ section#content {
     }
   }
 
-  .marketplace-button {
+  .explore-button {
     color: $white;
     background-color: $mint-orange;
     font-size: 18px;
@@ -452,7 +450,7 @@ section#content {
   }
 }
 
-section#marketplace {
+section#explore {
   height: inherit;
   color: $mint-black;
   display: flex;
@@ -517,7 +515,7 @@ section#marketplace {
 }
 
 @media (min-width: 1024px) {
-  .marketplace {
+  .explore {
     min-height: 100vh;
     display: flex;
     align-items: center;

@@ -27,10 +27,8 @@
             >
               Connect
             </button>
-            <button class="marketplace-button">
-              <router-link :to="{ name: 'marketplace' }"
-                >Marketplace</router-link
-              >
+            <button class="explore-button">
+              <router-link :to="{ name: 'explore' }">Explore</router-link>
             </button>
           </div>
         </div>
@@ -715,25 +713,28 @@ onMounted(async () => {
 @import "../assets/styles/mixins.scss";
 
 article {
-  width: 40%;
+  width: 43%;
   flex-grow: 1 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 3em 5em;
+  @include breakpoint($break-xl) {
+    padding: 1em;
+  }
   @include breakpoint($break-lg) {
     padding: 1em;
   }
   @include breakpoint($break-md) {
-    padding: 0.5em;
+    padding: 1em 2em;
   }
   @include breakpoint($break-sm) {
     width: 100%;
-    padding: 0;
+    padding: 0 0 2em 0;
   }
   @include breakpoint($break-xs) {
     width: 100%;
-    padding: 0;
+    padding: 0 0 2em 0;
   }
 }
 aside {
@@ -743,21 +744,30 @@ aside {
   justify-content: center;
   align-items: center;
   margin: 0;
-  padding: 0 0 0 50px;
+  padding: 0 auto;
   background: $mint-pink;
+  @include breakpoint($break-xl) {
+    padding: 0 auto;
+  }
   @include breakpoint($break-lg) {
-    padding: 0;
+    padding: 0 auto;
   }
   @include breakpoint($break-md) {
-    padding: 0;
+    border-top-left-radius: 30px;
+    padding: 2em 0 0 0;
+    overflow: hidden;
   }
   @include breakpoint($break-sm) {
     width: 100%;
-    padding: 0;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding: 2em 1em;
   }
   @include breakpoint($break-xs) {
     width: 100%;
-    padding: 0;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding: 1.5em 1em;
   }
 }
 
@@ -769,7 +779,7 @@ section#content {
   align-items: center;
 
   .form-container {
-    width: 380px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -781,6 +791,22 @@ section#content {
     border-radius: 30px;
     margin: 30px auto;
     padding: 30px 30px 20px;
+
+    @include breakpoint($break-md) {
+      width: 400px;
+      margin: 0 auto 10px;
+      padding: 25px 25px 20px;
+    }
+    @include breakpoint($break-sm) {
+      width: 380px;
+      margin: 0 auto 10px;
+      padding: 20px 20px 20px;
+    }
+    @include breakpoint($break-xs) {
+      width: 360px;
+      margin: 0 auto 10px;
+      padding: 20px 20px 20px;
+    }
 
     img,
     svg {
@@ -996,7 +1022,7 @@ section#content {
     }
   }
 
-  .marketplace-button {
+  .explore-button {
     color: $white;
     background-color: $mint-orange;
     font-size: 18px;
@@ -1064,22 +1090,24 @@ section#nft-modal {
   display: flex;
   flex-direction: column;
   align-content: center;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  padding: 0 0 4em 3em;
+  padding: 0 0 3em 5em;
   overflow: scroll;
+  @include breakpoint($break-xl) {
+    padding: 0 0 3em 2em;
+  }
   @include breakpoint($break-lg) {
-    padding: 0;
+    padding: 0 0 3em 1em;
   }
   @include breakpoint($break-md) {
-    padding: 0;
+    padding: 20px 0;
   }
   @include breakpoint($break-sm) {
-    padding: 0;
+    padding: 20px 0;
   }
   @include breakpoint($break-xs) {
-    padding: 0;
+    padding: 20px 0;
   }
 
   .nft-modal-loading {
@@ -1090,18 +1118,25 @@ section#nft-modal {
     align-items: center;
     width: 700px;
     padding: 0;
+    @include breakpoint($break-xl) {
+      width: 100%;
+      padding: 0 auto;
+    }
     @include breakpoint($break-lg) {
       width: 100%;
       padding: 0;
     }
     @include breakpoint($break-md) {
       width: 100%;
+      padding: 0 auto;
     }
     @include breakpoint($break-sm) {
       width: 100%;
+      padding: 0;
     }
     @include breakpoint($break-xs) {
       width: 100%;
+      padding: 0;
     }
   }
 
@@ -1117,16 +1152,20 @@ section#nft-modal {
     border-radius: 10px;
     padding: 20px 20px 10px 20px;
     @include breakpoint($break-lg) {
-      width: 100%;
+      width: 89%;
+      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-md) {
-      width: 100%;
+      width: 81%;
+      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-sm) {
-      width: 100%;
+      width: 81%;
+      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-xs) {
       width: 100%;
+      padding: 20px 20px 10px 20px;
     }
   }
 
@@ -1223,16 +1262,20 @@ section#collections {
     justify-content: center;
     align-items: center;
     margin: 25px 0;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 83%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     h2 {
@@ -1245,7 +1288,7 @@ section#collections {
       font-size: 36px;
       line-height: 42px;
       text-align: left;
-      margin: 0 0 10px 20px;
+      margin: 0 0 20px 20px;
       .arrow-down {
         margin-bottom: -5px;
       }
@@ -1265,16 +1308,20 @@ section#collections {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 86%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 97%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 80%;
       margin: 0 auto;
     }
   }
@@ -1299,16 +1346,20 @@ section#music {
     justify-content: center;
     align-items: center;
     margin: 25px 0;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 83%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     h2 {
@@ -1321,7 +1372,7 @@ section#music {
       font-size: 36px;
       line-height: 42px;
       text-align: left;
-      margin: 0 0 10px 20px;
+      margin: 0 0 20px 20px;
       .arrow-down {
         margin-bottom: -5px;
       }
@@ -1342,16 +1393,20 @@ section#music {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 86%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 97%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 80%;
       margin: 0 auto;
     }
   }
@@ -1408,16 +1463,20 @@ section#about {
     justify-content: center;
     align-items: center;
     margin: 25px 0;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 83%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 85%;
       margin: 0 auto;
     }
     h2 {
@@ -1430,7 +1489,7 @@ section#about {
       font-size: 36px;
       line-height: 42px;
       text-align: left;
-      margin: 0 0 10px 20px;
+      margin: 0 0 20px 20px;
       .arrow-down {
         margin-bottom: -5px;
       }
@@ -1443,6 +1502,7 @@ section#about {
     align-content: center;
     justify-content: center;
     align-items: center;
+    padding: 0;
   }
 
   .token-list {
@@ -1450,16 +1510,20 @@ section#about {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 90%;
+      width: 86%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 90%;
+      width: 97%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {
-      width: 90%;
+      width: 80%;
       margin: 0 auto;
     }
   }

@@ -5,15 +5,20 @@
         <BlueLogo />
       </router-link>
     </div>
-    <div class="header-menu">
+    <div class="header-menu" :class="$route.name === 'home' ? 'bg-pink' : ''">
       <nav>
         <router-link :to="{ name: 'home' }" active-class="active" exact
           >home</router-link
         >
-        <router-link :to="{ name: 'marketplace' }" active-class="active" exact
-          >marketplace</router-link
+        <router-link
+          :to="{ name: 'home', hash: '#about' }"
+          active-class="active"
+          exact
+          >about</router-link
         >
-        <a href="#about">about</a>
+        <router-link :to="{ name: 'explore' }" active-class="active" exact
+          >explore</router-link
+        >
         <router-link
           v-if="account"
           :to="{ name: 'account' }"
@@ -57,7 +62,7 @@ header {
   }
 
   .header-title {
-    width: 40%;
+    width: 43%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,30 +80,37 @@ header {
       overflow: hidden;
       @include breakpoint($break-md) {
         width: 220px;
-        margin: 10px auto 0;
+        margin: 30px auto 10px;
       }
       @include breakpoint($break-sm) {
-        width: 160px;
-        margin: 10px auto 0;
+        width: 190px;
+        margin: 30px auto 10px;
       }
     }
   }
 
+  .bg-pink {
+    background: $mint-pink;
+    @include breakpoint($break-md) {
+      background: none;
+    }
+    @include breakpoint($break-sm) {
+      background: none;
+    }
+  }
   .header-menu {
-    width: 60%;
+    width: 57%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     align-content: center;
-    background: $mint-pink;
+    padding: 0 0 0 5em;
     @include breakpoint($break-md) {
       width: 100%;
-      background: none;
     }
     @include breakpoint($break-sm) {
       width: 100%;
-      background: none;
     }
 
     nav {
@@ -124,7 +136,7 @@ header {
       }
       @include breakpoint($break-sm) {
         width: 100%;
-        margin: 0 auto;
+        margin: 10px auto;
         text-align: center;
         justify-content: center;
         align-items: center;
@@ -146,14 +158,15 @@ header {
         cursor: pointer;
         &.hover {
           font-weight: bold;
-          border-bottom: 1px solid $mint-black;
+        }
+        &.focus {
+          font-weight: bold;
         }
         &.active {
           font-weight: bold;
-          border-bottom: 1px solid $mint-black;
         }
         @include breakpoint($break-sm) {
-          font-size: 14px;
+          font-size: 18px;
           line-height: 19px;
           margin: 0 10px;
           padding-bottom: 2px;

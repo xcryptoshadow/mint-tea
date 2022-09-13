@@ -2,7 +2,6 @@
   <main>
     <section id="search-bar">
       <div class="row">
-        <h2>Marketplace</h2>
         <div class="search">
           <button
             :class="!show ? 'show-button' : 'hide-button'"
@@ -62,7 +61,9 @@
     </Transition>
     <section id="marketplace">
       <div class="row">
-        <h2>Latest NFTs</h2>
+        <div class="row-header">
+          <h2>Minty fresh<ArrowDownWhite class="arrow-down" /></h2>
+        </div>
         <div class="row token-list">
           <template v-for="token in latestTokens" :key="token.tokenId">
             <NftCard
@@ -73,7 +74,9 @@
         </div>
       </div>
       <div class="row">
-        <h2>Top NFTs</h2>
+        <div class="row-header">
+          <h2>Top pics<ArrowDownWhite class="arrow-down" /></h2>
+        </div>
         <div class="row token-list">
           <template v-for="token in topTokens" :key="token.tokenId">
             <NftCard
@@ -84,7 +87,9 @@
         </div>
       </div>
       <div class="row">
-        <h2>More NFTs</h2>
+        <div class="row-header">
+          <h2>Trendy<ArrowDownWhite class="arrow-down" /></h2>
+        </div>
         <div class="row token-list">
           <template v-for="token in anneTokens" :key="token.tokenId">
             <NftCard
@@ -102,8 +107,13 @@ import { ref, onMounted } from "vue";
 /* Import our Pinia Store & Refs */
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
+
+/* Import SVG */
+import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
+// import ArrowDownBlack from "../assets/svgs/ArrowDownBlack.vue?component";
+import OrangeLogo from "../assets/svgs/OrangeLogo.vue?component";
+
 /* Components */
-import OrangeLogo from "../assets/svgs/OrangeLogo.vue?url";
 import NftCard from "@/components/NftCard.vue";
 /* Init Store Values and Methods */
 const store = useStore();
@@ -288,7 +298,7 @@ onMounted(async () => {
       "ethereum",
       "metadata",
       "true",
-      8,
+      10,
       1
     );
     if (topTokens.nfts && topTokens.total > 0) {
@@ -302,7 +312,7 @@ onMounted(async () => {
       "ethereum",
       "metadata",
       "true",
-      12,
+      15,
       1
     );
     if (latestTokens.nfts && latestTokens.total > 0) {
@@ -316,7 +326,7 @@ onMounted(async () => {
       "ethereum",
       "metadata",
       "true",
-      8,
+      10,
       1
     );
     if (anneTokens.nfts) {
@@ -589,22 +599,58 @@ section#search-results {
   opacity: 0;
 }
 section#marketplace {
+  width: 100%;
   color: $mint-black;
+  background: $mint-blue;
   display: flex;
   flex-direction: column;
   align-content: center;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100vh;
-  max-width: 1280px;
-  display: inline-block;
-  margin: 0 auto;
-  padding-bottom: 4em;
-  overflow: scroll;
+  padding: 3em 0;
 
-  .row {
+  .row-header {
     width: 100%;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    margin: 25px 0;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-md) {
+      width: 83%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 85%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 85%;
+      margin: 0 auto;
+    }
+    h2 {
+      width: 100%;
+      color: $mint-pink;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 36px;
+      line-height: 42px;
+      text-align: left;
+      margin: 0 0 20px 20px;
+      .arrow-down {
+        margin-bottom: -5px;
+      }
+    }
+  }
+  .row {
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -618,6 +664,22 @@ section#marketplace {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-lg) {
+      width: 80%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-md) {
+      width: 86%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 97%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 80%;
+      margin: 0 auto;
+    }
   }
 
   .mint-button {
