@@ -213,7 +213,7 @@
     <!-- END Right Side -->
     <section id="collections">
       <div class="row-header">
-        <h2>Latest Collections</h2>
+        <h2>Minty fresh<ArrowDownWhite class="arrow-down" /></h2>
       </div>
       <div class="row token-list">
         <template v-for="token in latestTokens" :key="token.token_id">
@@ -242,7 +242,7 @@
     </section>
     <section id="music">
       <div class="row-header">
-        <h2>Latest Sounds</h2>
+        <h2>Latest beats<ArrowDownBlack class="arrow-down" /></h2>
       </div>
       <div class="row token-list">
         <!-- Music NFT by Kerem -->
@@ -261,7 +261,7 @@
     </section>
     <section id="about">
       <div class="row-header">
-        <h2>Team</h2>
+        <h2>Team<ArrowDownBlack class="arrow-down" /></h2>
       </div>
       <div class="row token-list">
         <div class="about-box">
@@ -297,6 +297,8 @@ import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 // import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
+import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
+import ArrowDownBlack from "../assets/svgs/ArrowDownBlack.vue?component";
 import RippleEffectBG from "../assets/svgs/RippleEffectBG.vue?component";
 
 /* Components */
@@ -719,6 +721,20 @@ article {
   justify-content: center;
   align-items: center;
   padding: 3em 5em;
+  @include breakpoint($break-lg) {
+    padding: 1em;
+  }
+  @include breakpoint($break-md) {
+    padding: 0.5em;
+  }
+  @include breakpoint($break-sm) {
+    width: 100%;
+    padding: 0;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 0;
+  }
 }
 aside {
   width: 100%;
@@ -728,7 +744,21 @@ aside {
   align-items: center;
   margin: 0;
   padding: 0 0 0 50px;
-  background: #fbe2ff;
+  background: $mint-pink;
+  @include breakpoint($break-lg) {
+    padding: 0;
+  }
+  @include breakpoint($break-md) {
+    padding: 0;
+  }
+  @include breakpoint($break-sm) {
+    width: 100%;
+    padding: 0;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 0;
+  }
 }
 
 section#content {
@@ -1039,6 +1069,18 @@ section#nft-modal {
   margin: 0 auto;
   padding: 0 0 4em 3em;
   overflow: scroll;
+  @include breakpoint($break-lg) {
+    padding: 0;
+  }
+  @include breakpoint($break-md) {
+    padding: 0;
+  }
+  @include breakpoint($break-sm) {
+    padding: 0;
+  }
+  @include breakpoint($break-xs) {
+    padding: 0;
+  }
 
   .nft-modal-loading {
     display: flex;
@@ -1048,6 +1090,19 @@ section#nft-modal {
     align-items: center;
     width: 700px;
     padding: 0;
+    @include breakpoint($break-lg) {
+      width: 100%;
+      padding: 0;
+    }
+    @include breakpoint($break-md) {
+      width: 100%;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+    }
   }
 
   .nft-modal-card {
@@ -1061,6 +1116,18 @@ section#nft-modal {
     background: #f4f4f4;
     border-radius: 10px;
     padding: 20px 20px 10px 20px;
+    @include breakpoint($break-lg) {
+      width: 100%;
+    }
+    @include breakpoint($break-md) {
+      width: 100%;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+    }
   }
 
   .nft-modal-video {
@@ -1155,17 +1222,33 @@ section#collections {
     align-content: flex-start;
     justify-content: center;
     align-items: center;
+    margin: 25px 0;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
     h2 {
       width: 100%;
-      font-size: 1.7rem;
-      font-weight: 400;
+      color: $mint-pink;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 36px;
+      line-height: 42px;
       text-align: left;
-      color: $mint-black;
-      text-decoration: underline;
-      text-underline-offset: 10px;
-      padding: 0 0 20px 40px;
-      margin-block-start: 0;
-      margin-block-end: 0;
+      margin: 0 0 10px 20px;
+      .arrow-down {
+        margin-bottom: -5px;
+      }
     }
   }
   .row {
@@ -1182,28 +1265,18 @@ section#collections {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
-  }
-
-  .mint-button {
-    color: #fff;
-    background-color: $mint-black;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    max-width: 360px;
-    height: 55px;
-    border: 0;
-    padding-left: 87px;
-    padding-right: 87px;
-    border-radius: 10px;
-    transition: 0.4s;
-    cursor: pointer;
-  }
-
-  .mint-button:disabled {
-    background: #c6c6c6;
-    color: $mint-orange;
-    cursor: not-allowed;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
   }
 }
 
@@ -1225,17 +1298,33 @@ section#music {
     align-content: flex-start;
     justify-content: center;
     align-items: center;
+    margin: 25px 0;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
     h2 {
       width: 100%;
-      font-size: 1.7rem;
-      font-weight: 400;
-      text-align: left;
       color: $mint-black;
-      text-decoration: underline;
-      text-underline-offset: 10px;
-      padding: 0 0 20px 40px;
-      margin-block-start: 0;
-      margin-block-end: 0;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 36px;
+      line-height: 42px;
+      text-align: left;
+      margin: 0 0 10px 20px;
+      .arrow-down {
+        margin-bottom: -5px;
+      }
     }
   }
 
@@ -1253,6 +1342,18 @@ section#music {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
   }
 
   .music-nft-container {
@@ -1265,8 +1366,7 @@ section#music {
     padding: 0;
 
     h1 {
-      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
-        sans-serif;
+      font-family: Roboto, Ubuntu, "Open Sans", "Helvetica Neue", sans-serif;
       color: $mint-black;
       font-size: 1.7rem;
       line-height: 1.8rem;
@@ -1307,17 +1407,33 @@ section#about {
     align-content: flex-start;
     justify-content: center;
     align-items: center;
+    margin: 25px 0;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
     h2 {
       width: 100%;
-      font-size: 1.7rem;
-      font-weight: 400;
-      text-align: left;
       color: $mint-black;
-      text-decoration: underline;
-      text-underline-offset: 10px;
-      padding: 0 0 20px 40px;
-      margin-block-start: 0;
-      margin-block-end: 0;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 36px;
+      line-height: 42px;
+      text-align: left;
+      margin: 0 0 10px 20px;
+      .arrow-down {
+        margin-bottom: -5px;
+      }
     }
   }
 
@@ -1334,6 +1450,18 @@ section#about {
     max-width: 1280px;
     display: inline-block;
     margin: 0 auto;
+    @include breakpoint($break-md) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 90%;
+      margin: 0 auto;
+    }
   }
 }
 </style>

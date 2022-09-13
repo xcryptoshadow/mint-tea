@@ -34,7 +34,7 @@ body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -54,6 +54,12 @@ main {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;  
+  @include breakpoint($break-sm) {
+    flex-flow: column wrap;
+  }
+  @include breakpoint($break-xs) {
+    flex-flow: column wrap;
+  }
 }
 
 a {

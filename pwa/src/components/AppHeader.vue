@@ -2,7 +2,7 @@
   <header id="header">
     <div class="header-title">
       <router-link :to="{ name: 'home' }">
-        <BlueLogo class="header-logo" />
+        <BlueLogo />
       </router-link>
     </div>
     <div class="header-menu">
@@ -40,10 +40,21 @@ const { account } = storeToRefs(store);
 
 header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   align-content: center;
-  overflow: show;
+
+  @include breakpoint($break-md) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    margin-bottom: 20px;
+  }
+  @include breakpoint($break-sm) {
+    margin-bottom: 20px;
+  }
 
   .header-title {
     width: 40%;
@@ -51,15 +62,25 @@ header {
     justify-content: center;
     align-items: center;
     align-content: center;
+
+    @include breakpoint($break-md) {
+      width: 100%;
+    }
+
     img,
     svg {
       width: 240px;
+      margin: 40px auto -20px;
       object-fit: contain;
       overflow: hidden;
-    }
-
-    .header-logo {
-      margin: 40px auto -20px;
+      @include breakpoint($break-md) {
+        width: 220px;
+        margin: 10px auto 0;
+      }
+      @include breakpoint($break-sm) {
+        width: 160px;
+        margin: 10px auto 0;
+      }
     }
   }
 
@@ -70,13 +91,45 @@ header {
     justify-content: center;
     align-items: center;
     align-content: center;
-    background: #fbe2ff;
+    background: $mint-pink;
+    @include breakpoint($break-md) {
+      width: 100%;
+      background: none;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+      background: none;
+    }
 
     nav {
       display: flex;
       align-items: center;
       text-align: right;
       margin-right: 50px;
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 5px auto;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
       a {
         color: $mint-blue;
         font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
@@ -98,6 +151,12 @@ header {
         &.active {
           font-weight: bold;
           border-bottom: 1px solid $mint-black;
+        }
+        @include breakpoint($break-sm) {
+          font-size: 14px;
+          line-height: 19px;
+          margin: 0 10px;
+          padding-bottom: 2px;
         }
       }
       .balance-button {

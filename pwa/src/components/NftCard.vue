@@ -89,7 +89,18 @@ export default {
   border: 2px solid #f4f4f4;
   border-radius: 15px;
   margin: 0 13px 25px 13px;
-  padding: 15px 15px 10px 15px;
+
+  @include breakpoint($break-md) {
+    width: 380px;
+    padding: 20px 20px 10px;
+  }
+  @include breakpoint($break-sm) {
+    width: 380px;
+  }
+  @include breakpoint($break-xs) {
+    width: 380px;
+    margin: 0 auto 20px;
+  }
 
   &:hover {
     border: 2px solid #8d50f5;
