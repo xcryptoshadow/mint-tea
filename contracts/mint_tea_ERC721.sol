@@ -35,6 +35,14 @@ contract MTEA is ERC721, AccessControl {
       uint256 tokenId
     );
 
+    event trait_type_updated(
+        address indexed from, 
+        uint256 timestamp, 
+        uint256 _attributesTableId,
+        string _trait_type, 
+        uint256 tokenId
+    );
+
     constructor( address registry) ERC721("MTEA", "MT") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
@@ -80,7 +88,7 @@ contract MTEA is ERC721, AccessControl {
                 _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
-                " (maintable_tokenid int, icon text, display_type text, trait_type text, value int);"
+                " (maintable_tokenid int, icon text, display_type text, trait_type text, value text);"
             )
         );
         attributesTable = string.concat(
@@ -102,7 +110,7 @@ contract MTEA is ERC721, AccessControl {
         string memory _icon,
         string memory _display_type,
         string memory _trait_type,
-        uint256 _value  
+        string memory _value  
         ) public returns (uint256) {
 
 
@@ -143,7 +151,7 @@ contract MTEA is ERC721, AccessControl {
                 "', '",
                 _trait_type,
                 "', '",
-                Strings.toString(_value),
+                _value,
                 "')"
             )
         );
@@ -151,6 +159,53 @@ contract MTEA is ERC721, AccessControl {
         _tokenIdCounter.increment();
         emit NewNftMinted(msg.sender, block.timestamp, tokenId);
         return tokenId;
+    }
+
+    /*function add_element_to_attribute_table(
+        string memory _trait_type
+        ) public {
+
+
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "ALTER TABLE ",
+                attributesTable,
+                "ADD ",
+                _trait_type,
+                " ",
+                "text"
+            )
+        );
+    }*/
+
+     /*
+     * update an attribute value
+     */
+    function update_trait_type(
+        uint256 tokenId,
+        string memory _trait_type
+    ) public {
+        /* Check Ownership */
+        require(this.ownerOf(tokenId) == msg.sender, "Invalid owner");
+
+        /* Update the row in tableland */
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "UPDATE ",
+                attributesTable,
+                " SET trait_type = '",
+                _trait_type,
+                "' WHERE maintable_tokenid = ",
+                Strings.toString(tokenId),
+                ";"
+            )
+        );
+        /* Emit Event */
+       emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId);
     }
 
     /**
