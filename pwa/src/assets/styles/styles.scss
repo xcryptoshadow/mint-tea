@@ -34,12 +34,13 @@ body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 #app{
   display: flex;
   flex-direction: column;
@@ -51,34 +52,14 @@ body {
 
 main {
   display: flex;
-  // flex-direction: column;
-  justify-content: space-between;
-  // height: 100%;
-  // width: 100%;
-  // margin: 0;
-  // padding: 0;
-}
-@media only screen and (max-width: 839px) {
-  main {
-    flex-direction: row;
+  flex-flow: row wrap;
+  justify-content: space-between;  
+  @include breakpoint($break-sm) {
+    flex-flow: column wrap;
   }
-}
-
-article {
-  max-width: 500px;
-  flex: 1 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1.5em 0 3em 2em;
-}
-aside {
-  flex: 1 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
+  @include breakpoint($break-xs) {
+    flex-flow: column wrap;
+  }
 }
 
 a {
