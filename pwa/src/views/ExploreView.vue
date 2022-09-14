@@ -38,13 +38,18 @@
             placeholder="Search by image url"
             @input="searchTokens('image')"
           />
+          <button
+            :class="!show ? 'show-button-mobile' : 'hide-button-mobile'"
+            @click="show = !show"
+          >
+            {{ !show ? "Show" : "Hide" }}
+          </button>
           <button class="search-clear-button" @click="clearSearch()">X</button>
         </div>
       </div>
     </section>
     <Transition name="slide-fade">
       <section v-show="show" id="search-results">
-        <OrangeLogo class="search-logo" />
         <div class="search-results-row">
           <h2>Search Results</h2>
           <div class="row token-list">
@@ -104,17 +109,17 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
+
 /* Import our Pinia Store & Refs */
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
 
 /* Import SVG */
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
-// import ArrowDownBlack from "../assets/svgs/ArrowDownBlack.vue?component";
-import OrangeLogo from "../assets/svgs/OrangeLogo.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
+
 /* Init Store Values and Methods */
 const store = useStore();
 const { searchResults, topTokens, latestTokens, anneTokens } =
@@ -181,6 +186,7 @@ async function searchTokens(type) {
   console.log("order_by:", order_by.value);
   console.log("page_size:", page_size.value);
   console.log("page_number:", page_number.value);
+
   if (type === "name") {
     try {
       const results = await store.searchNFTs(
@@ -256,7 +262,7 @@ async function searchTokens(type) {
     try {
       const results = await store.searchNFTs(
         contract.value,
-        name.value,
+        image.value,
         chain.value,
         sort_order.value,
         order_by.value,
@@ -387,8 +393,21 @@ section#search-bar {
   height: auto;
   max-width: 1279px;
   display: inline-block;
-  margin: 0 auto;
-  padding-bottom: 20px;
+  margin: 3em auto 1em;
+  padding-bottom: 10px;
+
+  @include breakpoint($break-md) {
+    margin: 1em auto;
+    padding: 0;
+  }
+  @include breakpoint($break-sm) {
+    margin: 0 auto;
+    padding: 0;
+  }
+  @include breakpoint($break-xs) {
+    margin: 0 auto;
+    padding: 0;
+  }
 
   .row {
     width: 100%;
@@ -407,6 +426,25 @@ section#search-bar {
     }
 
     .search {
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-md) {
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+      }
       select.search-chain {
         color: $mint-black;
         background-color: #fdfdfd;
@@ -418,6 +456,20 @@ section#search-bar {
         width: 200px;
         padding: 10px;
         text-align: center;
+
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1%;
+          border-top-left-radius: 5px;
+          border-top-right-radius: 5px;
+          border-bottom-left-radius: 0;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1%;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
       }
       select.search-chain::placeholder {
         color: #a8a8a8;
@@ -439,6 +491,17 @@ section#search-bar {
         min-width: 420px;
         padding: 11px 10px;
         text-align: center;
+        @include breakpoint($break-md) {
+          min-width: 250px;
+        }
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1%;
+        }
       }
       input.search-contract::placeholder {
         color: #a8a8a8;
@@ -460,6 +523,14 @@ section#search-bar {
         min-width: 220px;
         padding: 11px 10px;
         text-align: center;
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1%;
+        }
       }
       input.search-name::placeholder {
         color: #a8a8a8;
@@ -482,6 +553,20 @@ section#search-bar {
         width: auto;
         padding: 11px 10px;
         text-align: center;
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1%;
+          border-top-right-radius: 0;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1%;
+          border-top-right-radius: 0;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
       }
       input.search-image::placeholder {
         color: #a8a8a8;
@@ -491,6 +576,7 @@ section#search-bar {
         border: 0;
         outline: none;
       }
+      /* Desktopn & Tablet Versions */
       .show-button {
         color: $white;
         background-color: $mint-black;
@@ -503,6 +589,16 @@ section#search-bar {
         text-align: center;
         margin-right: 5px;
         cursor: pointer;
+        display: inline-block;
+        @include breakpoint($break-md) {
+          display: inline-block;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
       }
       .hide-button {
         color: $white;
@@ -516,7 +612,68 @@ section#search-bar {
         text-align: center;
         margin-right: 5px;
         cursor: pointer;
+        display: inline-block;
+        @include breakpoint($break-md) {
+          display: inline-block;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
       }
+      /* END Desktopn & Tablet Versions */
+      /* Mobile Versions */
+      .show-button-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 5px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        width: 48%;
+        padding: 1%;
+        margin: 2% 1%;
+        text-align: center;
+        margin: 1%;
+        cursor: pointer;
+        display: none;
+        @include breakpoint($break-md) {
+          display: none;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+        }
+      }
+      .hide-button-mobile {
+        color: $white;
+        background-color: $mint-orange;
+        border: 0;
+        border-radius: 5px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        width: 48%;
+        padding: 1%;
+        margin: 2% 1%;
+        text-align: center;
+        margin-right: 5px;
+        cursor: pointer;
+        display: none;
+        @include breakpoint($break-md) {
+          display: none;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+        }
+      }
+      /* END Mobile Versions */
       .search-clear-button {
         color: $white;
         background-color: $mint-black;
@@ -529,6 +686,14 @@ section#search-bar {
         text-align: center;
         margin-left: 5px;
         cursor: pointer;
+        @include breakpoint($break-sm) {
+          width: 48%;
+          padding: 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 48%;
+          padding: 1%;
+        }
       }
     }
   }
@@ -536,6 +701,7 @@ section#search-bar {
 section#search-results {
   color: $white;
   background: $mint-black;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -554,7 +720,7 @@ section#search-results {
   }
 
   .search-logo {
-    position: relative;
+    position: fixed;
     top: 60px;
     left: 30px;
   }
@@ -608,6 +774,7 @@ section#marketplace {
   align-items: center;
   justify-content: center;
   padding: 3em 0;
+  border-top: 1px solid $mint-black;
 
   .row-header {
     width: 100%;

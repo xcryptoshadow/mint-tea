@@ -5,7 +5,12 @@
         <BlueLogo />
       </router-link>
     </div>
-    <div class="header-menu" :class="$route.name === 'home' ? 'bg-pink' : ''">
+    <div
+      class="header-menu"
+      :class="
+        $route.name === 'home' || $route.name === 'account' ? 'bg-pink' : ''
+      "
+    >
       <nav>
         <router-link :to="{ name: 'home' }" active-class="active" exact
           >home</router-link

@@ -8,7 +8,7 @@ Search and verify your NFTs for rarity by name, description and image across all
 
 Browse through our marketplace to list and trade NFT collections for art, music, game items and so much more.
 
-Mint Tea aims to become a truly cross-chain platform that opens up new markets in the blockcahin space. We aim to bridge as many chains as possible starting with Ethereum, Polygon and Optimism. As our core technologies expand then we will grow with them incorporating more chains in the future.
+Mint Tea aims to become a truly cross-chain platform that opens up new markets in the blockchain space. We aim to bridge as many chains as possible starting with Ethereum, Polygon and Optimism. As our core technologies expand then we will grow with them incorporating more chains in the future.
 
 ## Ethereum, Polygon and Optimism
 
