@@ -43,7 +43,15 @@ contract MTEA is ERC721, AccessControl {
         uint256 timestamp, 
         uint256 _attributesTableId,
         string _trait_type, 
-        uint256 tokenId
+        uint256 tokenId,
+        uint256 _trait_id
+    );
+
+    event new_attribute_added(
+      address indexed from,
+      uint256 timestamp,
+      uint256 tokenId,
+      uint256 _trait_id
     );
 
     constructor( address registry) ERC721("MTEA", "MT") {
@@ -156,7 +164,7 @@ contract MTEA is ERC721, AccessControl {
                 "', '",
                 _value,
                 "', '",
-                "0",
+                "1",
                 "')"
             )
         );
@@ -196,13 +204,14 @@ contract MTEA is ERC721, AccessControl {
                 "', '",
                 _value,
                 "', '",
-                Strings.toString(counter_trait),
+                Strings.toString(counter_trait + 1),
                 "')"
             )
         );
         //NOTE: SafeMath is no longer needed starting with Solidity 0.8. 
         //The compiler now has built in overflow checking.
         nb_of_attributes[_tokenId] = counter_trait + 1;
+        emit new_attribute_added(msg.sender, block.timestamp,  _tokenId, counter_trait + 1);
         return counter_trait + 1 ;
     }
 
@@ -216,7 +225,7 @@ contract MTEA is ERC721, AccessControl {
     ) public {
         /* Check Ownership */
         require(this.ownerOf(tokenId) == msg.sender, "Invalid owner");
-        require(nb_of_attributes[tokenId] > _trait_id, "trait_id not found ");
+        require(nb_of_attributes[tokenId] >= _trait_id && _trait_id > 0, "trait_id not found ");
         /* Update the row in tableland */
         _tableland.runSQL(
             address(this),
@@ -234,7 +243,7 @@ contract MTEA is ERC721, AccessControl {
             )
         );
         /* Emit Event */
-       emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId);
+       emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId, _trait_id);
     }
 
     /**
