@@ -28,11 +28,30 @@ contract MTEA is ERC721, AccessControl {
     // Schema: main_id int not null, trait_type text not null, value text
     string public attributesTable;
 
+    //map of tokenid to the numbers of trait_id 
+    mapping(uint256 => uint256) private nb_of_attributes;
+
     /* Events */
     event NewNftMinted(
       address indexed from,
       uint256 timestamp,
       uint256 tokenId
+    );
+
+    event trait_type_updated(
+        address indexed from, 
+        uint256 timestamp, 
+        uint256 _attributesTableId,
+        string _trait_type, 
+        uint256 tokenId,
+        uint256 _trait_id
+    );
+
+    event new_attribute_added(
+      address indexed from,
+      uint256 timestamp,
+      uint256 tokenId,
+      uint256 _trait_id
     );
 
     constructor( address registry) ERC721("MTEA", "MT") {
@@ -80,7 +99,7 @@ contract MTEA is ERC721, AccessControl {
                 _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
-                " (maintable_tokenid int, icon text, display_type text, trait_type text, value int);"
+                " (maintable_tokenid int, icon text, display_type text, trait_type text, value text, trait_id int);"
             )
         );
         attributesTable = string.concat(
@@ -102,7 +121,7 @@ contract MTEA is ERC721, AccessControl {
         string memory _icon,
         string memory _display_type,
         string memory _trait_type,
-        uint256 _value  
+        string memory _value  
         ) public returns (uint256) {
 
 
@@ -134,7 +153,7 @@ contract MTEA is ERC721, AccessControl {
             string.concat(
                 "INSERT INTO ",
                 attributesTable,
-                " (maintable_tokenid, icon, display_type, trait_type, value) VALUES ('",
+                " (maintable_tokenid, icon, display_type, trait_type, value, trait_id) VALUES ('",
                 Strings.toString(tokenId),
                 "', '",
                 _icon,
@@ -143,14 +162,88 @@ contract MTEA is ERC721, AccessControl {
                 "', '",
                 _trait_type,
                 "', '",
-                Strings.toString(_value),
+                _value,
+                "', '",
+                "1",
                 "')"
             )
         );
         _safeMint(to, tokenId);
+        nb_of_attributes[tokenId] = 1;
         _tokenIdCounter.increment();
         emit NewNftMinted(msg.sender, block.timestamp, tokenId);
         return tokenId;
+    }
+
+     /*
+     * add new attribute to an NFT
+     */
+    function add_new_attribute(
+        uint256 _tokenId, 
+        string memory _trait_type, 
+        string memory _value
+        ) public returns(uint256)
+        {
+        
+        /* Check Ownership */
+        require(this.ownerOf(_tokenId) == msg.sender, "Invalid owner");
+        
+        //this counter begins from 1 not 0 
+        uint256 counter_trait = nb_of_attributes[_tokenId] ;
+         //insert into attributesTable
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "INSERT INTO ",
+                attributesTable,
+                " (maintable_tokenid, trait_type, value, trait_id) VALUES ('",
+                Strings.toString(_tokenId),
+                "', '",
+                _trait_type,
+                "', '",
+                _value,
+                "', '",
+                Strings.toString(counter_trait + 1),
+                "')"
+            )
+        );
+        //NOTE: SafeMath is no longer needed starting with Solidity 0.8. 
+        //The compiler now has built in overflow checking.
+        nb_of_attributes[_tokenId] = counter_trait + 1;
+        emit new_attribute_added(msg.sender, block.timestamp,  _tokenId, counter_trait + 1);
+        return counter_trait + 1 ;
+    }
+
+     /*
+     * update an attribute value
+     */
+    function update_trait_type(
+        uint256 tokenId,
+        uint256 _trait_id,
+        string memory _trait_type
+    ) public {
+        /* Check Ownership */
+        require(this.ownerOf(tokenId) == msg.sender, "Invalid owner");
+        require(nb_of_attributes[tokenId] >= _trait_id && _trait_id > 0, "trait_id not found ");
+        /* Update the row in tableland */
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "UPDATE ",
+                attributesTable,
+                " SET trait_type = '",
+                _trait_type,
+                "' WHERE maintable_tokenid = ",
+                Strings.toString(tokenId),
+                " AND trait_id = ",
+                Strings.toString(_trait_id),
+                ";"
+            )
+        );
+        /* Emit Event */
+       emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId, _trait_id);
     }
 
     /**
