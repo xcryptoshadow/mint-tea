@@ -513,6 +513,19 @@ section#explore {
   padding: 0 0 3em 3em;
   overflow: scroll;
 
+  @include breakpoint($break-lg) {
+    padding: 0 0 3em 3em;
+  }
+  @include breakpoint($break-md) {
+    padding: 0 0 3em 0;
+  }
+  @include breakpoint($break-sm) {
+    padding: 0 0 3em 0;
+  }
+  @include breakpoint($break-xs) {
+    padding: 0 0 3em 0;
+  }
+
   .row-header {
     width: 100%;
     max-width: 1280px;
@@ -523,11 +536,11 @@ section#explore {
     align-items: center;
     margin: 25px 0;
     @include breakpoint($break-lg) {
-      width: 80%;
+      width: 100%;
       margin: 0 auto;
     }
     @include breakpoint($break-md) {
-      width: 83%;
+      width: 100%;
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
@@ -567,23 +580,31 @@ section#explore {
   .token-list {
     width: 100%;
     max-width: 1280px;
-    display: inline-block;
-    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
     @include breakpoint($break-lg) {
-      width: 80%;
+      width: 100%;
       margin: 0 auto;
+      grid-template-columns: repeat(2, 1fr);
     }
     @include breakpoint($break-md) {
-      width: 86%;
+      width: 100%;
       margin: 0 auto;
+      grid-template-columns: repeat(1, 1fr);
     }
     @include breakpoint($break-sm) {
-      width: 97%;
+      width: 100%;
       margin: 0 auto;
+      grid-template-columns: repeat(2, 1fr);
     }
     @include breakpoint($break-xs) {
-      width: 80%;
+      width: 100%;
       margin: 0 auto;
+      grid-template-columns: repeat(1, 1fr);
     }
   }
 }
