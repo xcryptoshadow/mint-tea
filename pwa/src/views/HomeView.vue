@@ -211,7 +211,7 @@
     <!-- END Right Side -->
     <section id="collections">
       <div class="row-header">
-        <h2>Minty fresh<ArrowDownWhite class="arrow-down" /></h2>
+        <h2>minty fresh<ArrowDownWhite class="arrow-down" /></h2>
       </div>
       <div class="row token-list">
         <template v-for="token in latestTokens" :key="token.token_id">
@@ -238,12 +238,11 @@
         </template>
       </div>
     </section>
-    <section id="music">
+    <!-- <section id="music">
       <div class="row-header">
         <h2>Latest beats<ArrowDownBlack class="arrow-down" /></h2>
       </div>
       <div class="row token-list">
-        <!-- Music NFT by Kerem -->
         <div
           v-if="keremTokens && keremTokens.length > 0"
           class="music-nft-container"
@@ -256,21 +255,92 @@
           </template>
         </div>
       </div>
-    </section>
+    </section> -->
     <section id="about">
-      <div class="row-header">
-        <h2>Team<ArrowDownBlack class="arrow-down" /></h2>
-      </div>
-      <div class="row token-list">
+      <div class="about-left">
+        <div class="row-header">
+          <h2>mint team<ArrowDownBlack class="arrow-down" /></h2>
+        </div>
         <div class="about-box">
           <div class="team-box">
-            <div class="team-image"><img src="" alt="Name" /></div>
-            <div class="team-name">Name here</div>
-            <div class="team-job">Job here</div>
-            <div class="team-links">
-              <a href="#">Link Here</a>
-              <a href="#">Link Here</a>
-              <a href="#">Link Here</a>
+            <div class="team-image">
+              <img src="/Anne_Krauwer.jpeg" alt="Anne Krauwer" />
+            </div>
+            <div class="team-about-box">
+              <div class="team-name">Anne Krauwer</div>
+              <div class="team-job">Visual Designer</div>
+            </div>
+          </div>
+          <div class="team-box">
+            <div class="team-image">
+              <img src="/0xWebMoss.png" alt="Craig Moss" />
+            </div>
+            <div class="team-about-box">
+              <div class="team-name">Craig Moss</div>
+              <div class="team-job">Fullstack Developer</div>
+            </div>
+          </div>
+          <div class="team-box">
+            <div class="team-image">
+              <img src="/Mourad_Bouabdallah.jpeg" alt="Mourad Bouabdallah" />
+            </div>
+            <div class="team-about-box">
+              <div class="team-name">Mourad Bouabdallah</div>
+              <div class="team-job">Software Engineer</div>
+            </div>
+          </div>
+          <div class="team-box">
+            <div class="team-image">
+              <img src="/Nobuhito_Kurose.jpeg" alt="Nobuhito Kurose" />
+            </div>
+            <div class="team-about-box">
+              <div class="team-name">Nobuhito Kurose</div>
+              <div class="team-job">Software Engineer</div>
+            </div>
+          </div>
+          <!-- <div class="team-box">
+            <div class="team-image">
+              <img src="/0xWebMoss.png" alt="Kerem Demirayak" />
+            </div>
+            <div class="team-about-box">
+              <div class="team-name">Kerem Demirayak</div>
+              <div class="team-job">NFT Music &amp; Art</div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+      <div class="about-right">
+        <div class="sponsors-box">
+          <div class="sponsor-box">
+            <div class="sponsor-about-box">
+              <div class="sponsor-name">
+                <a
+                  href="https://github.com/Mint-Tea-ETHOnline"
+                  alt="GitHub"
+                  target="_blank"
+                  rel="noopener"
+                  >GitHub repository</a
+                >
+              </div>
+            </div>
+            <div class="sponsor-image">
+              <img src="/GitHub_Logo.png" alt="GitHub" />
+            </div>
+          </div>
+          <div class="sponsor-box">
+            <div class="sponsor-about-box">
+              <div class="sponsor-name">
+                <a
+                  href="https://ethglobal.com/showcase/mint-tea-2nn7k"
+                  alt="ETH Global ETHOnline 2022"
+                  target="_blank"
+                  rel="noopener"
+                  >ETHOnline showcase</a
+                >
+              </div>
+            </div>
+            <div class="sponsor-image">
+              <img src="/GitHub_Logo.png" alt="ETHGlobal" />
             </div>
           </div>
         </div>
@@ -301,7 +371,7 @@ import RippleEffectBG from "../assets/svgs/RippleEffectBG.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
-import MusicCard from "@/components/MusicCard.vue";
+// import MusicCard from "@/components/MusicCard.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
@@ -322,8 +392,7 @@ console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 const store = useStore();
 
 // Store Values and Methods
-const { account, topTokens, latestTokens, anneTokens, keremTokens } =
-  storeToRefs(store);
+const { account, topTokens, latestTokens, anneTokens } = storeToRefs(store);
 
 // Set Form Tab
 const formTab = ref("mint");
@@ -671,26 +740,26 @@ onMounted(async () => {
   await checkIfWalletIsConnected();
 
   /* Kerems Music NFT Video */
-  if (keremTokens.value.length === 0) {
-    let keremTokens = await store.detailsNftSearch(
-      "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-      "52806",
-      "ethereum",
-      true
-    );
-    if (keremTokens.nft) {
-      store.addKeremTokens(...[keremTokens.nft]);
-    }
-    let keremTokens2 = await store.detailsNftSearch(
-      "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
-      "108227",
-      "ethereum",
-      true
-    );
-    if (keremTokens2.nft) {
-      store.addKeremTokens(...[keremTokens2.nft]);
-    }
-  }
+  // if (keremTokens.value.length === 0) {
+  //   let keremTokens = await store.detailsNftSearch(
+  //     "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+  //     "52806",
+  //     "ethereum",
+  //     true
+  //   );
+  //   if (keremTokens.nft) {
+  //     store.addKeremTokens(...[keremTokens.nft]);
+  //   }
+  //   let keremTokens2 = await store.detailsNftSearch(
+  //     "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
+  //     "108227",
+  //     "ethereum",
+  //     true
+  //   );
+  //   if (keremTokens2.nft) {
+  //     store.addKeremTokens(...[keremTokens2.nft]);
+  //   }
+  // }
 
   if (anneTokens.value.length === 0) {
     let anneTokens = await store.contractNftSearch(
@@ -1448,83 +1517,228 @@ section#about {
   width: 100%;
   color: $mint-black;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-content: center;
   align-items: center;
   justify-content: center;
-  padding: 3em 0;
+  padding: 0;
 
-  .row-header {
-    width: 100%;
-    max-width: 1280px;
-    display: flex;
-    flex-direction: row;
-    align-content: flex-start;
+  @include breakpoint($break-sm) {
+    flex-direction: column;
+  }
+  @include breakpoint($break-xs) {
+    flex-direction: column;
+  }
+  .about-left {
+    background: $mint-pink;
+    width: 43%;
+    flex-grow: 1 100%;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 25px 0;
+    padding: 4em 0 4em 8em;
+
+    @include breakpoint($break-xl) {
+      padding: 1em;
+    }
     @include breakpoint($break-lg) {
-      width: 80%;
-      margin: 0 auto;
+      padding: 3em 0 3em 3em;
     }
     @include breakpoint($break-md) {
-      width: 83%;
-      margin: 0 auto;
+      padding: 3em 0 3em 2em;
     }
     @include breakpoint($break-sm) {
-      width: 85%;
-      margin: 0 auto;
+      width: 100%;
+      padding: 4em 0 4em 7em;
     }
     @include breakpoint($break-xs) {
-      width: 85%;
-      margin: 0 auto;
+      width: 100%;
+      padding: 4em 0 4em 4em;
     }
-    h2 {
+
+    .row-header {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-content: flex-start;
+      justify-content: center;
+      align-items: center;
+      margin: 25px 0;
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      h2 {
+        width: 100%;
+        color: $mint-black;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 36px;
+        line-height: 42px;
+        text-align: left;
+        margin: 0 0 20px 18px;
+        .arrow-down {
+          margin-bottom: -5px;
+        }
+      }
+    }
+    .about-box {
       width: 100%;
       color: $mint-black;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-      font-style: normal;
-      font-weight: 700;
-      font-size: 36px;
-      line-height: 42px;
-      text-align: left;
-      margin: 0 0 20px 20px;
-      .arrow-down {
-        margin-bottom: -5px;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0;
+
+      .team-box {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-content: center;
+        align-items: flex-start;
+        justify-content: center;
+        margin-bottom: 20px;
+        .team-image {
+          background: $white;
+          display: inline-block;
+          width: 145px;
+          height: 120px;
+          border-radius: 50%;
+          border: 2px solid $white;
+          overflow: hidden;
+          img,
+          svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            overflow: hidden;
+          }
+        }
+        .team-about-box {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-content: center;
+          align-items: flex-start;
+          justify-content: center;
+          .team-name {
+            font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+              "Droid Sans", "Helvetica Neue", sans-serif;
+            font-size: 26px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 28px;
+            margin: 25px 0 0 30px;
+          }
+          .team-job {
+            font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+              "Droid Sans", "Helvetica Neue", sans-serif;
+            font-size: 22px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 28px;
+            margin: 0 0 0 30px;
+          }
+        }
       }
     }
   }
-
-  .row {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
+  .about-right {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0;
-  }
 
-  .token-list {
-    width: 100%;
-    max-width: 1280px;
-    display: inline-block;
-    margin: 0 auto;
-    @include breakpoint($break-lg) {
-      width: 80%;
-      margin: 0 auto;
-    }
     @include breakpoint($break-md) {
-      width: 86%;
-      margin: 0 auto;
+      border-top-left-radius: 30px;
+      padding: 2em 0 0 0;
+      overflow: hidden;
     }
     @include breakpoint($break-sm) {
-      width: 97%;
-      margin: 0 auto;
+      width: 100%;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      padding: 2em 1em;
     }
     @include breakpoint($break-xs) {
-      width: 80%;
-      margin: 0 auto;
+      width: 100%;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      padding: 1.5em 1em;
+    }
+    .sponsors-box {
+      position: absolute;
+      bottom: 6em;
+      right: 6em;
+      .sponsor-box {
+        width: 100%;
+        color: $mint-black;
+        display: flex;
+        flex-direction: row;
+        align-content: center;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 20px;
+
+        .sponsor-about-box {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          align-content: center;
+          align-items: center;
+          justify-content: flex-end;
+          .sponsor-name {
+            margin: 0 20px 20px 0;
+            a {
+              font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+                "Droid Sans", "Helvetica Neue", sans-serif;
+              font-size: 26px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: 28px;
+              color: $mint-black;
+
+              cursor: pointer;
+            }
+            a:hover {
+              font-weight: bold;
+            }
+            a:active {
+              font-weight: bold;
+            }
+          }
+        }
+        .sponsor-image {
+          display: inline-block;
+          width: 90px;
+          height: 90px;
+          img,
+          svg {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            overflow: hidden;
+          }
+        }
+      }
     }
   }
 }
