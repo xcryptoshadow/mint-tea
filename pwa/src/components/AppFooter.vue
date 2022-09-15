@@ -1,28 +1,10 @@
 <template>
   <footer id="footer">
     <div class="footer-title">
-      <span>Mint, brew &amp; bridge NFTs cross-chain</span>
+      <span>Mint, bridge &amp; brew ross-chain NFTs</span>
     </div>
     <div class="footer-logo">
       <GreenLogo />
-    </div>
-    <div class="footer-menu">
-      <nav class="footer-navbar">
-        <a
-          href="https://ethglobal.com/showcase/mint-tea-2nn7k"
-          alt="ETH Online 2022"
-          target="_blank"
-          rel="noopener"
-          >ETHOnline</a
-        >
-        <a
-          href="https://github.com/Mint-Tea-ETHOnline"
-          alt="GitHub"
-          target="_blank"
-          rel="noopener"
-          >GitHub</a
-        >
-      </nav>
     </div>
   </footer>
 </template>
@@ -39,21 +21,22 @@ footer {
   justify-content: space-between;
   align-items: center;
   align-content: center;
-  padding: 0.8em;
+  padding: 2em;
   color: $white;
   background: $mint-black;
 
   .footer-title {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
-    width: 45%;
+    width: 42%;
+    margin-left: 40px;
 
     span {
-      font-size: 0.8rem;
+      font-size: 1.2rem;
       a {
-        font-size: 0.8rem;
+        font-size: 1.2rem;
         color: $white;
         cursor: pointer;
 
@@ -66,45 +49,16 @@ footer {
 
   .footer-logo {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     align-content: center;
-    width: 10%;
+    width: 58%;
 
     img,
     svg {
-      width: 70px;
+      width: 160px;
       object-fit: contain;
       overflow: hidden;
-    }
-  }
-
-  .footer-menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    width: 45%;
-
-    .footer-navbar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-
-      a {
-        font-size: 0.8rem;
-        color: $white;
-        margin: 0 15px 0 0;
-        cursor: pointer;
-      }
-      a:hover {
-        color: $mint-orange !important;
-        font-weight: bold;
-      }
-      a:active {
-        font-weight: bold;
-      }
     }
   }
 }
