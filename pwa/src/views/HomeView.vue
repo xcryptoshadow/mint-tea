@@ -376,7 +376,7 @@ import NftCard from "@/components/NftCard.vue";
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
-const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
+const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -1686,7 +1686,7 @@ section#about {
     }
     .sponsors-box {
       position: absolute;
-      bottom: 6em;
+      bottom: 6.5em;
       right: 6em;
       .sponsor-box {
         width: 100%;

@@ -5,7 +5,7 @@ import nftPort from "../services/nftPort.js";
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
-// const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
+// const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
 
 /* LFG */
 export const useStore = defineStore({

@@ -1,7 +1,7 @@
 <template>
   <footer id="footer">
     <div class="footer-title">
-      <span>Mint, bridge &amp; brew ross-chain NFTs</span>
+      <span>Mint, bridge &amp; brew cross-chain NFTs</span>
     </div>
     <div class="footer-logo">
       <GreenLogo />
