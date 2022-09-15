@@ -7,7 +7,7 @@ const infuraKey = import.meta.env.VITE_INFURA_API_KEY;
 const infuraSecret = import.meta.env.VITE_INFURA_API_SECRET;
 
 /* Mint Tea Contract Address */
-const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
+const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
 
 export default class authNFT {
   constructor() {

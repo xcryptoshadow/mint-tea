@@ -1,6 +1,6 @@
 # 🍵 Mint Tea
 
-🍵 Brew up some fresh cross-chain NFTs using our custom NFT bridge, port your best NFTs to all the top chains to maximise your exposure. The Mint Tea web3 app allows users to mint NFTs with mutable metadata using Tableland which is used to store data in relational tables on chain.
+🍵 Brew up some fresh cross-chain NFTs using our custom NFT bridge, port your best NFTs to all the top chains to maximise your exposure. The 🍵 Mint Tea web3 app allows users to mint NFTs with mutable metadata using Tableland which is used to store data in relational tables on chain.
 
 Mint Tea NFT holders can bridge their dynamic NFTs cross-chain to trade, stake or use on different blockchains and their local dapps. We've included a standard bridge using the IOU approach so users can bridge normal tokens or our custom NFTs to the different blockchains.
 
@@ -57,7 +57,7 @@ NFTPort provide enhanced APIs for Text Search so you don't have to build your ow
 
 ## IPFS, Filecoin and NFT.Storage
 
-The Interplanetary File System (IPFS) is a decentralized file system for building the next generation of the internet. Filecoin (opens new window)and many popular Web3 projects are built on IPFS. Some call it the hard drive for blockchain and Web3, though its power extends much further.
+The Interplanetary File System (IPFS) is a decentralized file system for building the next generation of the internet. Filecoin (opens new window) and many popular Web3 projects are built on IPFS. Some call it the hard drive for blockchain and Web3, though its power extends much further.
 
 NFT.Storage is a long-term storage service designed for off-chain NFT data (like metadata, images, and other assets). Data is content addressed using IPFS, meaning the URI pointing to a piece of data (“ipfs://…”) is completely unique to that data (using a content identifier, or CID). IPFS URLs and CIDs can be used in NFTs and metadata to ensure the NFT forever actually refers to the intended data (eliminating things like rug pulls, and making it trustlessly verifiable what content an NFT is associated with).
 
@@ -69,10 +69,12 @@ Github: <https://github.com/Mint-Tea-ETHOnline/mint-tea>
 
 Tableland Example
 
-<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_1706%20JOIN%20Mint_TEA_80001_1707%20ON%20Mint_TEA_80001_1706%2Etokenid%20%3D%20Mint_TEA_80001_1707%2Emaintable_tokenid%20WHERE%20tokenid%3D0%20group%20by%20tokenid>
+<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_1913%20JOIN%20Mint_TEA_80001_1914%20ON%20Mint_TEA_80001_1913%2Etokenid%20%3D%20Mint_TEA_80001_1914%2Emaintable_tokenid%20WHERE%20tokenid%3D1%20group%20by%20tokenid>
 
-We minted this NFT using the 🍵 Mint Tea app for the #ETHOnline 2022 hackathon
+We minted these NFTs during testing using the 🍵 Mint Tea app for the #ETHOnline 2022 hackathon
+
 <https://testnets.opensea.io/assets/mumbai/0x8d57ffb931426aaa612591f846bd00d6c580a59c/2>
+<https://testnets.opensea.io/assets/mumbai/0xbe3601f014e0a861bc837bd1f24822ce23592422/1>
 
 Technology Stack
 🍵 Mint Tea was built with or uses the following technologies in it's software life cycle:
@@ -83,13 +85,13 @@ IPFS & Filecoin - IPFS and NFT.Storage are used to store all our uploaded NFT fi
 
 Sponsor Note: Kindly refer to pwa > src > services for examples of IPFS, NFT.Storage and NFT Port usage. These are used in the Upload and Mint functionality.
 
-Tableland - Tableland was used to create a SQL table on contract creation which stores the tokenId, aid, gid, and external_url. The NFT is created in normal fashion whereby the images and metadata are created and stored on ipfs://, then in addition the same information is then stored in separate sql tables which will be joined together to provide the NFT with a new tokenUri serving the metadata from Tableland. The aim is to be able to create Tableland data for old NFTs and then we will be able to addon to these using our custom metadata templates based on file types or media types
+Tableland - Tableland was used to create a SQL table on contract creation which stores the NFT data. The NFT is created in normal fashion whereby the images and metadata are created and stored on ipfs://, then in addition the same information is then stored in separate sql tables which will be joined together to provide the NFT with a new tokenUri serving the metadata from Tableland.
 
 Polygon - 🍵 Mint Tea is deployed to the Polygon Mumbai network and uses Matic for payments and minting, Mumbai Testnet for demo purposes only please!
 Spheron - The 🍵 Mint Tea web app is deployed seemlessly using Spheron, and served to the world via IPFS, also stored on Filecoin.
-Hardhat - Hardhat takes care of all my deployments and smart contract compilation.
-Vue.js - I just like the vue from over here ;)
-Pinia - Store management using Pinia
+Hardhat - Hardhat takes care of all our deployments and smart contract compilation and testing
+Vue.js - It's green for go ;)
+Pinia - State management using Pinia store
 SASS,SCSS - Styled beatifully to match our fabulous designs by Anne Krauwer
 
 Please visit <https://mint-tea-kqg2oj.spheron.app/> to view the 🍵 Mint Tea web3 application, feel free to connect your metamask wallet and enjoy
@@ -135,23 +137,25 @@ GAS_REPORT=true npx hardhat test
 
 ## Deployments Note
 
-The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test purposes at: 0x8d57FfB931426aAa612591F846BD00d6c580A59c
+The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test purposes at: 0xbE3601f014e0A861bc837bD1f24822cE23592422
 
 Tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
 
-mainTable name is: Mint_TEA_80001_1706
-attributestable name is: Mint_TEA_80001_1707
-tokenid is: 0
+Mint Tea NFT contract deployed on polygon-mumbai at: 0xbE3601f014e0A861bc837bD1f24822cE23592422
+
+mainTable name is: Mint_TEA_80001_1913
+
+attributestable name is: Mint_TEA_80001_1914
 
 ## Tableland Tableland
 
 View our Tableland table as NFTS on opensea.io testnet
 
 Main NFT Table
-<https://testnets.opensea.io/assets/mumbai/0x4b48841d4b32c4650e4abc117a03fe8b51f38f68/1706>
+<https://testnets.opensea.io/assets/mumbai/0x4b48841d4b32c4650e4abc117a03fe8b51f38f68/1913>
 
 Attributes NFT Table
-<https://testnets.opensea.io/assets/mumbai/0x4b48841d4b32c4650e4abc117a03fe8b51f38f68/1707>
+<https://testnets.opensea.io/assets/mumbai/0x4b48841d4b32c4650e4abc117a03fe8b51f38f68/1914>
 
 ```shell
 npx hardhat run scripts/deploy.js --network polygon-mumbai
