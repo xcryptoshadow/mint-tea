@@ -10,11 +10,25 @@
     enable-background="new 0 0 40 40"
   >
     <defs>
-      <filter id="a-logo" filterUnits="userSpaceOnUse" x="0" y="0" width="40" height="40">
+      <filter
+        id="a-logo"
+        filterUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="40"
+        height="40"
+      >
         <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
       </filter>
     </defs>
-    <mask maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40" id="b-logo_1">
+    <mask
+      maskUnits="userSpaceOnUse"
+      x="0"
+      y="0"
+      width="40"
+      height="40"
+      id="b-logo_1"
+    >
       <g filter="url(#a-logo)">
         <path id="a-logo_1" class="st1-logo" d="M0 0h40v40H0V0z" />
       </g>

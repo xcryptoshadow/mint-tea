@@ -67,7 +67,10 @@
     <section id="marketplace">
       <div class="row">
         <div class="row-header">
-          <h2>Minty fresh<ArrowDownWhite class="arrow-down" /></h2>
+          <h2>
+            <span class="mint-black">minty</span>fresh
+            <ArrowDownWhite class="arrow-down" />
+          </h2>
         </div>
         <div class="row token-list">
           <template v-for="token in latestTokens" :key="token.tokenId">
@@ -80,7 +83,10 @@
       </div>
       <div class="row">
         <div class="row-header">
-          <h2>Top pics<ArrowDownWhite class="arrow-down" /></h2>
+          <h2>
+            <span class="mint-black">top</span>pics
+            <ArrowDownWhite class="arrow-down" />
+          </h2>
         </div>
         <div class="row token-list">
           <template v-for="token in topTokens" :key="token.tokenId">
@@ -93,7 +99,10 @@
       </div>
       <div class="row">
         <div class="row-header">
-          <h2>Trendy<ArrowDownWhite class="arrow-down" /></h2>
+          <h2>
+            <span class="mint-black">trendy</span>
+            <ArrowDownWhite class="arrow-down" />
+          </h2>
         </div>
         <div class="row token-list">
           <template v-for="token in anneTokens" :key="token.tokenId">
@@ -355,32 +364,22 @@ onMounted(async () => {
   //     store.addAnneTokens(...anneTokens.nfts);
   //   }
   // }
-
-  /* Craig NFT Collection */
-  // if (craigTokens.value.length === 0) {
-  //   let craigTokens = await store.accountNftSearch(
-  //     "0x09c0377BAdCa7349b20569f45f2D94398179Db0c",
-  //     "",
-  //     "",
-  //     "ethereum",
-  //     "metadata",
-  //     "erc1155",
-  //     8
-  //   );
-  //   if (craigTokens.nfts && craigTokens.total > 0) {
-  //     store.addCraigTokens(...craigTokens.nfts);
-  //   }
-  // }
 });
 </script>
 <style lang="scss" scoped>
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
+
 main {
   flex-direction: column;
   align-content: center;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(
+    269.69deg,
+    #fbe2ff 0.3%,
+    rgba(251, 226, 255, 0) 99.77%
+  );
 }
 section#search-bar {
   color: $mint-black;
@@ -446,15 +445,15 @@ section#search-bar {
         margin: 0 auto;
       }
       select.search-chain {
-        color: $mint-black;
-        background-color: #fdfdfd;
-        border: 0;
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
         width: 200px;
-        padding: 10px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
         text-align: center;
 
         @include breakpoint($break-sm) {
@@ -472,7 +471,7 @@ section#search-bar {
         }
       }
       select.search-chain::placeholder {
-        color: #a8a8a8;
+        color: $mint-blue;
         letter-spacing: 1px;
       }
       select.search-chain:focus {
@@ -482,14 +481,15 @@ section#search-bar {
 
       /* Filter by Contract */
       input.search-contract {
-        color: $mint-black;
-        background-color: #fdfdfd;
-        border: 0;
-        border-radius: 0;
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
-        min-width: 420px;
-        padding: 11px 10px;
+        min-width: 400px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
         text-align: center;
         @include breakpoint($break-md) {
           min-width: 250px;
@@ -504,7 +504,7 @@ section#search-bar {
         }
       }
       input.search-contract::placeholder {
-        color: #a8a8a8;
+        color: $mint-blue;
         letter-spacing: 1px;
       }
       input.search-contract:focus {
@@ -514,14 +514,15 @@ section#search-bar {
 
       /* Search by Token Name or Description */
       input.search-name {
-        color: $mint-black;
-        background-color: #fdfdfd;
-        border: 0;
-        border-radius: 0;
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
         min-width: 220px;
-        padding: 11px 10px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
         text-align: center;
         @include breakpoint($break-sm) {
           width: 98%;
@@ -533,7 +534,7 @@ section#search-bar {
         }
       }
       input.search-name::placeholder {
-        color: #a8a8a8;
+        color: $mint-blue;
         letter-spacing: 1px;
       }
       input.search-name:focus {
@@ -543,15 +544,15 @@ section#search-bar {
 
       /* Search by Token Name or Description */
       input.search-image {
-        color: $mint-black;
-        background-color: #fdfdfd;
-        border: 0;
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
         width: auto;
-        padding: 11px 10px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
         text-align: center;
         @include breakpoint($break-sm) {
           width: 98%;
@@ -569,7 +570,7 @@ section#search-bar {
         }
       }
       input.search-image::placeholder {
-        color: #a8a8a8;
+        color: $mint-blue;
         letter-spacing: 1px;
       }
       input.search-image:focus {
@@ -581,7 +582,7 @@ section#search-bar {
         color: $white;
         background-color: $mint-black;
         border: 0;
-        border-radius: 5px;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
         width: auto;
@@ -604,7 +605,7 @@ section#search-bar {
         color: $white;
         background-color: $mint-orange;
         border: 0;
-        border-radius: 5px;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
         width: auto;
@@ -629,7 +630,7 @@ section#search-bar {
         color: $white;
         background-color: $mint-black;
         border: 0;
-        border-radius: 5px;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
         width: 48%;
@@ -653,7 +654,7 @@ section#search-bar {
         color: $white;
         background-color: $mint-orange;
         border: 0;
-        border-radius: 5px;
+        border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
         width: 48%;
@@ -676,16 +677,22 @@ section#search-bar {
       /* END Mobile Versions */
       .search-clear-button {
         color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 5px;
-        letter-spacing: 1px;
+        background-color: $mint-blue;
+        border: 1px solid $mint-blue;
+        border-radius: 100px;
         font-size: 14px;
-        width: auto;
-        padding: 10px;
+        padding: 8px 8px 6px 8px;
         text-align: center;
-        margin-left: 5px;
+        margin: 10px 5px 0 5px;
+        box-sizing: border-box;
+        transition: 0.4s;
         cursor: pointer;
+
+        &:hover {
+          color: $mint-black;
+          border: 1px solid $mint-black;
+        }
+
         @include breakpoint($break-sm) {
           width: 48%;
           padding: 1%;
@@ -803,17 +810,18 @@ section#marketplace {
     }
     h2 {
       width: 100%;
-      color: $mint-pink;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
+      color: $white;
       font-style: normal;
       font-weight: 700;
       font-size: 36px;
       line-height: 42px;
       text-align: left;
       margin: 0 0 20px 20px;
+      .mint-black {
+        color: $mint-black;
+      }
       .arrow-down {
-        margin-bottom: -5px;
+        margin: 10px 0 -10px 10px;
       }
     }
   }

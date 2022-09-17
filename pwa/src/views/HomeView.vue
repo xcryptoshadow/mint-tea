@@ -1,220 +1,212 @@
 <template>
   <main>
-    <!-- Left Side -->
-    <article>
-      <section id="content">
-        <!-- Connect Tab -->
-        <div v-if="!account" class="form-container">
-          <h1>Let's go brew</h1>
-          <p>
-            Mint and brew cross-chain NFTs using our custom bridge, send tokens
-            and NFTs to all your favourite blockchains.
-          </p>
-          <p>
-            Mint and brew cross-chain NFTs using our custom bridge, send tokens
-            and NFTs to all your favourite blockchains.
-          </p>
-          <p>
-            Search and verify your NFTs for rarity by name, description and
-            image across all blockchains.
-          </p>
-
-          <div class="button-container">
-            <button
-              v-if="!account"
-              @click="connectWallet"
-              class="connect-button"
-            >
-              Connect
-            </button>
-            <button class="explore-button">
-              <router-link :to="{ name: 'explore' }">Explore</router-link>
-            </button>
-          </div>
-        </div>
-
-        <!-- Bridge Tab -->
-        <div v-if="account && formTab === 'bridge'" class="form-container">
-          <h1>Bridge NFT</h1>
-          <div class="input-row">
+    <section id="mint">
+      <article>
+        <!-- Left Side -->
+        <section id="content">
+          <!-- Connect Tab -->
+          <div v-if="!account" class="form-container">
+            <div class="header-logo">
+              <BlueLogo />
+            </div>
             <p>
-              Bridge your NFT to different chains, your token will be minted on
-              the destination chain and burned on source chain
+              Brew up some fresh cross-chain NFTs and port your favourite NFTs
+              to all the top chains and maximise your exposure.
             </p>
-          </div>
-          <div class="button-container mb-10">
-            <button class="bridge-button" @click="bridgeNFT()">Bridge</button>
-          </div>
-          <div class="button-container">
-            <button class="back-button" @click="switchTab('mint')">Back</button>
-          </div>
-        </div>
-
-        <!-- Mint Tab -->
-        <div v-if="account && formTab === 'mint'" class="form-container">
-          <h1>Mint NFT</h1>
-          <div class="input-row">
-            <label for="file">Upload file</label>
-            <input
-              type="file"
-              name="file"
-              ref="fileRef"
-              placeholder="PNG, JPG, GIF, SVG or MP4"
-              @change="uploadFileHandler()"
-            />
-          </div>
-          <!-- <div class="input-row">
-            <label for="imageUrl">Image URL</label>
-            <input type="text" name="imageUrl" v-model="imageUrl" readonly />
-          </div>
-          <div class="input-row">
-            <label for="audioVideoType">Audio/Video Type</label>
-            <input
-              type="text"
-              name="audioVideoType"
-              v-model="audioVideoType"
-              readonly
-            />
-          </div>
-          <div class="input-row">
-            <label for="size">File Size</label>
-            <input type="text" name="size" v-model="size" readonly />
-          </div>
-          <div class="input-row">
-            <label for="createdAt">Created At</label>
-            <input type="text" name="createdAt" v-model="createdAt" readonly />
-          </div>
-          <div class="input-row">
-            <label for="tokenId">Token ID</label>
-            <input type="text" name="tokenId" v-model="tokenId" />
-          </div>
-          <div class="input-row">
-            <label for="cid">IPFS CID</label>
-            <input type="text" name="cid" v-model="cid" />
-          </div> -->
-          <div class="input-row">
-            <label for="name">Name</label>
-            <input type="text" name="name" v-model="name" />
-          </div>
-          <div class="input-row">
-            <label for="description">Description</label>
-            <textarea type="text" name="description" v-model="description" />
-          </div>
-          <div class="input-row mb-10">
-            <label for="externalUrl">External URL</label>
-            <input type="text" name="externalUrl" v-model="externalUrl" />
-          </div>
-          <div class="input-row mb-10 hidden">
-            <label for="animationUrl">Animation URL</label>
-            <input type="text" name="animationUrl" v-model="animationUrl" />
-          </div>
-          <div class="input-row mb-10 hidden">
-            <label for="youtubeUrl">Youtube URL</label>
-            <input type="text" name="youtubeUrl" v-model="youtubeUrl" />
-          </div>
-          <div class="button-container mb-10">
-            <button
-              v-if="!tokenId"
-              :disabled="!account"
-              class="mint-button"
-              @click="mintNFT()"
-            >
-              Mint
-            </button>
-          </div>
-          <div class="button-container">
-            <button class="bridge-button" @click="switchTab('bridge')">
-              Bridge
-            </button>
-          </div>
-        </div>
-        <!-- END Mint Tab -->
-      </section>
-    </article>
-    <!-- END Left Side -->
-    <!-- Right Side -->
-    <aside>
-      <section id="nft-modal">
-        <div v-if="!imageUrl" class="nft-modal-loading"><RippleEffectBG /></div>
-        <div v-if="imageUrl" class="nft-modal-card">
-          <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
-            <video width="320" height="240" controls>
-              <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <div v-if="getUrlProtocol(imageUrl) === 'mp3'" class="nft-video">
-            <audio ref="player" width="320" height="240">
-              <source :src="imageUrl" type="audio/mpeg" />
-            </audio>
-            <video width="320" height="240" controls>
-              <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <div v-else-if="imageUrl" class="nft-modal-image">
-            <img
-              v-if="imageUrl"
-              :src="`${getUrlProtocol(imageUrl)}`"
-              :alt="`${name}`"
-            />
-          </div>
-          <div class="nft-modal-title">
-            {{ name }}
-          </div>
-          <div class="nft-modal-description">
-            {{ description }}
-          </div>
-          <div class="nft-modal-description">
-            {{ externalUrl }}
-          </div>
-          <!-- <div class="nft-modal-description">
-            {{ animationUrl }}
-          </div> -->
-          <!-- <div class="nft-modal-description">
-            {{ youtubeUrl }}
-          </div> -->
-          <div class="nft-modal-attributes">
-            <template v-for="(index, attr) in attributes" :key="index">
-              <div class="nft-attribute">
-                <div class="nft-attribute-icon">{{ attr.icon }}</div>
-                <div class="nft-attribute-display-type">
-                  {{ attr.display_type }}
-                </div>
-                <div class="nft-attribute-trait-type">
-                  {{ attr.trait_type }}
-                </div>
-                <div class="nft-attribute-value">{{ attr.value }}</div>
-              </div>
-            </template>
-          </div>
-          <div class="nft-modal-image-url">
-            <div class="file-image-url">
-              <a
-                title="Copy to clipboard"
-                target="_blank"
-                @click="copyFileLink(imageUrl)"
+            <p>
+              Mint Tableland NFTs with mutable metadata all stored in relational
+              data tables on chain.
+            </p>
+            <p>
+              Search and verify your NFTs for rarity by name, description and
+              image across all blockchains.
+            </p>
+            <div class="button-container">
+              <button
+                v-if="!account"
+                @click="connectWallet"
+                class="connect-button"
               >
-                Copy Link
-              </a>
+                connect
+              </button>
+              <button class="explore-button">
+                <router-link :to="{ name: 'explore' }">explore</router-link>
+              </button>
             </div>
           </div>
-          <div class="nft-modal-file-type">
-            <div class="file-type">{{ audioVideoType }}</div>
+
+          <!-- Bridge Tab -->
+          <div v-if="account && formTab === 'bridge'" class="form-container">
+            <h1>Bridge NFT</h1>
+            <div class="input-row">
+              <p>
+                Bridge your favourite NFTs to all the top chains to maximise
+                your exposure using our NFT bridge.
+              </p>
+              <p>
+                Your NFT will be minted as a wrapped mNFT on the target chain
+                and locked on the chain of origin.
+              </p>
+              <p>
+                Trade, stake or use your dynamic Mint Tea NFTs on different
+                blockchains and their local dapps.
+              </p>
+            </div>
+            <div class="button-container">
+              <button class="bridge-button-left" @click="bridgeNFT()">
+                bridge
+              </button>
+              <button class="back-button" @click="switchTab('mint')">
+                back
+              </button>
+            </div>
           </div>
-          <div class="nft-modal-file-size">
-            <div class="file-size">{{ size }}</div>
+          <!-- END Bridge Tab -->
+
+          <!-- Mint Tab -->
+          <div v-if="account && formTab === 'mint'" class="form-container">
+            <h1>Mint NFT</h1>
+            <div class="input-row-first">
+              <label for="file">Upload file</label>
+              <input
+                type="file"
+                name="file"
+                ref="fileRef"
+                placeholder="PNG, JPG, GIF, SVG or MP4"
+                @change="uploadFileHandler()"
+              />
+              <span class="loading">{{ loading ? "loading..." : "" }}</span>
+            </div>
+            <div class="input-row">
+              <label for="name">Name</label>
+              <input type="text" name="name" v-model="name" />
+            </div>
+            <div class="input-row">
+              <label for="description">Description</label>
+              <textarea type="text" name="description" v-model="description" />
+            </div>
+            <div class="input-row mb-10">
+              <label for="externalUrl">External URL</label>
+              <input type="text" name="externalUrl" v-model="externalUrl" />
+            </div>
+            <div class="input-row mb-10 hidden">
+              <label for="animationUrl">Animation URL</label>
+              <input type="text" name="animationUrl" v-model="animationUrl" />
+            </div>
+            <div class="input-row mb-10 hidden">
+              <label for="youtubeUrl">Youtube URL</label>
+              <input type="text" name="youtubeUrl" v-model="youtubeUrl" />
+            </div>
+            <div class="input-row-end">
+              <span class="file-size">File Size {{ size ? size : 0 }}</span>
+            </div>
+            <div class="button-container">
+              <button
+                v-if="!tokenId"
+                :disabled="!account"
+                class="mint-button"
+                @click="mintNFT()"
+              >
+                mint
+              </button>
+              <button class="bridge-button-right" @click="switchTab('bridge')">
+                bridge
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
-    </aside>
-    <!-- END Right Side -->
+          <!-- END Mint Tab -->
+        </section>
+        <!-- END Left Side -->
+      </article>
+      <aside>
+        <!-- Right Side -->
+        <section id="nft-modal" class="bubbles-brewing">
+          <div v-if="!imageUrl" class="nft-modal-loading">
+            <div v-if="loading" class="loading">loading ...</div>
+          </div>
+          <div v-if="imageUrl" class="nft-modal-card">
+            <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
+              <video width="320" height="240" controls>
+                <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div v-if="getUrlProtocol(imageUrl) === 'mp3'" class="nft-video">
+              <audio ref="player" width="320" height="240">
+                <source :src="imageUrl" type="audio/mpeg" />
+              </audio>
+              <video width="320" height="240" controls>
+                <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div v-else-if="imageUrl" class="nft-modal-image">
+              <img
+                v-if="imageUrl"
+                :src="`${getUrlProtocol(imageUrl)}`"
+                :alt="`${name}`"
+              />
+            </div>
+            <div class="nft-modal-title">
+              {{ name }}
+            </div>
+            <div class="nft-modal-description">
+              {{ description }}
+            </div>
+            <div class="nft-modal-external-url">
+              {{ externalUrl }}
+            </div>
+            <!-- <div class="nft-modal-description">
+            {{ animationUrl }}
+          </div> -->
+            <!-- <div class="nft-modal-description">
+            {{ youtubeUrl }}
+          </div> -->
+            <div class="nft-modal-attributes">
+              <template v-for="(index, attr) in attributes" :key="index">
+                <div class="nft-attribute">
+                  <div class="nft-attribute-icon">{{ attr.icon }}</div>
+                  <div class="nft-attribute-display-type">
+                    {{ attr.display_type }}
+                  </div>
+                  <div class="nft-attribute-trait-type">
+                    {{ attr.trait_type }}
+                  </div>
+                  <div class="nft-attribute-value">{{ attr.value }}</div>
+                </div>
+              </template>
+            </div>
+            <div class="nft-modal-image-url">
+              <div class="file-copy-url">
+                <a
+                  title="Copy to clipboard"
+                  target="_blank"
+                  @click="copyFileLink(imageUrl)"
+                >
+                  Copy link
+                </a>
+              </div>
+              <div class="file-image-url">
+                <a :href="imageUrl" title="Open in new tab" target="_blank">
+                  Open link
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+      <!-- END Right Side -->
+    </section>
+    <!-- Collections -->
     <section id="collections">
       <div class="row-header">
-        <h2>minty fresh<ArrowDownWhite class="arrow-down" /></h2>
+        <h2>
+          <span class="mint-black">minty</span>fresh
+          <ArrowDownWhite class="arrow-down" />
+        </h2>
       </div>
       <div class="row token-list">
-        <template v-for="token in latestTokens" :key="token.token_id">
+        <template v-for="token in anneTokens" :key="token.token_id">
           <NftCard
             v-if="token.metadata && token.metadata.image"
             :token="token"
@@ -222,7 +214,7 @@
         </template>
       </div>
       <div class="row token-list">
-        <template v-for="token in anneTokens" :key="token.token_id">
+        <template v-for="token in latestTokens" :key="token.token_id">
           <NftCard
             v-if="token.metadata && token.metadata.image"
             :token="token"
@@ -256,102 +248,14 @@
         </div>
       </div>
     </section> -->
-    <section id="about">
-      <div class="about-left">
-        <div class="row-header">
-          <h2>mint team<ArrowDownBlack class="arrow-down" /></h2>
-        </div>
-        <div class="about-box">
-          <div class="team-box">
-            <div class="team-image">
-              <img src="/Anne_Krauwer.jpeg" alt="Anne Krauwer" />
-            </div>
-            <div class="team-about-box">
-              <div class="team-name">Anne Krauwer</div>
-              <div class="team-job">Visual Designer</div>
-            </div>
-          </div>
-          <div class="team-box">
-            <div class="team-image">
-              <img src="/0xWebMoss.png" alt="Craig Moss" />
-            </div>
-            <div class="team-about-box">
-              <div class="team-name">Craig Moss</div>
-              <div class="team-job">Fullstack Developer</div>
-            </div>
-          </div>
-          <div class="team-box">
-            <div class="team-image">
-              <img src="/Mourad_Bouabdallah.jpeg" alt="Mourad Bouabdallah" />
-            </div>
-            <div class="team-about-box">
-              <div class="team-name">Mourad Bouabdallah</div>
-              <div class="team-job">Software Engineer</div>
-            </div>
-          </div>
-          <div class="team-box">
-            <div class="team-image">
-              <img src="/Nobuhito_Kurose.jpeg" alt="Nobuhito Kurose" />
-            </div>
-            <div class="team-about-box">
-              <div class="team-name">Nobuhito Kurose</div>
-              <div class="team-job">Software Engineer</div>
-            </div>
-          </div>
-          <!-- <div class="team-box">
-            <div class="team-image">
-              <img src="/0xWebMoss.png" alt="Kerem Demirayak" />
-            </div>
-            <div class="team-about-box">
-              <div class="team-name">Kerem Demirayak</div>
-              <div class="team-job">NFT Music &amp; Art</div>
-            </div>
-          </div> -->
-        </div>
-      </div>
-      <div class="about-right">
-        <div class="sponsors-box">
-          <div class="sponsor-box">
-            <div class="sponsor-about-box">
-              <div class="sponsor-name">
-                <a
-                  href="https://github.com/Mint-Tea-ETHOnline"
-                  alt="GitHub"
-                  target="_blank"
-                  rel="noopener"
-                  >GitHub repository</a
-                >
-              </div>
-            </div>
-            <div class="sponsor-image">
-              <img src="/GitHub_Logo.png" alt="GitHub" />
-            </div>
-          </div>
-          <div class="sponsor-box">
-            <div class="sponsor-about-box">
-              <div class="sponsor-name">
-                <a
-                  href="https://ethglobal.com/showcase/mint-tea-2nn7k"
-                  alt="ETH Global ETHOnline 2022"
-                  target="_blank"
-                  rel="noopener"
-                  >ETHOnline showcase</a
-                >
-              </div>
-            </div>
-            <div class="sponsor-image">
-              <img src="/GitHub_Logo.png" alt="ETHGlobal" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <AboutSection />
   </main>
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
+/* Import Libraries */
 import { ethers } from "ethers";
-import { BigNumber } from "bignumber.js";
+// import { BigNumber } from "bignumber.js";
 import moment from "moment";
 
 /* Import our Pinia Store & Refs */
@@ -361,17 +265,22 @@ import { useStore } from "../store";
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
-// import { nftStorage } from "../services/nftStorage.js";
-// import authNFT from "../services/authNFT.js";
+import { nftStorage } from "../services/nftStorage.js";
 
-/* Import SVG */
+/* Import SVGs */
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
-import ArrowDownBlack from "../assets/svgs/ArrowDownBlack.vue?component";
-import RippleEffectBG from "../assets/svgs/RippleEffectBG.vue?component";
+import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
+// import BubblesOne from "../assets/svgs/BubblesOne.vue?component";
+// import BubblesTwo from "../assets/svgs/BubblesTwo.vue?component";
+// import BubblesThree from "../assets/svgs/BubblesThree.vue?component";
+// import BubblesFour from "../assets/svgs/BubblesFour.vue?component";
+// import BubblesFive from "../assets/svgs/BubblesFive.vue?component";
+// import BrewingBubbles from "../assets/svgs/BrewingBubbles.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 // import MusicCard from "@/components/MusicCard.vue";
+import AboutSection from "@/components/AboutSection.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
@@ -388,13 +297,12 @@ console.log(
 const stylesAbi = ["color: black", "background: cyan"].join(";");
 console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 
-// Init Store
+/* Init Pinia Store Values and Methods */
 const store = useStore();
+const { loading, account, topTokens, latestTokens, anneTokens } =
+  storeToRefs(store);
 
-// Store Values and Methods
-const { account, topTokens, latestTokens, anneTokens } = storeToRefs(store);
-
-// Set Form Tab
+/* Set Form Tab */
 const formTab = ref("mint");
 
 // File Uploader
@@ -541,10 +449,11 @@ const uploadFileHandler = async () => {
    * Upload file and store using NFT.Storage
    */
   const file = fileRef.value.files;
-  console.log("file:", file[0]);
+  console.log("File :", file[0]);
+
   store.setLoading(true);
   const uploadResult = await uploadBlob(file[0]);
-  console.log("uploadResult:", uploadResult);
+  console.log("Upload Result :", uploadResult);
 
   const { error } = uploadResult;
   if (error && error instanceof Error) {
@@ -552,6 +461,7 @@ const uploadFileHandler = async () => {
     store.setLoading(false);
     return uploadResult;
   }
+
   /* Set our NFT Metadata Form Values using IPFS best practises */
   cid.value = uploadResult.data.cid;
   /* Strip image type off our name eg, .png, .jpeg, .gif */
@@ -629,39 +539,36 @@ const mintNFT = async () => {
        *  @dev See NewNftMinted emitted from our smart contract safeMint function
        */
       contract.on("NewNftMinted", (receiver, timestamp, newTokenId) => {
-        console.log("receiver ", receiver);
+        console.log("Receiver :", receiver);
 
         createdAt.value = moment.unix(timestamp).toString();
-        console.log("createdAt.value ", createdAt.value);
+        console.log("Created At :", createdAt.value);
 
-        let tokenIdBigNo = new BigNumber(newTokenId);
-
-        console.log("tokenId ", tokenIdBigNo);
         tokenId.value = newTokenId.toNumber();
-        console.log("tokenId.value ", tokenId.value);
+        console.log("TokenId :", tokenId.value);
       });
 
       /* Store NFT Metadata on NFT.Storage */
-      // const nftStorageTMetadataURI = await nftStorage(
-      //   name.value,
-      //   description.value,
-      //   imageUrl.value,
-      //   externalUrl.value,
-      //   animationUrl.value,
-      //   youtubeUrl.value,
-      //   attributes.value,
-      //   audioVideoType.value
-      // );
-      // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
-      //   ";"
-      // );
-      // console.log(
-      //   "%c💾 NFT.Storage ipfs:// link :  %s 💾",
-      //   stylesNFTStorage,
-      //   nftStorageTMetadataURI
-      // );
+      const nftStorageTMetadataURI = await nftStorage(
+        name.value,
+        description.value,
+        imageUrl.value,
+        externalUrl.value,
+        animationUrl.value,
+        youtubeUrl.value,
+        attributes.value,
+        audioVideoType.value
+      );
+      const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
+        ";"
+      );
+      console.log(
+        "%c💾 NFT.Storage ipfs:// link :  %s 💾",
+        stylesNFTStorage,
+        nftStorageTMetadataURI
+      );
       /* Check our Transaction results */
-      // if (!nftStorageTMetadataURI) return;
+      if (!nftStorageTMetadataURI) return;
 
       /* Mint our NFT using custom structure */
       // let nftTxn = await contract.safeMint(
@@ -671,9 +578,9 @@ const mintNFT = async () => {
 
       const mintDate = new Date();
       const mintDateTimestamp = mintDate.getTime();
+      const mintDateString = mintDateTimestamp.toString();
       // const mintDateBigNo = new BigNumber(mintDateTimestamp);
-
-      // console.log("mintDateBigNo:", mintDateBigNo);
+      console.log("mintDateString", mintDateString);
 
       let nftTxn = await contract.safeMint(
         signer.getAddress(),
@@ -683,8 +590,8 @@ const mintNFT = async () => {
         externalUrl.value,
         "https://cloudflare-ipfs.com/ipfs/bafkreibx3akdct6syqhkis3dqsnekukhh5ib5pdwepfki7hf45viv4ylp4",
         "date",
-        "🍵 Brewed by Mint Tea",
-        mintDateTimestamp
+        "Brewed by 🍵 Mint Tea",
+        mintDateString
       );
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
@@ -781,65 +688,78 @@ onMounted(async () => {
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
 
-article {
-  width: 43%;
-  flex-grow: 1 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 3em 5em;
-  @include breakpoint($break-xl) {
-    padding: 1em;
-  }
-  @include breakpoint($break-lg) {
-    padding: 1em;
-  }
-  @include breakpoint($break-md) {
-    padding: 1em 2em;
-  }
-  @include breakpoint($break-sm) {
-    width: 100%;
-    padding: 0 0 2em 0;
-  }
-  @include breakpoint($break-xs) {
-    width: 100%;
-    padding: 0 0 2em 0;
-  }
-}
-aside {
+section#mint {
   width: 100%;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
   align-items: center;
-  margin: 0;
-  padding: 0 auto;
-  background: $mint-pink;
-  @include breakpoint($break-xl) {
-    padding: 0 auto;
-  }
-  @include breakpoint($break-lg) {
-    padding: 0 auto;
-  }
-  @include breakpoint($break-md) {
-    border-top-left-radius: 30px;
-    padding: 2em 0 0 0;
-    overflow: hidden;
-  }
+  justify-content: center;
+  padding: 0;
+  background: linear-gradient(
+    269.69deg,
+    #fbe2ff 0.3%,
+    rgba(251, 226, 255, 0) 99.77%
+  );
   @include breakpoint($break-sm) {
-    width: 100%;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    padding: 2em 1em;
+    flex-flow: column wrap;
   }
   @include breakpoint($break-xs) {
+    flex-flow: column wrap;
+  }
+  article {
+    width: 43%;
+    flex-grow: 1 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3em 5em;
+    @include breakpoint($break-xl) {
+      padding: 1em;
+    }
+    @include breakpoint($break-lg) {
+      padding: 1em;
+    }
+    @include breakpoint($break-md) {
+      padding: 1em 0.5em;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+      padding: 0 0 2em 0;
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+      padding: 0 0 2em 0;
+    }
+  }
+  aside {
     width: 100%;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    padding: 1.5em 1em;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0 auto;
+    @include breakpoint($break-xl) {
+      padding: 0 auto;
+    }
+    @include breakpoint($break-lg) {
+      padding: 0 auto;
+    }
+    @include breakpoint($break-md) {
+      padding: 2em 0 0 0;
+      overflow: hidden;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+      padding: 2em 1em;
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+      padding: 1.5em 1em;
+    }
   }
 }
-
 section#content {
   height: inherit;
   display: flex;
@@ -848,7 +768,7 @@ section#content {
   align-items: center;
 
   .form-container {
-    width: 400px;
+    width: 428px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -856,10 +776,11 @@ section#content {
     align-content: center;
     background: #fff;
     border: 4px solid var(--gradient-100);
-    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 30px;
+    box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+    border-radius: 10px;
     margin: 30px auto;
-    padding: 30px 30px 20px;
+    padding: 30px 40px;
+    z-index: 999;
 
     @include breakpoint($break-md) {
       width: 400px;
@@ -877,25 +798,36 @@ section#content {
       padding: 20px 20px 20px;
     }
 
-    img,
-    svg {
-      margin-top: -20px;
-      width: 180px;
-      object-fit: contain;
-      overflow: hidden;
-    }
     .header-logo {
-      margin: 0 auto 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+
+      img,
+      svg {
+        width: 200px;
+        margin: 10px auto 20px;
+        object-fit: contain;
+        overflow: hidden;
+        @include breakpoint($break-md) {
+          width: 200px;
+          margin: 30px auto 10px;
+        }
+        @include breakpoint($break-sm) {
+          width: 180px;
+          margin: 30px auto 10px;
+        }
+      }
     }
 
     h1 {
-      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
-        sans-serif;
       color: $mint-black;
       font-size: 2rem;
       line-height: 2rem;
       text-align: center;
-      margin: 0 auto 15px;
+      margin: 20px auto;
       span.emoji {
         font-size: 2.2rem;
       }
@@ -909,13 +841,36 @@ section#content {
     }
 
     p {
-      line-height: 1.6;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       text-align: center;
     }
 
     .mb-10 {
       margin-bottom: 10px;
+    }
+  }
+
+  .input-row-first {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    .loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      width: 100%;
+      height: 12px;
+      color: $mint-black;
+      font-size: 12px;
+      line-height: 12px;
+      font-weight: normal;
+      text-align: right;
+      padding-right: 25px;
+      transition: 0.4s;
     }
   }
 
@@ -925,8 +880,26 @@ section#content {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    margin-bottom: 5px;
+    margin-bottom: 12px;
     width: 100%;
+  }
+
+  .input-row-end {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    .file-size {
+      color: $mint-black;
+      text-align: right;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 15px;
+      margin: 15px 10px 5px 10px;
+    }
   }
 
   .hidden {
@@ -934,51 +907,59 @@ section#content {
   }
 
   label {
-    color: #23073c;
-    font-family: "RalewayBold";
-    font-style: bold;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 23px;
-    margin-bottom: 4px;
+    color: $mint-blue;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.1em;
+    margin: 8px 0 2px 15px;
   }
 
   input[type="file"] {
-    color: #1a1a1a;
+    width: 100%;
+    height: 40px;
+    color: $mint-black;
     background-color: #fdfdfd;
-    border: 1px dashed #fde2db;
-    border-radius: 2px;
+    border: 1px solid #d9d9d9;
+    border-radius: 30px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 100%;
-    margin-bottom: 5px;
-    padding: 7px;
+    line-height: 24px;
+    margin-bottom: 12px;
+    padding: 7px 6px 7px 15px;
     cursor: pointer;
   }
+
+  input[type="file"]::placeholder {
+    color: #a8a8a8;
+    letter-spacing: 1px;
+  }
   ::-webkit-file-upload-button {
-    background: #23073c;
+    background: $mint-green;
     border: none;
-    border-radius: 35px;
-    color: #ffffff;
-    padding: 8px 10px;
-    font-family: "Raleway";
+    border-radius: 30px;
+    color: $mint-blue;
+    padding: 0px 10px;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 14px;
-    line-height: 16px;
-    display: flex;
-    align-items: flex-end;
+    line-height: 24px;
     text-align: center;
+    float: right;
+    cursor: pointer;
   }
 
   input {
-    color: #1a1a1a;
+    width: 100%;
+    height: 40px;
+    color: $mint-black;
     background-color: #fdfdfd;
-    border: 1px dashed #fde2db;
-    border-radius: 2px;
+    border: 1px solid #d9d9d9;
+    border-radius: 30px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 100%;
+    line-height: 24px;
     margin-bottom: 5px;
     padding: 7px;
     text-align: left;
@@ -992,26 +973,28 @@ section#content {
   input:read-only {
     color: #1a1a1a;
     border: 1px dashed #e0e0e0;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     cursor: not-allowed;
   }
 
   input:focus {
-    border: 1px solid #fde2db;
+    border: 1px solid $mint-green;
     outline: none;
   }
 
   textarea {
-    color: #1a1a1a;
+    width: 100%;
+    color: $mint-black;
     background-color: #fdfdfd;
-    border: 1px dashed #fde2db;
-    border-radius: 1px;
+    border: 1px solid #d9d9d9;
+    border-radius: 30px;
     letter-spacing: 1px;
     font-size: 14px;
-    width: 100%;
+    line-height: 24px;
     margin-bottom: 5px;
     padding: 10px;
-    text-align: center;
+    text-align: left;
+    resize: none;
   }
 
   textarea::placeholder {
@@ -1020,7 +1003,7 @@ section#content {
   }
 
   textarea:focus {
-    border: 1px solid #fde2db;
+    border: 1px solid $mint-green;
     outline: none;
   }
 
@@ -1039,35 +1022,22 @@ section#content {
     flex-direction: row;
     justify-content: space-between;
   }
-
-  .tab-button {
-    color: $white;
-    background-color: $mint-orange;
-    font-size: 18px;
-    font-weight: bold;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    margin-right: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
-    transition: 0.4s;
-    cursor: pointer;
-  }
-
   .mint-button {
     color: $white;
-    background-color: $mint-green;
+    background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
-    width: 100%;
+    width: 48%;
     height: 55px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 30px;
+    margin: 10px 1% 10px 0;
     transition: 0.4s;
     cursor: pointer;
+    &:hover {
+      color: $mint-blue;
+    }
   }
-
   .mint-button:disabled {
     background: #c6c6c6;
     color: #101010;
@@ -1076,39 +1046,68 @@ section#content {
 
   .connect-button {
     color: $white;
+    background-color: $mint-black;
+    font-size: 18px;
+    font-weight: bold;
+    width: 48%;
+    height: 55px;
+    border: 0;
+    border-radius: 30px;
+    margin: 10px 1% 10px 0;
+    transition: 0.4s;
+    cursor: pointer;
+    &:hover {
+      color: $mint-blue;
+    }
+  }
+
+  .explore-button {
+    color: $white;
     background-color: $mint-blue;
     font-size: 18px;
     font-weight: bold;
     width: 48%;
     height: 55px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 30px;
     margin: 10px 1% 10px 0;
     transition: 0.4s;
     cursor: pointer;
-    &:hover {
-      color: $black;
+    a {
+      color: $white;
+      text-decoration: none;
+      border-bottom: none;
+
+      &:hover {
+        color: $black;
+      }
     }
   }
-
-  .explore-button {
+  .bridge-button-left {
     color: $white;
-    background-color: $mint-orange;
+    background-color: $mint-blue;
     font-size: 18px;
     font-weight: bold;
     width: 48%;
     height: 55px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 30px;
     margin: 10px 1% 10px 0;
-    a {
-      color: $white;
-      text-decoration: none;
-      border-bottom: none;
-      &:hover {
-        color: $black;
-      }
-    }
+    transition: 0.4s;
+    cursor: pointer;
+  }
+  .bridge-button-right {
+    color: $white;
+    background-color: $mint-blue;
+    font-size: 18px;
+    font-weight: bold;
+    width: 48%;
+    height: 55px;
+    border: 0;
+    border-radius: 30px;
+    margin: 10px 0 10px 1%;
+    transition: 0.4s;
+    cursor: pointer;
   }
 
   .back-button {
@@ -1116,59 +1115,63 @@ section#content {
     background-color: $mint-black;
     font-size: 18px;
     font-weight: bold;
-    width: 100%;
+    width: 48%;
     height: 55px;
     border: 0;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    transition: 0.4s;
-    cursor: pointer;
-  }
-  .brew-button {
-    color: $white;
-    background-color: $mint-orange;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    margin-right: 1%;
-    transition: 0.4s;
-    cursor: pointer;
-  }
-  .bridge-button {
-    color: $white;
-    background-color: $mint-blue;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
+    border-radius: 30px;
+    margin: 10px 0 10px 1%;
     transition: 0.4s;
     cursor: pointer;
   }
 }
 
+.bubbles-brewing {
+  background-image: url("./brewingbubbles.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+.bubbles-one {
+  background-image: url("./bubbles1.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+.bubbles-two {
+  background-image: url("./bubbles2.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+.bubbles-three {
+  background-image: url("./bubbles3.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+.bubbles-four {
+  background-image: url("./bubbles4.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+.bubbles-five {
+  background-image: url("./bubbles5.svg");
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-size: 700px;
+}
+
 section#nft-modal {
-  height: inherit;
+  min-height: 720px;
   color: $mint-black;
   display: flex;
   flex-direction: column;
   align-content: center;
   align-items: center;
   justify-content: center;
-  padding: 0 0 3em 5em;
-  overflow: scroll;
-  @include breakpoint($break-xl) {
-    padding: 0 0 3em 2em;
-  }
-  @include breakpoint($break-lg) {
-    padding: 0 0 3em 1em;
-  }
+  padding: 0;
+
   @include breakpoint($break-md) {
     padding: 20px 0;
   }
@@ -1180,12 +1183,14 @@ section#nft-modal {
   }
 
   .nft-modal-loading {
+    width: 600px;
+    height: 100%;
+    min-height: 720px;
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
     align-items: center;
-    width: 700px;
     padding: 0;
     @include breakpoint($break-xl) {
       width: 100%;
@@ -1210,14 +1215,16 @@ section#nft-modal {
   }
 
   .nft-modal-card {
+    width: 600px;
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    width: 600px;
     background: #f4f4f4;
+    border: 4px solid var(--gradient-100);
+    box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
     border-radius: 10px;
     padding: 20px 20px 10px 20px;
     @include breakpoint($break-lg) {
@@ -1266,20 +1273,74 @@ section#nft-modal {
     font-size: 1.7rem;
     font-weight: 400;
     text-align: center;
-    text-transform: uppercase;
-    margin: 0;
+    margin: 10px auto 0;
   }
 
   .nft-modal-description {
-    color: #1a1a1a;
+    color: $mint-black;
     width: 100%;
     font-size: 16px;
     font-weight: normal;
     text-align: center;
-    margin: 0;
+    margin: 10px auto 0;
+  }
+  .nft-modal-external-url {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px auto 0;
   }
 
   .nft-modal-image-url {
+    width: 50%;
+    margin: 0 auto 10px;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+    .file-image-url {
+      background: $mint-green;
+      border: none;
+      border-radius: 30px;
+      padding: 2px 12px;
+      cursor: pointer;
+      a {
+        color: $mint-black;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 24px;
+        text-align: center;
+        transition: 0.4s;
+        &:hover {
+          color: $mint-black;
+        }
+      }
+    }
+    .file-copy-url {
+      background: $mint-blue;
+      border: none;
+      border-radius: 30px;
+      padding: 2px 12px;
+      cursor: pointer;
+      a {
+        color: $white;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 24px;
+        text-align: center;
+        transition: 0.4s;
+        &:hover {
+          color: $mint-black;
+        }
+      }
+    }
   }
 
   .nft-modal-file-type {
@@ -1349,17 +1410,18 @@ section#collections {
     }
     h2 {
       width: 100%;
-      color: $mint-pink;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
+      color: $white;
       font-style: normal;
       font-weight: 700;
       font-size: 36px;
       line-height: 42px;
       text-align: left;
       margin: 0 0 20px 20px;
+      .mint-black {
+        color: $mint-black;
+      }
       .arrow-down {
-        margin-bottom: -5px;
+        margin: 10px 0 -10px 10px;
       }
     }
   }
@@ -1434,8 +1496,6 @@ section#music {
     h2 {
       width: 100%;
       color: $mint-black;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
       font-style: normal;
       font-weight: 700;
       font-size: 36px;
@@ -1490,7 +1550,6 @@ section#music {
     padding: 0;
 
     h1 {
-      font-family: Roboto, Ubuntu, "Open Sans", "Helvetica Neue", sans-serif;
       color: $mint-black;
       font-size: 1.7rem;
       line-height: 1.8rem;
@@ -1509,236 +1568,6 @@ section#music {
       line-height: 1.7;
       margin-bottom: 10px;
       text-align: center;
-    }
-  }
-}
-
-section#about {
-  width: 100%;
-  color: $mint-black;
-  display: flex;
-  flex-direction: row;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-
-  @include breakpoint($break-sm) {
-    flex-direction: column;
-  }
-  @include breakpoint($break-xs) {
-    flex-direction: column;
-  }
-  .about-left {
-    background: $mint-pink;
-    width: 43%;
-    flex-grow: 1 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 4em 0 4em 8em;
-
-    @include breakpoint($break-xl) {
-      padding: 1em;
-    }
-    @include breakpoint($break-lg) {
-      padding: 3em 0 3em 3em;
-    }
-    @include breakpoint($break-md) {
-      padding: 3em 0 3em 2em;
-    }
-    @include breakpoint($break-sm) {
-      width: 100%;
-      padding: 4em 0 4em 7em;
-    }
-    @include breakpoint($break-xs) {
-      width: 100%;
-      padding: 4em 0 4em 4em;
-    }
-
-    .row-header {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      align-content: flex-start;
-      justify-content: center;
-      align-items: center;
-      margin: 25px 0;
-      @include breakpoint($break-lg) {
-        width: 100%;
-        margin: 0 auto;
-      }
-      @include breakpoint($break-md) {
-        width: 100%;
-        margin: 0 auto;
-      }
-      @include breakpoint($break-sm) {
-        width: 100%;
-        margin: 0 auto;
-      }
-      @include breakpoint($break-xs) {
-        width: 100%;
-        margin: 0 auto;
-      }
-      h2 {
-        width: 100%;
-        color: $mint-black;
-        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-          "Droid Sans", "Helvetica Neue", sans-serif;
-        font-style: normal;
-        font-weight: 700;
-        font-size: 36px;
-        line-height: 42px;
-        text-align: left;
-        margin: 0 0 20px 18px;
-        .arrow-down {
-          margin-bottom: -5px;
-        }
-      }
-    }
-    .about-box {
-      width: 100%;
-      color: $mint-black;
-      display: flex;
-      flex-direction: column;
-      align-content: center;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 0;
-
-      .team-box {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-content: center;
-        align-items: flex-start;
-        justify-content: center;
-        margin-bottom: 20px;
-        .team-image {
-          background: $white;
-          display: inline-block;
-          width: 145px;
-          height: 120px;
-          border-radius: 50%;
-          border: 2px solid $white;
-          overflow: hidden;
-          img,
-          svg {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            overflow: hidden;
-          }
-        }
-        .team-about-box {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-content: center;
-          align-items: flex-start;
-          justify-content: center;
-          .team-name {
-            font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-              "Droid Sans", "Helvetica Neue", sans-serif;
-            font-size: 26px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: 28px;
-            margin: 25px 0 0 30px;
-          }
-          .team-job {
-            font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-              "Droid Sans", "Helvetica Neue", sans-serif;
-            font-size: 22px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 28px;
-            margin: 0 0 0 30px;
-          }
-        }
-      }
-    }
-  }
-  .about-right {
-    width: 100%;
-    height: 100%;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    @include breakpoint($break-md) {
-      border-top-left-radius: 30px;
-      padding: 2em 0 0 0;
-      overflow: hidden;
-    }
-    @include breakpoint($break-sm) {
-      width: 100%;
-      border-top-left-radius: 30px;
-      border-top-right-radius: 30px;
-      padding: 2em 1em;
-    }
-    @include breakpoint($break-xs) {
-      width: 100%;
-      border-top-left-radius: 30px;
-      border-top-right-radius: 30px;
-      padding: 1.5em 1em;
-    }
-    .sponsors-box {
-      position: absolute;
-      bottom: 6.5em;
-      right: 6em;
-      .sponsor-box {
-        width: 100%;
-        color: $mint-black;
-        display: flex;
-        flex-direction: row;
-        align-content: center;
-        align-items: flex-end;
-        justify-content: center;
-        padding-bottom: 20px;
-
-        .sponsor-about-box {
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          align-content: center;
-          align-items: center;
-          justify-content: flex-end;
-          .sponsor-name {
-            margin: 0 20px 20px 0;
-            a {
-              font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-                "Droid Sans", "Helvetica Neue", sans-serif;
-              font-size: 26px;
-              font-style: normal;
-              font-weight: 700;
-              line-height: 28px;
-              color: $mint-black;
-
-              cursor: pointer;
-            }
-            a:hover {
-              font-weight: bold;
-            }
-            a:active {
-              font-weight: bold;
-            }
-          }
-        }
-        .sponsor-image {
-          display: inline-block;
-          width: 90px;
-          height: 90px;
-          img,
-          svg {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            overflow: hidden;
-          }
-        }
-      }
     }
   }
 }

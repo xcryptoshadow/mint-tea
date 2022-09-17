@@ -1,7 +1,7 @@
 <template>
   <footer id="footer">
-    <div class="footer-title">
-      <span>Mint, bridge &amp; brew cross-chain NFTs</span>
+    <div class="footer-sponsors">
+      <SponsorLogos />
     </div>
     <div class="footer-logo">
       <GreenLogo />
@@ -11,6 +11,7 @@
 <script setup>
 /* Import SVG */
 import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
+import SponsorLogos from "../assets/svgs/SponsorLogos.vue?component";
 </script>
 <style lang="scss">
 @import "../assets/styles/variables.scss";
@@ -21,30 +22,31 @@ footer {
   justify-content: space-between;
   align-items: center;
   align-content: center;
-  padding: 2em;
   color: $white;
-  background: $mint-black;
+  background: #2b2b2b;
+  border-top: 1px solid #fff;
+  padding: 3em 3em 2em 3em;
 
-  .footer-title {
+  @include breakpoint($break-lg) {
+    width: 100%;
+    padding: 2em 2em 1em 0.8em;
+  }
+  @include breakpoint($break-md) {
+    width: 100%;
+    padding: 1em 1em 1em 0;
+  }
+  @include breakpoint($break-sm) {
+    width: 100%;
+    padding: 1em 1em 1em 0;
+  }
+
+  .footer-sponsors {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     align-content: center;
-    width: 42%;
-    margin-left: 40px;
-
-    span {
-      font-size: 1.2rem;
-      a {
-        font-size: 1.2rem;
-        color: $white;
-        cursor: pointer;
-
-        &.active {
-          font-weight: bold;
-        }
-      }
-    }
+    width: 48%;
+    margin-left: 2%;
   }
 
   .footer-logo {
@@ -52,13 +54,19 @@ footer {
     justify-content: flex-end;
     align-items: center;
     align-content: center;
-    width: 58%;
-
+    width: 50%;
+    margin-right: 40px;
     img,
     svg {
-      width: 160px;
+      width: 240px;
       object-fit: contain;
       overflow: hidden;
+      @include breakpoint($break-md) {
+        width: 200px;
+      }
+      @include breakpoint($break-sm) {
+        width: 200px;
+      }
     }
   }
 }

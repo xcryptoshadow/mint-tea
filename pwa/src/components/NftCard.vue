@@ -89,7 +89,9 @@ export default {
   border: 2px solid #f4f4f4;
   border-radius: 15px;
   margin: 0 13px 25px 13px;
-  padding: 1%;
+  padding: 10px;
+  transition: 0.4s;
+  cursor: pointer;
 
   @include breakpoint($break-md) {
     width: 380px;
