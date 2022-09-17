@@ -12,10 +12,9 @@
 }
 
 * {
-  font-family: "SFDisplay", inter, -apple-system, system-ui, "Segoe UI",
-    Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
-    "Segoe UI Symbol";
-  letter-spacing: 0.05786em;
+  font-family: "PPNeueMachina", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   box-sizing: border-box;
 }
 
@@ -31,11 +30,13 @@ body {
   background: $mint-green;
   transition: color 0.5s, background-color 0.5s;
 
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: "PPNeueMachina", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 21px;
+  font-weight: 400;
+  font-style: normal;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -47,7 +48,14 @@ body {
   height: 100vh;
   width: 100vw;
   margin: 0;
-  padding: 0;
+  padding: 0;  
+}
+
+.bg-gradient {
+  background-image: url("./brewtube.svg");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: auto;
 }
 
 main {

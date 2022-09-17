@@ -355,32 +355,22 @@ onMounted(async () => {
   //     store.addAnneTokens(...anneTokens.nfts);
   //   }
   // }
-
-  /* Craig NFT Collection */
-  // if (craigTokens.value.length === 0) {
-  //   let craigTokens = await store.accountNftSearch(
-  //     "0x09c0377BAdCa7349b20569f45f2D94398179Db0c",
-  //     "",
-  //     "",
-  //     "ethereum",
-  //     "metadata",
-  //     "erc1155",
-  //     8
-  //   );
-  //   if (craigTokens.nfts && craigTokens.total > 0) {
-  //     store.addCraigTokens(...craigTokens.nfts);
-  //   }
-  // }
 });
 </script>
 <style lang="scss" scoped>
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
+
 main {
   flex-direction: column;
   align-content: center;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(
+    269.69deg,
+    #fbe2ff 0.3%,
+    rgba(251, 226, 255, 0) 99.77%
+  );
 }
 section#search-bar {
   color: $mint-black;
@@ -676,16 +666,22 @@ section#search-bar {
       /* END Mobile Versions */
       .search-clear-button {
         color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 5px;
-        letter-spacing: 1px;
+        background-color: $mint-blue;
+        border: 1px solid $mint-blue;
+        border-radius: 100px;
         font-size: 14px;
-        width: auto;
-        padding: 10px;
+        padding: 8px 8px 6px 8px;
         text-align: center;
-        margin-left: 5px;
+        margin: 10px 5px 0 5px;
+        box-sizing: border-box;
+        transition: 0.4s;
         cursor: pointer;
+
+        &:hover {
+          color: $mint-black;
+          border: 1px solid $mint-black;
+        }
+
         @include breakpoint($break-sm) {
           width: 48%;
           padding: 1%;
@@ -804,8 +800,6 @@ section#marketplace {
     h2 {
       width: 100%;
       color: $mint-pink;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
       font-style: normal;
       font-weight: 700;
       font-size: 36px;

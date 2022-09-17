@@ -10,7 +10,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return window.scrollTo({
-        top: document.querySelector(to.hash).offsetTop - 135,
+        top: document.querySelector(to.hash).offsetTop + 140,
         behavior: "smooth",
       });
     } else {

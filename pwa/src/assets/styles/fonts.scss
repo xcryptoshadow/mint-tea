@@ -1,4 +1,28 @@
-/* Inter Font */
+/* PPNeueMachina Font */
+@font-face {
+  font-family: PPNeueMachinaLight;
+  src: url(../fonts/PPNeueMachina/PPNeueMachina-Light.otf);
+}
+@font-face {
+  font-family: PPNeueMachina;
+  src: url(../fonts/PPNeueMachina/PPNeueMachina-Regular.otf);
+}
+@font-face {
+  font-family: PPNeueMachinaBold;
+  src: url(../fonts/PPNeueMachina/PPNeueMachina-Bold.otf);
+}
+/* Declare a class which applies it */
+.PPNeueMachinaLight {
+  font-family: 'PPNeueMachinaLight';
+}
+.PPNeueMachina {
+  font-family: 'PPNeueMachina';
+}
+.PPNeueMachinaBold {
+  font-family: 'PPNeueMachinaBold';
+}
+
+/* Raleway Font */
 @font-face {
   font-family: RalewayLight;
   src: url(../fonts/Raleway/Raleway-Light.ttf);
@@ -15,6 +39,7 @@
   font-family: RalewayBold;
   src: url(../fonts/Raleway/Raleway-Bold.ttf);
 }
+
 /* Declare a class which applies it */
 .RalewayLight {
   font-family: 'RalewayLight';
@@ -28,6 +53,7 @@
 .RalewayBold {
   font-family: 'RalewayBold';
 }
+
 /* Inter Font */
 @font-face {
   font-family: InterLight;
@@ -41,6 +67,7 @@
   font-family: InterBold;
   src: url(../fonts/Inter/Inter-Bold.ttf);
 }
+
 /* Declare a class which applies it */
 .InterLight {
   font-family: 'InterLight';

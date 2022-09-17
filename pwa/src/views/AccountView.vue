@@ -1,123 +1,109 @@
 <template>
   <main>
-    <article>
-      <section id="content">
-        <!-- Connect Tab -->
-        <div v-if="!account" class="form-container">
-          <h1>Mint Tea</h1>
-          <p>
-            Mint and brew cross-chain NFTs using our custom bridge, send tokens
-            and NFTs to all your favourite blockchains.
-          </p>
-          <p>Connect your wallet to view your account NFTs for all chains</p>
-
-          <div class="button-container">
-            <button v-if="account" class="balance-button">
-              {{ balance ? balance : 0 }}
-            </button>
-            <button
-              v-if="!account"
-              @click="connectWallet"
-              class="connect-button"
-            >
-              Connect
-            </button>
-            <button class="explore-button">
-              <router-link :to="{ name: 'explore' }">Explore</router-link>
-            </button>
-          </div>
-        </div>
-        <!-- Bridge Tab -->
-        <div v-if="account && formTab === 'account'" class="form-container">
-          <h1>Account NFTs</h1>
-          <div class="input-row">
+    <section id="mint">
+      <article>
+        <!-- Left Side -->
+        <section id="content">
+          <!-- Connect Tab -->
+          <div v-if="!account" class="form-container">
+            <div class="header-logo">
+              <BlueLogo />
+            </div>
             <p>
-              Browse all your NFTs across all the best blockchains like
-              Ethereum, Polygon, Optimism and more coming soon...
+              Mint and brew cross-chain NFTs using our custom bridge, send
+              tokens and NFTs to all your favourite blockchains.
             </p>
+            <p>
+              Mint and brew cross-chain NFTs using our custom bridge, send
+              tokens and NFTs to all your favourite blockchains.
+            </p>
+            <p>
+              Search and verify your NFTs for rarity by name, description and
+              image across all blockchains.
+            </p>
+
+            <div class="button-container">
+              <button
+                v-if="!account"
+                @click="connectWallet"
+                class="connect-button"
+              >
+                connect
+              </button>
+              <button class="explore-button">
+                <router-link :to="{ name: 'explore' }">explore</router-link>
+              </button>
+            </div>
           </div>
-          <div class="button-container">
-            <button class="home-button">
-              <router-link :to="{ name: 'home' }">Home</router-link>
-            </button>
+
+          <!-- Account Tab -->
+          <div v-if="account && formTab === 'account'" class="form-container">
+            <div class="header-logo">
+              <BlueLogo />
+            </div>
+            <h1>Account NFTs</h1>
+            <div class="input-row">
+              <p>
+                Browse all your NFTs across all the best blockchains like
+                Ethereum, Polygon, Optimism and more coming soon...
+              </p>
+            </div>
+            <div class="button-container">
+              <button class="home-button">
+                <router-link :to="{ name: 'home' }">Home</router-link>
+              </button>
+              <button class="explore-button">
+                <router-link :to="{ name: 'explore' }">Explore</router-link>
+              </button>
+            </div>
           </div>
-          <button class="explore-button">
-            <router-link :to="{ name: 'explore' }">Explore</router-link>
-          </button>
-        </div>
-      </section>
-    </article>
-    <aside>
-      <section id="explore">
-        <div class="row">
-          <div class="row-header">
-            <h2>Ethereum<ArrowDownBlack class="arrow-down" /></h2>
+        </section>
+      </article>
+      <aside>
+        <section id="explore">
+          <div class="row">
+            <div class="row-header">
+              <h2>Ethereum<ArrowDownBlue class="arrow-down" /></h2>
+            </div>
+            <div v-if="ethereumTokens.length > 0" class="row token-list">
+              <template v-for="token in ethereumTokens" :key="token.tokenId">
+                <NftCard v-if="token.metadata" :token="token" />
+              </template>
+            </div>
           </div>
-          <div v-if="ethereumTokens.length > 0" class="row token-list">
-            <template v-for="token in ethereumTokens" :key="token.tokenId">
-              <NftCard v-if="token.metadata" :token="token" />
-            </template>
+          <div class="row">
+            <div class="row-header">
+              <h2>Polygon <ArrowDownBlue class="arrow-down" /></h2>
+            </div>
+            <div v-if="polygonTokens.length > 0" class="row token-list">
+              <template v-for="token in polygonTokens" :key="token.tokenId">
+                <NftCard v-if="token.metadata" :token="token" />
+              </template>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="row-header">
-            <h2>Polygon<ArrowDownBlack class="arrow-down" /></h2>
+          <div class="row">
+            <div class="row-header">
+              <h2>Optimism <ArrowDownBlue class="arrow-down" /></h2>
+            </div>
+            <div v-if="optimismTokens.length > 0" class="row token-list">
+              <template v-for="token in optimismTokens" :key="token.tokenId">
+                <NftCard v-if="token.metadata" :token="token" />
+              </template>
+            </div>
           </div>
-          <div v-if="polygonTokens.length > 0" class="row token-list">
-            <template v-for="token in polygonTokens" :key="token.tokenId">
-              <NftCard v-if="token.metadata" :token="token" />
-            </template>
+          <div class="row">
+            <div class="row-header">
+              <h2>Arbitrum <ArrowDownBlue class="arrow-down" /></h2>
+            </div>
+            <div v-if="arbitrumTokens.length > 0" class="row token-list">
+              <template v-for="token in arbitrumTokens" :key="token.tokenId">
+                <NftCard v-if="token.metadata" :token="token" />
+              </template>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="row-header">
-            <h2>Optimism<ArrowDownBlack class="arrow-down" /></h2>
-          </div>
-          <div v-if="optimismTokens.length > 0" class="row token-list">
-            <template v-for="token in optimismTokens" :key="token.tokenId">
-              <NftCard v-if="token.metadata" :token="token" />
-            </template>
-          </div>
-        </div>
-        <div class="row">
-          <div class="row-header">
-            <h2>Arbitrum<ArrowDownBlack class="arrow-down" /></h2>
-          </div>
-          <div v-if="arbitrumTokens.length > 0" class="row token-list">
-            <template v-for="token in arbitrumTokens" :key="token.tokenId">
-              <NftCard v-if="token.metadata" :token="token" />
-            </template>
-          </div>
-        </div>
-        <!-- <h2 v-if="ethereumTokens.length > 0">Ethereum NFTs</h2>
-        <div v-if="ethereumTokens.length > 0" class="row token-list">
-          <template v-for="token in ethereumTokens" :key="token.tokenId">
-            <NftCard v-if="token.metadata" :token="token" />
-          </template>
-        </div> -->
-        <!-- Polygon -->
-        <!-- <h2 v-if="polygonTokens.length > 0">Polygon NFTs</h2>
-        <div v-if="polygonTokens.length > 0" class="row token-list">
-          <template v-for="token in polygonTokens" :key="token.tokenId">
-            <NftCard v-if="token.metadata" :token="token" />
-          </template>
-        </div> -->
-        <!-- Optimism -->
-        <!-- <h2 v-if="optimismTokens.length > 0">Optimism NFTs</h2>
-        <div v-if="optimismTokens.length > 0" class="row token-list">
-          <template v-for="token in optimismTokens" :key="token.tokenId">
-            <NftCard v-if="token.metadata" :token="token" />
-          </template>
-        </div> -->
-        <!-- Arbitrum -->
-        <!-- <h2 v-if="arbitrumTokens.length > 0">Arbitrum NFTs</h2>
-        <div v-if="arbitrumTokens.length > 0" class="row token-list">
-          <template v-for="token in arbitrumTokens" :key="token.tokenId">
-            <NftCard v-if="token.metadata" :token="token" />
-          </template>
-        </div> -->
-      </section>
-    </aside>
+        </section>
+      </aside>
+    </section>
   </main>
 </template>
 <script setup>
@@ -131,25 +117,22 @@ import { useStore } from "../store";
 import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
-import ArrowDownBlack from "../assets/svgs/ArrowDownBlack.vue?component";
+import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 
-// Init Store
+/* Init Pinia Store Values and Methods */
 const store = useStore();
-
-// Store Values and Methods
 const {
   account,
-  balance,
   ethereumTokens,
   polygonTokens,
   optimismTokens,
   arbitrumTokens,
 } = storeToRefs(store);
 
-// Set Form Tab
+/* Set Form Tab */
 const formTab = ref("account");
 
 /**
@@ -211,7 +194,7 @@ async function connectWallet() {
     const [accountAddress] = await ethereum.request({
       method: "eth_requestAccounts",
     });
-    console.log("Account Address", accountAddress);
+
     if (accountAddress) {
       store.updateAccount(accountAddress);
       await fetchTokens();
@@ -302,309 +285,337 @@ onMounted(async () => {
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
 
-article {
-  width: 43%;
-  flex-grow: 1 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 3em 5em;
-  @include breakpoint($break-xl) {
-    padding: 1em;
-  }
-  @include breakpoint($break-lg) {
-    padding: 1em;
-  }
-  @include breakpoint($break-md) {
-    padding: 1em 2em;
-  }
-  @include breakpoint($break-sm) {
-    width: 100%;
-    padding: 0 0 2em 0;
-  }
-  @include breakpoint($break-xs) {
-    width: 100%;
-    padding: 0 0 2em 0;
-  }
-}
-aside {
+section#mint {
   width: 100%;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: flex;
+  flex-flow: row wrap;
   align-content: center;
-  background: $mint-pink;
-  @include breakpoint($break-xl) {
-    padding: 0 auto;
-  }
-  @include breakpoint($break-lg) {
-    padding: 0 auto;
-  }
-  @include breakpoint($break-md) {
-    border-top-left-radius: 30px;
-    padding: 2em 0 0 0;
-    overflow: hidden;
-  }
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  background: linear-gradient(
+    269.69deg,
+    #fbe2ff 0.3%,
+    rgba(251, 226, 255, 0) 99.77%
+  );
   @include breakpoint($break-sm) {
-    width: 100%;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    padding: 2em 1em;
+    flex-flow: column wrap;
   }
   @include breakpoint($break-xs) {
-    width: 100%;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    padding: 1.5em 1em;
+    flex-flow: column wrap;
   }
-}
-
-section#content {
-  height: inherit;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  .form-container {
-    width: 400px;
-    display: flex;
+  article {
+    width: 43%;
+    flex-grow: 1 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3em 5em;
+    @include breakpoint($break-xl) {
+      padding: 1em;
+    }
+    @include breakpoint($break-lg) {
+      padding: 1em;
+    }
+    @include breakpoint($break-md) {
+      padding: 1em 0.5em;
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+      padding: 0 0 2em 0;
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+      padding: 0 0 2em 0;
+    }
+  }
+  aside {
+    width: 100%;
+    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     align-content: center;
-    background: #fff;
-    border: 4px solid var(--gradient-100);
-    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 30px;
-    margin: 30px auto;
-    padding: 30px 30px 20px;
-
+    margin: 0;
+    padding: 0 auto;
+    @include breakpoint($break-xl) {
+      padding: 0 auto;
+    }
+    @include breakpoint($break-lg) {
+      padding: 0 auto;
+    }
     @include breakpoint($break-md) {
-      width: 400px;
-      margin: 0 auto 10px;
-      padding: 25px 25px 20px;
-    }
-    @include breakpoint($break-sm) {
-      width: 380px;
-      margin: 0 auto 10px;
-      padding: 20px 20px 20px;
-    }
-    @include breakpoint($break-xs) {
-      width: 360px;
-      margin: 0 auto 10px;
-      padding: 20px 20px 20px;
-    }
-
-    img,
-    svg {
-      margin-top: -20px;
-      width: 180px;
-      object-fit: contain;
+      padding: 2em 0 0 0;
       overflow: hidden;
     }
-    .header-logo {
-      margin: 0 auto 20px;
+    @include breakpoint($break-sm) {
+      width: 100%;
+      padding: 2em 1em;
     }
-
-    h1 {
-      font-family: "SFDisplay", Roboto, Ubuntu, "Open Sans", "Helvetica Neue",
-        sans-serif;
-      color: $mint-black;
-      font-size: 2rem;
-      line-height: 2rem;
-      text-align: center;
-      margin: 0 auto 15px;
-      span.emoji {
-        font-size: 2.2rem;
-      }
-    }
-
-    a {
-      color: $mint-black;
-      font-weight: bold;
-      border-bottom: 1px solid $mint-black;
-      text-decoration: none;
-    }
-
-    p {
-      line-height: 1.6;
-      margin-bottom: 10px;
-      text-align: center;
+    @include breakpoint($break-xs) {
+      width: 100%;
+      padding: 1.5em 1em;
     }
   }
 
-  .button-container {
+  section#content {
+    height: inherit;
     display: flex;
     flex-direction: column;
-    width: 100%;
-  }
+    justify-content: center;
+    align-items: center;
 
-  .connect-button {
-    color: $white;
-    background-color: $mint-blue;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    margin: 10px 0;
-    transition: 0.4s;
-    cursor: pointer;
-    &:hover {
-      color: $black;
-    }
-  }
+    .form-container {
+      width: 428px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      background: #fff;
+      border: 4px solid var(--gradient-100);
+      box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+      border-radius: 10px;
+      margin: 30px auto;
+      padding: 30px 40px;
 
-  .explore-button {
-    color: $white;
-    background-color: $mint-orange;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    a {
-      color: $white;
-      text-decoration: none;
-      border-bottom: none;
-      &:hover {
-        color: $black;
+      @include breakpoint($break-md) {
+        width: 400px;
+        margin: 0 auto 10px;
+        padding: 25px 25px 20px;
+      }
+      @include breakpoint($break-sm) {
+        width: 380px;
+        margin: 0 auto 10px;
+        padding: 20px 20px 20px;
+      }
+      @include breakpoint($break-xs) {
+        width: 360px;
+        margin: 0 auto 10px;
+        padding: 20px 20px 20px;
+      }
+
+      .header-logo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+
+        img,
+        svg {
+          width: 200px;
+          margin: 10px auto 20px;
+          object-fit: contain;
+          overflow: hidden;
+          @include breakpoint($break-md) {
+            width: 200px;
+            margin: 30px auto 10px;
+          }
+          @include breakpoint($break-sm) {
+            width: 180px;
+            margin: 30px auto 10px;
+          }
+        }
+      }
+
+      h1 {
+        color: $mint-black;
+        font-size: 2rem;
+        line-height: 2rem;
+        text-align: center;
+        margin: 0 auto 15px;
+        span.emoji {
+          font-size: 2.2rem;
+        }
+      }
+
+      a {
+        color: $mint-black;
+        font-weight: bold;
+        border-bottom: 1px solid $mint-black;
+        text-decoration: none;
+      }
+
+      p {
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      .mb-10 {
+        margin-bottom: 10px;
       }
     }
-  }
 
-  .home-button {
-    color: $white;
-    background-color: $mint-blue;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    height: 55px;
-    border: 0;
-    border-radius: 10px;
-    margin: 10px 0;
-    transition: 0.4s;
-    cursor: pointer;
-    a {
+    .button-container {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+
+    .connect-button {
       color: $white;
+      background-color: $mint-black;
+      font-size: 18px;
       font-weight: bold;
-      text-decoration: none;
-      border-bottom: none;
+      width: 48%;
+      height: 55px;
+      border: 0;
+      border-radius: 30px;
+      margin: 10px 1% 10px 0;
+      transition: 0.4s;
+      cursor: pointer;
       &:hover {
-        color: $black;
+        color: $mint-blue;
+      }
+    }
+
+    .explore-button {
+      color: $white;
+      background-color: $mint-blue;
+      font-size: 18px;
+      font-weight: bold;
+      width: 48%;
+      height: 55px;
+      border: 0;
+      border-radius: 30px;
+      margin: 10px 0 10px 1%;
+      transition: 0.4s;
+      cursor: pointer;
+      a {
+        color: $white;
+        text-decoration: none;
+        border-bottom: none;
+        &:hover {
+          color: $black;
+        }
+      }
+    }
+
+    .home-button {
+      color: $white;
+      background-color: $mint-black;
+      font-size: 18px;
+      font-weight: bold;
+      width: 48%;
+      height: 55px;
+      border: 0;
+      border-radius: 30px;
+      margin: 10px 1% 10px 0;
+      transition: 0.4s;
+      cursor: pointer;
+      a {
+        color: $white;
+        text-decoration: none;
+        border-bottom: none;
+        &:hover {
+          color: $black;
+        }
       }
     }
   }
-}
 
-section#explore {
-  width: 100%;
-  color: $mint-black;
-  background: $mint-pink;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0 3em 3em;
-  overflow: scroll;
-
-  @include breakpoint($break-lg) {
+  section#explore {
+    width: 100%;
+    color: $mint-black;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
     padding: 0 0 3em 3em;
-  }
-  @include breakpoint($break-md) {
-    padding: 0 0 3em 0;
-  }
-  @include breakpoint($break-sm) {
-    padding: 0 0 3em 0;
-  }
-  @include breakpoint($break-xs) {
-    padding: 0 0 3em 0;
-  }
+    overflow: scroll;
 
-  .row-header {
-    width: 100%;
-    max-width: 1280px;
-    display: flex;
-    flex-direction: row;
-    align-content: flex-start;
-    justify-content: center;
-    align-items: center;
-    margin: 25px 0;
     @include breakpoint($break-lg) {
-      width: 100%;
-      margin: 0 auto;
+      padding: 0 0 3em 3em;
     }
     @include breakpoint($break-md) {
-      width: 100%;
-      margin: 0 auto;
+      padding: 0 0 3em 0;
     }
     @include breakpoint($break-sm) {
-      width: 85%;
-      margin: 0 auto;
+      padding: 0 0 3em 0;
     }
     @include breakpoint($break-xs) {
-      width: 85%;
-      margin: 0 auto;
+      padding: 0 0 3em 0;
     }
-    h2 {
+
+    .row-header {
       width: 100%;
-      color: $mint-black;
-      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-      font-style: normal;
-      font-weight: 700;
-      font-size: 36px;
-      line-height: 42px;
-      text-align: left;
-      margin: 0 0 20px 20px;
-      .arrow-down {
-        margin-bottom: -5px;
+      max-width: 1280px;
+      display: flex;
+      flex-direction: row;
+      align-content: flex-start;
+      justify-content: center;
+      align-items: center;
+      margin: 25px 0;
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-sm) {
+        width: 85%;
+        margin: 0 auto;
+      }
+      @include breakpoint($break-xs) {
+        width: 85%;
+        margin: 0 auto;
+      }
+      h2 {
+        width: 100%;
+        color: $mint-blue;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 36px;
+        line-height: 42px;
+        text-align: left;
+        margin: 0 0 20px 20px;
+        .arrow-down {
+          margin: 10px 0 -10px 10px;
+        }
       }
     }
-  }
 
-  .row {
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-  }
+    .row {
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+    }
 
-  .token-list {
-    width: 100%;
-    max-width: 1280px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    align-content: center;
-    justify-content: center;
-    align-items: flex-start;
-    @include breakpoint($break-lg) {
+    .token-list {
       width: 100%;
-      margin: 0 auto;
-      grid-template-columns: repeat(2, 1fr);
-    }
-    @include breakpoint($break-md) {
-      width: 100%;
-      margin: 0 auto;
-      grid-template-columns: repeat(1, 1fr);
-    }
-    @include breakpoint($break-sm) {
-      width: 100%;
-      margin: 0 auto;
-      grid-template-columns: repeat(2, 1fr);
-    }
-    @include breakpoint($break-xs) {
-      width: 100%;
-      margin: 0 auto;
-      grid-template-columns: repeat(1, 1fr);
+      max-width: 1280px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      align-content: center;
+      justify-content: center;
+      align-items: flex-start;
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 0 auto;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        margin: 0 auto;
+        grid-template-columns: repeat(1, 1fr);
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        margin: 0 auto;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+        margin: 0 auto;
+        grid-template-columns: repeat(1, 1fr);
+      }
     }
   }
 }
