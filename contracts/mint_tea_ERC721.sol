@@ -47,6 +47,15 @@ contract MTEA is ERC721, AccessControl {
         uint256 _trait_id
     );
 
+    event value_updated(
+        address indexed from, 
+        uint256 timestamp, 
+        uint256 _attributesTableId,
+        string _value, 
+        uint256 tokenId,
+        uint256 _trait_id
+    );
+
     event new_attribute_added(
       address indexed from,
       uint256 timestamp,
@@ -72,7 +81,6 @@ contract MTEA is ERC721, AccessControl {
                 _tablePrefix,
                 "_",
                 Strings.toString(block.chainid),
-                //TO DO : I need to change the columns
                 " (tokenid int, name text, description text, image text, external_url text);"
             )
         );
@@ -216,7 +224,7 @@ contract MTEA is ERC721, AccessControl {
     }
 
      /*
-     * update an attribute value
+     * update an attribute trait_type
      */
     function update_trait_type(
         uint256 tokenId,
@@ -246,13 +254,45 @@ contract MTEA is ERC721, AccessControl {
        emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId, _trait_id);
     }
 
+     /*
+     * update an attribute value
+     */
+    function update_value(
+        uint256 tokenId,
+        uint256 _trait_id,
+        string memory _value
+    ) public {
+        /* Check Ownership */
+        require(this.ownerOf(tokenId) == msg.sender, "Invalid owner");
+        require(nb_of_attributes[tokenId] >= _trait_id && _trait_id > 0, "trait_id not found ");
+        /* Update the row in tableland */
+        _tableland.runSQL(
+            address(this),
+            _attributesTableId,
+            string.concat(
+                "UPDATE ",
+                attributesTable,
+                " SET value = '",
+                _value,
+                "' WHERE maintable_tokenid = ",
+                Strings.toString(tokenId),
+                " AND trait_id = ",
+                Strings.toString(_trait_id),
+                ";"
+            )
+        );
+        /* Emit Event */
+       emit value_updated(msg.sender, block.timestamp, _attributesTableId, _value, tokenId, _trait_id);
+    }
+
     /**
      * @dev View the contract’s main metadata table
      */
     function main_metadataURI() public view returns (string memory) {
         string memory base = _baseURI();
         return string.concat(
-            base, 
+            base,
+            "mode=list&s=", 
             "SELECT%20*%20FROM%20",
             mainTable
         );
@@ -264,7 +304,8 @@ contract MTEA is ERC721, AccessControl {
     function attributes_metadataURI() public view returns (string memory) {
         string memory base = _baseURI();
         return string.concat(
-            base, 
+            base,
+            "mode=list&s=", 
             "SELECT%20*%20FROM%20",
             attributesTable
         );
