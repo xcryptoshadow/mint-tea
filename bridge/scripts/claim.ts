@@ -3,6 +3,14 @@ import { evm } from "@debridge-finance/desdk";
 import { HttpNetworkConfig } from "hardhat/types";
 import { DEFAULT_DEBRIDGE_GATE_ADDRESS } from "@debridge-finance/desdk/lib/evm/context";
 
+// for nodejs older versions.
+// inject node-fetch's fetch() to global context
+// const _importDynamic = new Function("modulePath", "return import(modulePath)");
+// global.fetch = async (...args: any) => {
+//   const { default: fetch } = await _importDynamic("node-fetch");
+//   return fetch(...args);
+// };
+
 const TX_HASH =
   "0x8c38070fbbaa22a3166a3785cd6be41b90658e61a4442040ca0ed2363f6068ef";
 

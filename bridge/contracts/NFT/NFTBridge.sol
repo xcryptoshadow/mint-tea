@@ -164,9 +164,9 @@ contract NFTBridge is
                 if (
                     createdTokens[_nftCollectionAddress] == TOKEN_BURNABLE_TYPE
                 ) {
-                    _checkAddAsset(_nftCollectionAddress);
-                    IDeNFT(_nftCollectionAddress).burn(_tokenId);
                     revert("Don't use TOKEN_BURNABLE_TYPE!");
+                    // _checkAddAsset(_nftCollectionAddress);
+                    // IDeNFT(_nftCollectionAddress).burn(_tokenId);
                 }
                 // hold the object on this contract address
                 else {
@@ -176,7 +176,6 @@ contract NFTBridge is
             // we are on the secondary chain
             else {
                 IDeNFT(_nftCollectionAddress).burn(_tokenId);
-                revert("Don't use TOKEN_BURNABLE_TYPE!");
             }
 
             //
