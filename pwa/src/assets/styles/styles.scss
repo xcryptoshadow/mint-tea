@@ -56,6 +56,21 @@ body {
   background-position: center top;
   background-repeat: no-repeat;
   background-size: auto;
+  @include breakpoint($break-md) {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 70%;
+  }
+  @include breakpoint($break-sm) {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 85%;
+  }
+  @include breakpoint($break-xs) {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: auto;
+  }
 }
 
 main {

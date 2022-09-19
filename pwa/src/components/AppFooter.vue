@@ -26,6 +26,7 @@ footer {
   background: #2b2b2b;
   border-top: 1px solid #fff;
   padding: 3em 3em 2em 3em;
+  overflow: hidden;
 
   @include breakpoint($break-lg) {
     width: 100%;
@@ -33,11 +34,15 @@ footer {
   }
   @include breakpoint($break-md) {
     width: 100%;
-    padding: 1em 1em 1em 0;
+    padding: 1em 1% 1em 0;
   }
   @include breakpoint($break-sm) {
     width: 100%;
-    padding: 1em 1em 1em 0;
+    padding: 1em 1% 1em 0;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 1em 1% 1em 0;
   }
 
   .footer-sponsors {
@@ -55,7 +60,16 @@ footer {
     align-items: center;
     align-content: center;
     width: 50%;
-    margin-right: 40px;
+    padding-right: 40px;
+    @include breakpoint($break-md) {
+      padding-right: 10px;
+    }
+    @include breakpoint($break-sm) {
+      padding-right: 0;
+    }
+    @include breakpoint($break-xs) {
+      padding-right: 0;
+    }
     img,
     svg {
       width: 240px;
@@ -65,7 +79,10 @@ footer {
         width: 200px;
       }
       @include breakpoint($break-sm) {
-        width: 200px;
+        width: 190px;
+      }
+      @include breakpoint($break-xs) {
+        width: 180px;
       }
     }
   }

@@ -106,13 +106,17 @@ section#about {
     linear-gradient(91deg, #fbe2ff 45.95%, rgba(251, 226, 255, 0) 99.2%);
   background-position: 42% 77%;
   background-size: auto;
+  overflow: hidden;
 
-  @include breakpoint($break-sm) {
-    flex-direction: column;
-  }
-  @include breakpoint($break-xs) {
-    flex-direction: column;
-  }
+  // @include breakpoint($break-md) {
+  //   background-position: 100% 74.5%;
+  // }
+  // @include breakpoint($break-sm) {
+  //   background-position: 100% 74.5%;
+  // }
+  // @include breakpoint($break-xs) {
+  //   background-position: 100% 74.5%;
+  // }
   .about-left {
     width: 43%;
     flex-grow: 1 100%;
@@ -129,11 +133,11 @@ section#about {
     }
     @include breakpoint($break-sm) {
       width: 100%;
-      padding: 4em 0 4em 7em;
+      padding: 1em 0 0 1.5em;
     }
     @include breakpoint($break-xs) {
       width: 100%;
-      padding: 4em 0 4em 4em;
+      padding: 1em 0 0 1em;
     }
 
     .row-header {
@@ -258,13 +262,13 @@ section#about {
       width: 100%;
       border-top-left-radius: 30px;
       border-top-right-radius: 30px;
-      padding: 2em 1em;
+      padding: 1em;
     }
     @include breakpoint($break-xs) {
       width: 100%;
       border-top-left-radius: 30px;
       border-top-right-radius: 30px;
-      padding: 1.5em 10px;
+      padding: 1em 10px;
     }
     .sponsors-box {
       position: absolute;

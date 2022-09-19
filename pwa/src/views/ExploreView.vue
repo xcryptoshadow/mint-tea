@@ -9,15 +9,6 @@
           >
             {{ !show ? "Show" : "Hide" }}
           </button>
-          <select class="search-chain" v-model="chain">
-            <option
-              v-for="option in options"
-              :value="option.label"
-              :key="option.key"
-            >
-              {{ option.text }}
-            </option>
-          </select>
           <input
             type="text"
             v-model="contract"
@@ -31,87 +22,125 @@
             placeholder="Search by name"
             @input="searchTokens('name')"
           />
-          <input
-            type="text"
-            v-model="image"
-            class="search-image"
-            placeholder="Search by image url"
-            @input="searchTokens('image')"
-          />
+          <select class="search-chain" v-model="chain">
+            <option
+              v-for="option in options"
+              :value="option.label"
+              :key="option.key"
+            >
+              {{ option.text }}
+            </option>
+          </select>
           <button
-            :class="!show ? 'show-button-mobile' : 'hide-button-mobile'"
-            @click="show = !show"
+            :class="
+              !showAdvancedSearch
+                ? 'show-advanced-button'
+                : 'hide-advanced-button'
+            "
+            @click="showAdvancedSearch = !showAdvancedSearch"
           >
-            {{ !show ? "Show" : "Hide" }}
+            {{ !showAdvancedSearch ? "Advanced" : "Close" }}
           </button>
           <button class="search-clear-button" @click="clearSearch()">X</button>
+          <button class="search-clear-button-mobile" @click="clearSearch()">
+            Clear
+          </button>
         </div>
+        <!-- Advanced Search Options Panel -->
+        <div v-if="showAdvancedSearch" class="advanced-search">
+          <input
+            type="text"
+            v-model="contractAdvanced"
+            class="search-advanced-contract"
+            placeholder="Filter by contract"
+          />
+          <input
+            type="text"
+            v-model="tokenId"
+            class="search-tokenId"
+            placeholder="Find duplicate by token id"
+            @input="searchTokens('advanced')"
+          />
+          <input
+            type="text"
+            v-model="duplicateUrl"
+            class="search-duplicates"
+            placeholder="Find duplicate NFTS by url"
+            @input="searchTokens('advanced')"
+          />
+        </div>
+        <!-- END Advanced Search Options Panel -->
       </div>
     </section>
     <Transition name="slide-fade">
       <section v-show="show" id="search-results">
         <div class="search-results-row">
           <h2>Search Results</h2>
-          <div class="row token-list">
-            {{ searchResults }}
-            <template v-for="token in searchResults" :key="token.tokenId">
-              <NftCard
-                v-if="token.metadata && token.metadata.image"
-                :token="token"
-              />
+          <div v-if="searchResults" class="row token-list">
+            <template v-for="token in searchResults" :key="token.token_id">
+              <SearchCard :token="token" />
             </template>
+            <div v-if="loading" class="loading-bar">...loading</div>
+          </div>
+          <div
+            v-if="(!loading && errorCode) || errorStatus || errorMessage"
+            class="row error-box"
+          >
+            <div class="error-status">{{ errorStatus }} : {{ errorCode }}</div>
+            <div class="error-message">
+              {{ errorMessage
+              }}<template v-if="errorStatus === 404"
+                ><br />Please make sure you have entered the correct contract
+                address<br />
+                or try a different name or image url</template
+              >
+            </div>
           </div>
         </div>
       </section>
     </Transition>
     <section id="marketplace">
-      <div class="row">
-        <div class="row-header">
-          <h2>
-            <span class="mint-black">minty</span>fresh
-            <ArrowDownWhite class="arrow-down" />
-          </h2>
-        </div>
-        <div class="row token-list">
-          <template v-for="token in latestTokens" :key="token.tokenId">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
+      <div class="row-header">
+        <h2>
+          <span class="mint-black">minty</span>fresh
+          <ArrowDownWhite class="arrow-down" />
+        </h2>
       </div>
-      <div class="row">
-        <div class="row-header">
-          <h2>
-            <span class="mint-black">top</span>pics
-            <ArrowDownWhite class="arrow-down" />
-          </h2>
-        </div>
-        <div class="row token-list">
-          <template v-for="token in topTokens" :key="token.tokenId">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
+      <div class="row token-list">
+        <template v-for="token in latestTokens" :key="token.tokenId">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
       </div>
-      <div class="row">
-        <div class="row-header">
-          <h2>
-            <span class="mint-black">trendy</span>
-            <ArrowDownWhite class="arrow-down" />
-          </h2>
-        </div>
-        <div class="row token-list">
-          <template v-for="token in anneTokens" :key="token.tokenId">
-            <NftCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
+      <div class="row-header">
+        <h2>
+          <span class="mint-black">top</span>pics
+          <ArrowDownWhite class="arrow-down" />
+        </h2>
+      </div>
+      <div class="row token-list">
+        <template v-for="token in topTokens" :key="token.tokenId">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
+      </div>
+      <div class="row-header">
+        <h2>
+          <span class="mint-black">trendy</span>
+          <ArrowDownWhite class="arrow-down" />
+        </h2>
+      </div>
+      <div class="row token-list">
+        <template v-for="token in trendingTokens" :key="token.tokenId">
+          <NftCard
+            v-if="token.metadata && token.metadata.image"
+            :token="token"
+          />
+        </template>
       </div>
     </section>
   </main>
@@ -128,29 +157,47 @@ import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
+import SearchCard from "@/components/SearchCard.vue";
 
 /* Init Store Values and Methods */
 const store = useStore();
-const { searchResults, topTokens, latestTokens, anneTokens } =
-  storeToRefs(store);
+const {
+  loading,
+  errorCode,
+  errorStatus,
+  errorMessage,
+  searchResults,
+  topTokens,
+  latestTokens,
+  trendingTokens,
+} = storeToRefs(store);
 
 const chain = ref("all");
 const options = ref([
-  { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
-  { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon Mainnet" },
-  { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism Mainnet" },
-  { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
-  { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
   { value: 0, label: "all", text: "All" },
+  { value: 1, label: "ethereum", text: "Ethereum" },
+  // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  { value: 137, label: "polygon", text: "Polygon" },
+  // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  { value: 10, label: "optimism", text: "Optimism" },
+  // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 43114, label: "avalanche", text: "Avalanche" },
+  // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
 ]);
 
+/* Show Search Results Panel */
 const show = ref(false);
+const showAdvancedSearch = ref(false);
+
+/* NFT Port Search Defaults */
 const contract = ref("");
+const contractAdvanced = ref("");
+const tokenId = ref(null);
 const name = ref("");
 const image = ref("");
+const duplicateUrl = ref("");
 const sort_order = ref("asc");
 const order_by = ref("relevance");
 const page_size = ref(50);
@@ -182,10 +229,81 @@ async function checkIfWalletIsConnected() {
 }
 
 /**
+ * Fetch NFTs using NFT Port API for our Marketplace Example
+ */
+// async function fetchTokens() {
+//   if (topTokens.value.length === 0) {
+//     try {
+//       let topTokens = await store.contractNftSearch(
+//         "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
+//         "ethereum",
+//         "metadata",
+//         "true",
+//         10,
+//         1
+//       );
+//       if (topTokens.nfts && topTokens.total > 0) {
+//         store.addTopTokens(...topTokens.nfts);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
+
+//   if (latestTokens.value.length === 0) {
+//     try {
+//       let latestTokens = await store.contractNftSearch(
+//         "0x1A92f7381B9F03921564a437210bB9396471050C",
+//         "ethereum",
+//         "metadata",
+//         "true",
+//         15,
+//         1
+//       );
+//       if (latestTokens.nfts && latestTokens.total > 0) {
+//         store.addLatestTokens(...latestTokens.nfts);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
+
+//   if (trendingTokens.value.length === 0) {
+//     try {
+//       let trendingTokens = await store.contractNftSearch(
+//         "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+//         "ethereum",
+//         "metadata",
+//         "true",
+//         10,
+//         1
+//       );
+//       if (trendingTokens.nfts) {
+//         store.addTrendingTokens(...trendingTokens.nfts);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
+// }
+
+/**
  * NFTPort Search
  */
 /* Fetch new NFT audio/media by Category or Name */
 async function searchTokens(type) {
+  /* Set Loading */
+  store.setLoading(true);
+  /* Clear our last response */
+  store.setErrorCode(null);
+  store.setErrorStatus(null);
+  store.setErrorMessage("");
+
+  /* Open the Search Panel */
+  if (show.value === false) {
+    show.value = true;
+  }
+
   console.log("Search type:", type);
   console.log("contract:", contract.value);
   console.log("name:", name.value);
@@ -207,69 +325,26 @@ async function searchTokens(type) {
         page_size.value,
         page_number.value
       );
-      //       Body
-      // application/json
-      // response
-      // string
-      // required
-      // Response status, either OK or NOK.
 
-      // Allowed values:
-      // OK
-      // NOK
-      // search_results
-      // array[TextSearchNft]
-      // chain
-      // string
-      // required
-      // Blockchain where the NFT has been minted.
-
-      // Allowed values:
-      // polygon
-      // ethereum
-      // contract_address
-      // string
-      // required
-      // The contract address of the NFT.
-
-      // token_id
-      // string
-      // required
-      // A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
-
-      // cached_file_url
-      // string
-      // required
-      // Cached file (image, video, etc) in NFTPort's cloud with no access restrictions and without IPFS issues.
-
-      // name
-      // string
-      // required
-      // Name of the NFT in the metadata.
-
-      // description
-      // string
-      // required
-      // Description of the NFT in the metadata.
-
-      // mint_date
-      // string
-      // Date when the NFT was minted (ISO).
       const stylesResults = ["color: black", "background: grey"].join(";");
-      console.log("%c📻 NFT Port Search fetched : %s", stylesResults, results);
-      if (results.error) {
-        console.log("Error", results.error);
-      }
+      console.log(
+        "%c📻 NFT Port Search by Name fetched : %s",
+        stylesResults,
+        JSON.stringify(results)
+      );
+
       if (results.search_results && results.search_results.length > 0) {
         store.addSearchResults(...results.search_results);
       }
+      store.setLoading(false);
     } catch (error) {
       console.log(error);
+      store.setLoading(false);
     }
   } else {
     /* Image Search */
     try {
-      const results = await store.searchNFTs(
+      const results = await store.searchNFTImage(
         contract.value,
         image.value,
         chain.value,
@@ -280,23 +355,36 @@ async function searchTokens(type) {
       );
 
       const stylesResults = ["color: black", "background: grey"].join(";");
-      console.log("%c📻 NFT Port Search fetched : %s", stylesResults, results);
-      if (results.error) {
-        console.log("Error", results.error);
-      }
+      console.log(
+        "%c📻 NFT Port Search by Image fetched : %s",
+        stylesResults,
+        results
+      );
+
       if (results.search_results && results.search_results.length > 0) {
         store.addSearchResults(...results.search_results);
       }
+      store.setLoading(false);
     } catch (error) {
       console.log(error);
+      store.setLoading(false);
     }
   }
 }
 
 /* Clear our Search Results */
-async function clearSearch() {
-  console.log("Clear Search Clicked!");
-  await store.clearSearchResults();
+function clearSearch() {
+  store.setErrorCode(null);
+  store.setErrorStatus(null);
+  store.setErrorMessage("");
+  chain.value = "all";
+  contract.value = "";
+  name.value = "";
+  image.value = "";
+  sort_order.value = "asc";
+  order_by.value = "relevance";
+  page_size.value = 50;
+  page_number.value = 1;
 }
 
 onMounted(async () => {
@@ -306,64 +394,7 @@ onMounted(async () => {
     behavior: "smooth",
   });
   await checkIfWalletIsConnected();
-
-  if (topTokens.value.length === 0) {
-    let topTokens = await store.contractNftSearch(
-      "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
-      "ethereum",
-      "metadata",
-      "true",
-      10,
-      1
-    );
-    if (topTokens.nfts && topTokens.total > 0) {
-      store.addTopTokens(...topTokens.nfts);
-    }
-  }
-
-  if (latestTokens.value.length === 0) {
-    let latestTokens = await store.contractNftSearch(
-      "0x1A92f7381B9F03921564a437210bB9396471050C",
-      "ethereum",
-      "metadata",
-      "true",
-      15,
-      1
-    );
-    if (latestTokens.nfts && latestTokens.total > 0) {
-      store.addLatestTokens(...latestTokens.nfts);
-    }
-  }
-
-  if (anneTokens.value.length === 0) {
-    let anneTokens = await store.contractNftSearch(
-      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
-      "ethereum",
-      "metadata",
-      "true",
-      10,
-      1
-    );
-    if (anneTokens.nfts) {
-      store.addAnneTokens(...anneTokens.nfts);
-    }
-  }
-
-  /* Anne NFT Collection */
-  // if (anneTokens.value.length === 0) {
-  //   let anneTokens = await store.contractNftSearch(
-  //     "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
-  //     "ethereum",
-  //     "metadata",
-  //     true,
-  //     50,
-  //     1
-  //   );
-  //   console.log("anneTokens", anneTokens.nfts);
-  //   if (anneTokens.nfts && anneTokens.total > 0) {
-  //     store.addAnneTokens(...anneTokens.nfts);
-  //   }
-  // }
+  // await fetchTokens();
 });
 </script>
 <style lang="scss" scoped>
@@ -428,9 +459,10 @@ section#search-bar {
       @include breakpoint($break-lg) {
         width: 100%;
         margin: 0 auto;
+        padding-left: 3px;
       }
       @include breakpoint($break-md) {
-        width: auto;
+        width: 100%;
         height: auto;
         margin: 0 auto;
       }
@@ -456,18 +488,17 @@ section#search-bar {
         margin: 0 5px;
         text-align: center;
 
+        @include breakpoint($break-md) {
+          width: 180px;
+          margin: 0 1% 1% 1%;
+        }
         @include breakpoint($break-sm) {
           width: 98%;
-          margin: 0 1%;
-          border-top-left-radius: 5px;
-          border-top-right-radius: 5px;
-          border-bottom-left-radius: 0;
+          margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
           width: 98%;
-          margin: 0 1%;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
+          margin: 0 1% 1% 1%;
         }
       }
       select.search-chain::placeholder {
@@ -475,7 +506,7 @@ section#search-bar {
         letter-spacing: 1px;
       }
       select.search-chain:focus {
-        border: 0;
+        border: 1px solid $mint-black;
         outline: none;
       }
 
@@ -491,16 +522,19 @@ section#search-bar {
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
+        @include breakpoint($break-lg) {
+          min-width: 256px;
+        }
         @include breakpoint($break-md) {
-          min-width: 250px;
+          min-width: 200px;
         }
         @include breakpoint($break-sm) {
           width: 98%;
-          margin: 0 1%;
+          margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
           width: 98%;
-          margin: 0 1%;
+          margin: 0 1% 1% 1%;
         }
       }
       input.search-contract::placeholder {
@@ -508,7 +542,7 @@ section#search-bar {
         letter-spacing: 1px;
       }
       input.search-contract:focus {
-        border: 0;
+        border: 1px solid $mint-black;
         outline: none;
       }
 
@@ -524,13 +558,16 @@ section#search-bar {
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
+        @include breakpoint($break-md) {
+          min-width: 200px;
+        }
         @include breakpoint($break-sm) {
           width: 98%;
-          margin: 0 1%;
+          margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
           width: 98%;
-          margin: 0 1%;
+          margin: 0 1% 1% 1%;
         }
       }
       input.search-name::placeholder {
@@ -538,7 +575,7 @@ section#search-bar {
         letter-spacing: 1px;
       }
       input.search-name:focus {
-        border: 0;
+        border: 1px solid $mint-black;
         outline: none;
       }
 
@@ -554,19 +591,16 @@ section#search-bar {
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
+        @include breakpoint($break-md) {
+          min-width: 200px;
+        }
         @include breakpoint($break-sm) {
           width: 98%;
           margin: 0 1%;
-          border-top-right-radius: 0;
-          border-bottom-left-radius: 5px;
-          border-bottom-right-radius: 5px;
         }
         @include breakpoint($break-xs) {
           width: 98%;
           margin: 0 1%;
-          border-top-right-radius: 0;
-          border-bottom-left-radius: 5px;
-          border-bottom-right-radius: 5px;
         }
       }
       input.search-image::placeholder {
@@ -574,25 +608,58 @@ section#search-bar {
         letter-spacing: 1px;
       }
       input.search-image:focus {
-        border: 0;
+        border: 1px solid $mint-black;
         outline: none;
       }
       /* Desktopn & Tablet Versions */
       .show-button {
         color: $white;
-        background-color: $mint-black;
+        background-color: $mint-blue;
         border: 0;
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
-        width: auto;
+        min-width: 70px;
         padding: 10px;
         text-align: center;
         margin-right: 5px;
+        transition: 0.4s;
         cursor: pointer;
         display: inline-block;
+        &:hover {
+          color: $mint-black;
+        }
         @include breakpoint($break-md) {
           display: inline-block;
+          margin: 0 5px 0 10px;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
+      }
+      .show-advanced-button {
+        color: $white;
+        background-color: $mint-blue;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 100px;
+        padding: 10px;
+        text-align: center;
+        margin-right: 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          color: $mint-black;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 10px;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -603,17 +670,46 @@ section#search-bar {
       }
       .hide-button {
         color: $white;
-        background-color: $mint-orange;
+        background-color: $mint-black;
         border: 0;
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
-        width: auto;
+        min-width: 70px;
         padding: 10px;
         text-align: center;
         margin-right: 5px;
         cursor: pointer;
         display: inline-block;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
+      }
+      .hide-advanced-button {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 100px;
+        padding: 10px;
+        text-align: center;
+        margin-right: 5px;
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          color: $mint-blue;
+        }
         @include breakpoint($break-md) {
           display: inline-block;
         }
@@ -635,11 +731,13 @@ section#search-bar {
         font-size: 14px;
         width: 48%;
         padding: 1%;
-        margin: 2% 1%;
+        margin: 1% 0.5% 1% 0.5%;
         text-align: center;
-        margin: 1%;
         cursor: pointer;
         display: none;
+        &:hover {
+          color: $mint-blue;
+        }
         @include breakpoint($break-md) {
           display: none;
         }
@@ -659,11 +757,13 @@ section#search-bar {
         font-size: 14px;
         width: 48%;
         padding: 1%;
-        margin: 2% 1%;
+        margin: 1% 0.5% 1% 0.5%;
         text-align: center;
-        margin-right: 5px;
         cursor: pointer;
         display: none;
+        &:hover {
+          color: $mint-blue;
+        }
         @include breakpoint($break-md) {
           display: none;
         }
@@ -678,36 +778,178 @@ section#search-bar {
       .search-clear-button {
         color: $white;
         background-color: $mint-blue;
-        border: 1px solid $mint-blue;
         border-radius: 100px;
+        border: 0;
         font-size: 14px;
         padding: 8px 8px 6px 8px;
         text-align: center;
         margin: 10px 5px 0 5px;
-        box-sizing: border-box;
         transition: 0.4s;
         cursor: pointer;
-
         &:hover {
           color: $mint-black;
-          border: 1px solid $mint-black;
         }
-
         @include breakpoint($break-sm) {
-          width: 48%;
-          padding: 1%;
+          display: none;
         }
         @include breakpoint($break-xs) {
-          width: 48%;
-          padding: 1%;
+          display: none;
         }
+      }
+
+      .search-clear-button-mobile {
+        color: $white;
+        background-color: $mint-blue;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        width: 49%;
+        padding: 1%;
+        margin: 1% 0 1% 0.5%;
+        text-align: center;
+        cursor: pointer;
+        display: none;
+        @include breakpoint($break-md) {
+          display: none;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+        }
+      }
+    }
+    /*Advanced Serach Options */
+    .advanced-search {
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 10px auto;
+        padding-left: 3px;
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        height: auto;
+        margin: 10px auto;
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        height: auto;
+        margin: 10px auto;
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+        height: auto;
+        margin: 10px auto;
+      }
+      /* Filter by Contract */
+      input.search-advanced-contract {
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 13px;
+        min-width: 400px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
+        text-align: center;
+        @include breakpoint($break-lg) {
+          min-width: 256px;
+        }
+        @include breakpoint($break-md) {
+          min-width: 200px;
+        }
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1% 1% 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1% 1% 1%;
+        }
+      }
+      input.search-advanced-contract::placeholder {
+        color: $mint-blue;
+        letter-spacing: 1px;
+      }
+      input.search-advanced-contract:focus {
+        border: 1px solid $mint-black;
+        outline: none;
+      }
+
+      /* Search by Token Name or Description */
+      input.search-tokenId {
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 13px;
+        min-width: 220px;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
+        text-align: center;
+        @include breakpoint($break-md) {
+          min-width: 200px;
+        }
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1% 1% 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1% 1% 1%;
+        }
+      }
+      input.search-tokenId::placeholder {
+        color: $mint-blue;
+        letter-spacing: 1px;
+      }
+      input.search-tokenId:focus {
+        border: 1px solid $mint-black;
+        outline: none;
+      }
+
+      /* Search by Token Name or Description */
+      input.search-duplicates {
+        color: $mint-blue;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 13px;
+        width: auto;
+        padding: 11px 10px 9px;
+        margin: 0 5px;
+        text-align: center;
+        @include breakpoint($break-md) {
+          min-width: 200px;
+        }
+        @include breakpoint($break-sm) {
+          width: 98%;
+          margin: 0 1%;
+        }
+        @include breakpoint($break-xs) {
+          width: 98%;
+          margin: 0 1%;
+        }
+      }
+      input.search-duplicates::placeholder {
+        color: $mint-blue;
+        letter-spacing: 1px;
+      }
+      input.search-duplicates:focus {
+        border: 1px solid $mint-black;
+        outline: none;
       }
     }
   }
 }
 section#search-results {
   color: $white;
-  background: $mint-black;
+  background: $grey-90;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -715,8 +957,8 @@ section#search-results {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  height: 500px;
-  padding: 10px 0 10px;
+  height: 400px;
+  padding: 30px 0 10px;
 
   img,
   svg {
@@ -739,11 +981,7 @@ section#search-results {
     h2 {
       font-size: 1.6rem;
       text-align: center;
-      padding-bottom: 0;
       text-decoration: none;
-      border-bottom: 1px solid;
-      margin-block-start: 0;
-      margin-block-end: 0.5em;
     }
 
     .token-list {
@@ -751,6 +989,41 @@ section#search-results {
       max-width: 1279px;
       display: inline-block;
       margin: 0 auto;
+      .loading-bar {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .error-box {
+      width: auto;
+      display: inline-block;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      align-items: center;
+      justify-content: flex-start;
+
+      .error-status {
+        width: 100%;
+        color: #fff;
+        width: auto;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: left;
+      }
+      .error-message {
+        color: #fff;
+        width: 100%;
+        font-size: 14px;
+        font-weight: normal;
+        text-align: center;
+      }
     }
   }
 }
@@ -792,10 +1065,6 @@ section#marketplace {
     justify-content: center;
     align-items: center;
     margin: 25px 0;
-    @include breakpoint($break-lg) {
-      width: 80%;
-      margin: 0 auto;
-    }
     @include breakpoint($break-md) {
       width: 83%;
       margin: 0 auto;
