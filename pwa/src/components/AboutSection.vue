@@ -97,26 +97,24 @@ section#about {
   width: 100%;
   color: $mint-black;
   display: flex;
-  flex-direction: row;
+  flex-direction: row wrap;
   align-content: center;
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: url("./brewtubebottom.svg") no-repeat,
-    linear-gradient(91deg, #fbe2ff 45.95%, rgba(251, 226, 255, 0) 99.2%);
-  background-position: 42% 77%;
-  background-size: auto;
+  background: linear-gradient(
+    91deg,
+    #fbe2ff 45.95%,
+    rgba(251, 226, 255, 0) 99.2%
+  );
   overflow: hidden;
 
-  // @include breakpoint($break-md) {
-  //   background-position: 100% 74.5%;
-  // }
-  // @include breakpoint($break-sm) {
-  //   background-position: 100% 74.5%;
-  // }
-  // @include breakpoint($break-xs) {
-  //   background-position: 100% 74.5%;
-  // }
+  @include breakpoint($break-sm) {
+    flex-direction: column;
+  }
+  @include breakpoint($break-xs) {
+    flex-direction: column;
+  }
   .about-left {
     width: 43%;
     flex-grow: 1 100%;
@@ -273,7 +271,12 @@ section#about {
     .sponsors-box {
       position: absolute;
       bottom: 6.5em;
-      right: 37%;
+      right: 33%;
+      @include breakpoint($break-lg) {
+        position: absolute;
+        bottom: 5em;
+        right: 20%;
+      }
       @include breakpoint($break-md) {
         position: absolute;
         bottom: 5em;

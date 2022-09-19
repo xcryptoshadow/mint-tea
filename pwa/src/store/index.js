@@ -27,6 +27,7 @@ export const useStore = defineStore({
     polygonTokens: [],
     optimismTokens: [],
     arbitrumTokens: [],
+    avalancheTokens: [],
     anneTokens: [],
     trendingTokens: [],
     topTokens: [],
@@ -80,6 +81,9 @@ export const useStore = defineStore({
     },
     getArbitrumTokens(state) {
       return state.arbitrumTokens;
+    },
+    getAvalancheTokens(state) {
+      return state.avalancheTokens;
     },
     getAnneTokens(state) {
       return state.anneTokens;
@@ -149,6 +153,9 @@ export const useStore = defineStore({
     },
     addArbitrumTokens(...tokens) {
       this.arbitrumTokens.push(...tokens);
+    },
+    addAvalancheTokens(...tokens) {
+      this.avalancheTokens.push(...tokens);
     },
     addAnneTokens(...tokens) {
       this.anneTokens.push(...tokens);
