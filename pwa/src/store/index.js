@@ -11,7 +11,11 @@ import nftPort from "../services/nftPort.js";
 export const useStore = defineStore({
   id: "store",
   state: () => ({
+    errorCode: null,
+    errorStatus: null,
+    errorMessage: "",
     loading: false,
+    fileLoading: false,
     account: null,
     balance: null,
     searchChainId: 1,
@@ -24,13 +28,25 @@ export const useStore = defineStore({
     optimismTokens: [],
     arbitrumTokens: [],
     anneTokens: [],
-    keremTokens: [],
+    trendingTokens: [],
     topTokens: [],
     latestTokens: [],
   }),
   getters: {
+    isErrorCode(state) {
+      return state.errorCode;
+    },
+    isErrorStatus(state) {
+      return state.errorStatus;
+    },
+    isErrorMessage(state) {
+      return state.errorMessage;
+    },
     isLoading(state) {
       return state.loading;
+    },
+    isFileLoading(state) {
+      return state.fileLoading;
     },
     getAccount(state) {
       return state.account;
@@ -68,8 +84,8 @@ export const useStore = defineStore({
     getAnneTokens(state) {
       return state.anneTokens;
     },
-    getKeremTokens(state) {
-      return state.keremTokens;
+    getTrendingTokens(state) {
+      return state.trendingTokens;
     },
     getTopTokens(state) {
       return state.topTokens;
@@ -79,8 +95,20 @@ export const useStore = defineStore({
     },
   },
   actions: {
+    setErrorCode(value) {
+      this.errorCode = value;
+    },
+    setErrorStatus(value) {
+      this.errorStatus = value;
+    },
+    setErrorMessage(value) {
+      this.errorMessage = value;
+    },
     setLoading(value) {
       this.loading = value;
+    },
+    setFileLoading(value) {
+      this.fileLoading = value;
     },
     updateAccount(account) {
       this.account = account;
@@ -104,7 +132,7 @@ export const useStore = defineStore({
       this.searchResults.push(...tokens);
     },
     clearSearchResults() {
-      this.searchChainId = 1;
+      this.searchChainId = "all";
       this.searchContract = "";
       this.searchName = "";
       this.searchImage = "";
@@ -125,8 +153,8 @@ export const useStore = defineStore({
     addAnneTokens(...tokens) {
       this.anneTokens.push(...tokens);
     },
-    addKeremTokens(...tokens) {
-      this.keremTokens.push(...tokens);
+    addTrendingTokens(...tokens) {
+      this.trendingTokens.push(...tokens);
     },
     addTopTokens(...tokens) {
       this.topTokens.push(...tokens);
@@ -192,6 +220,39 @@ export const useStore = defineStore({
       const nftPortApi = new nftPort();
       const results = await nftPortApi.nftSearch(
         text,
+        contract,
+        chain,
+        sort_order,
+        order_by,
+        page_size,
+        page_number
+      );
+      return results;
+    },
+
+    /**
+     * NFT PORT API - Search NFTs by Image URL and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} image Required Search query
+     * @param {String} chain Allowed values: polygon / ethereum / all
+     * @param {String} sort_order Allowed values: desc / asc
+     * @param {String} order_by Allowed values: relevance / mint_date
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
+     */
+    async searchNFTImage(
+      contract,
+      image,
+      chain,
+      sort_order,
+      order_by,
+      page_size,
+      page_number
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.nftSearchImage(
+        image,
         contract,
         chain,
         sort_order,

@@ -1,7 +1,7 @@
 import axios from "axios";
+import { useStore } from "../store";
 
 const nftPortApiKey = import.meta.env.VITE_NFT_PORT_API_KEY;
-console.log("nftPortApiKey", nftPortApiKey);
 
 export default class nftPort {
   constructor() {
@@ -57,7 +57,136 @@ export default class nftPort {
         return data;
       })
       .catch(function (error) {
-        console.error(error);
+        const store = useStore();
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log("Error Code: ", error.response.data.error.code);
+          store.setErrorCode(error.response.data.error.code);
+
+          console.log("Error Status: ", error.response.status);
+          store.setErrorStatus(error.response.status);
+
+          console.log("Error Message: ", error.response.data.error.message);
+          store.setErrorMessage(error.response.data.error.message);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.error("Error Request: ", error.request);
+        } else {
+          /* Something happened in setting up the request that triggered an Error */
+          console.log("Error Code: ", error.code);
+          store.setErrorCode(error.code);
+
+          console.log("Error Status: ", error.status);
+          store.setErrorStatus(error.status);
+
+          console.log("Error Message: ", error.message);
+          store.setErrorMessage(error.message);
+        }
+        console.log("error.config", error.config);
+        console.log("error.toJSON()", error.toJSON());
+        return error.toJSON();
+      });
+
+    // {
+    //   "response": "OK",
+    //   "search_results": [
+    //     {
+    //       "chain": "ethereum",
+    //       "contract_address": "0x12f28e2106ce8fd8464885b80ea865e98b465149",
+    //       "token_id": "100030071",
+    //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x12f28e2106ce8fd8464885b80ea865e98b465149_t_100030071_raw_asset.png",
+    //       "name": "Name field value in NFT metadata",
+    //       "description": "Description field value in NFT metadata",
+    //       "mint_date": "2020-10-29T15:03:54.838612"
+    //     }
+    //   ]
+    // }
+    return results;
+  }
+
+  /**
+   *
+   * @param {String} image Required Search query
+   * @param {String} chain Allowed values: polygon / ethereum / all
+   * @param {String} filter_by_contract_address Results will only include NFTs from this contract address.
+   * @param {String} sort_order Allowed values: desc / asc
+   * @param {String} order_by Allowed values: relevance / mint_date
+   * @param {Integer} page_size Required Search query
+   * @param {Integer} page_number Required Search query
+   * @returns {Promise<String|Error>}
+   *
+   */
+  async nftSearchImage(
+    image,
+    filter_by_contract_address,
+    chain,
+    sort_order,
+    order_by,
+    page_size,
+    page_number
+  ) {
+    console.log("Filter by Contract:", filter_by_contract_address);
+    console.log("Search Image:", image);
+    console.log("Search Chain:", chain);
+    console.log("Search sort_order:", sort_order);
+    console.log("Search order_by:", order_by);
+    console.log("Search page_size:", page_size);
+    console.log("Search page_number:", page_number);
+    const options = {
+      method: "GET",
+      url: this.endpoint + "search",
+      params: {
+        image: image,
+        filter_by_contract_address: filter_by_contract_address,
+        chain: chain,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: nftPortApiKey,
+      },
+    };
+
+    const results = await axios
+      .request(options)
+      .then(function (response) {
+        const data = response.data;
+        return data;
+      })
+      .catch(function (error) {
+        const store = useStore();
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log("Error Code: ", error.response.data.error.code);
+          store.setErrorCode(error.response.data.error.code);
+
+          console.log("Error Status: ", error.response.status);
+          store.setErrorStatus(error.response.status);
+
+          console.log("Error Message: ", error.response.data.error.message);
+          store.setErrorMessage(error.response.data.error.message);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.error("Error Request: ", error.request);
+        } else {
+          /* Something happened in setting up the request that triggered an Error */
+          console.log("Error Code: ", error.code);
+          store.setErrorCode(error.code);
+
+          console.log("Error Status: ", error.status);
+          store.setErrorStatus(error.status);
+
+          console.log("Error Message: ", error.message);
+          store.setErrorMessage(error.message);
+        }
+        console.log("error.config", error.config);
+        console.log("error.toJSON()", error.toJSON());
+        return error.toJSON();
       });
 
     // {
@@ -120,7 +249,23 @@ export default class nftPort {
         return data;
       })
       .catch(function (error) {
-        console.error(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log("error.response.data", error.response.data);
+          console.log("error.response.status", error.response.status);
+          console.log("error.response.headers", error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log("error.request", error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        // console.log("error.config", error.config);
+        console.log("error.toJSON()", error.toJSON());
       });
 
     const nftCollection = {
@@ -179,7 +324,23 @@ export default class nftPort {
           return data;
         })
         .catch(function (error) {
-          console.error(error);
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log("error.response.data", error.response.data);
+            console.log("error.response.status", error.response.status);
+            console.log("error.response.headers", error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log("error.request", error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+          // console.log("error.config", error.config);
+          console.log("error.toJSON()", error.toJSON());
         });
 
       const account = {
@@ -204,6 +365,11 @@ export default class nftPort {
    *
    */
   async detailsNftSearch(contract_address, token_id, chain, refresh_metadata) {
+    // console.log("contract_address", contract_address);
+    // console.log("token_id", token_id);
+    // console.log("chain", chain);
+    // console.log("refresh_metadata", refresh_metadata);
+
     const options = {
       method: "GET",
       url: this.endpoint + `nfts/${contract_address}/${token_id}`,
@@ -220,11 +386,33 @@ export default class nftPort {
     const results = await axios
       .request(options)
       .then(function (response) {
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
+        console.log(response.config);
         const data = response.data;
+        // console.log("NFT Port Response Data: ", data);
         return data;
       })
       .catch(function (error) {
-        console.error(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log("error.response.data", error.response.data);
+          console.log("error.response.status", error.response.status);
+          console.log("error.response.headers", error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log("error.request", error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        // console.log("error.config", error.config);
+        console.log("error.toJSON()", error.toJSON());
       });
 
     const nft = {
@@ -233,6 +421,7 @@ export default class nftPort {
       owner: results.owner,
       response: results.response,
     };
+    console.log("NFT details :", nft);
     return nft;
   }
 }

@@ -47,10 +47,30 @@
                 Your NFT will be minted as a wrapped mNFT on the target chain
                 and locked on the chain of origin.
               </p>
-              <p>
-                Trade, stake or use your dynamic Mint Tea NFTs on different
-                blockchains and their local dapps.
-              </p>
+            </div>
+            <div class="select-row">
+              <label class="black">Bridge From</label>
+              <select class="bridge-from-chain" v-model="bridgeFrom">
+                <option
+                  v-for="option in options"
+                  :value="option.label"
+                  :key="option.key"
+                >
+                  {{ option.text }}
+                </option>
+              </select>
+            </div>
+            <div class="select-row">
+              <label class="black">Bridge To</label>
+              <select class="bridge-to-chain" v-model="bridgeTo">
+                <option
+                  v-for="option in options"
+                  :value="option.label"
+                  :key="option.key"
+                >
+                  {{ option.text }}
+                </option>
+              </select>
             </div>
             <div class="button-container">
               <button class="bridge-button-left" @click="bridgeNFT()">
@@ -206,7 +226,7 @@
         </h2>
       </div>
       <div class="row token-list">
-        <template v-for="token in anneTokens" :key="token.token_id">
+        <template v-for="token in trendingTokens" :key="token.token_id">
           <NftCard
             v-if="token.metadata && token.metadata.image"
             :token="token"
@@ -230,24 +250,7 @@
         </template>
       </div>
     </section>
-    <!-- <section id="music">
-      <div class="row-header">
-        <h2>Latest beats<ArrowDownBlack class="arrow-down" /></h2>
-      </div>
-      <div class="row token-list">
-        <div
-          v-if="keremTokens && keremTokens.length > 0"
-          class="music-nft-container"
-        >
-          <template v-for="token in keremTokens" :key="token.contract">
-            <MusicCard
-              v-if="token.metadata && token.metadata.image"
-              :token="token"
-            />
-          </template>
-        </div>
-      </div>
-    </section> -->
+    <CollectionSection />
     <AboutSection />
   </main>
 </template>
@@ -279,7 +282,7 @@ import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
-// import MusicCard from "@/components/MusicCard.vue";
+import CollectionSection from "@/components/CollectionSection.vue";
 import AboutSection from "@/components/AboutSection.vue";
 
 /* Import Smart Contract ABI */
@@ -299,7 +302,7 @@ console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 
 /* Init Pinia Store Values and Methods */
 const store = useStore();
-const { loading, account, topTokens, latestTokens, anneTokens } =
+const { loading, account, topTokens, latestTokens, trendingTokens } =
   storeToRefs(store);
 
 /* Set Form Tab */
@@ -325,6 +328,20 @@ const attributes = ref([]);
 const size = ref("");
 const createdAt = ref("");
 const audioVideoType = ref("");
+
+const bridgeFrom = ref("all");
+const bridgeTo = ref("all");
+const options = ref([
+  { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
+  { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  { value: 137, label: "polygon", text: "Polygon Mainnet" },
+  { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  { value: 10, label: "optimism", text: "Optimism Mainnet" },
+  { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
+  { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 0, label: "all", text: "All" },
+]);
 
 /**
  * Switch Tab
@@ -646,39 +663,21 @@ onMounted(async () => {
   getAccount();
   await checkIfWalletIsConnected();
 
-  /* Kerems Music NFT Video */
-  // if (keremTokens.value.length === 0) {
-  //   let keremTokens = await store.detailsNftSearch(
-  //     "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-  //     "52806",
-  //     "ethereum",
-  //     true
-  //   );
-  //   if (keremTokens.nft) {
-  //     store.addKeremTokens(...[keremTokens.nft]);
-  //   }
-  //   let keremTokens2 = await store.detailsNftSearch(
-  //     "0x3B3ee1931Dc30C1957379FAc9aba94D1C48a5405",
-  //     "108227",
-  //     "ethereum",
-  //     true
-  //   );
-  //   if (keremTokens2.nft) {
-  //     store.addKeremTokens(...[keremTokens2.nft]);
-  //   }
-  // }
-
-  if (anneTokens.value.length === 0) {
-    let anneTokens = await store.contractNftSearch(
-      "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
-      "ethereum",
-      "metadata",
-      "true",
-      10,
-      1
-    );
-    if (anneTokens.nfts) {
-      store.addAnneTokens(...anneTokens.nfts);
+  if (trendingTokens.value.length === 0) {
+    try {
+      let trendingTokens = await store.contractNftSearch(
+        "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+        "ethereum",
+        "metadata",
+        "true",
+        10,
+        1
+      );
+      if (trendingTokens.nfts) {
+        store.addTrendingTokens(...trendingTokens.nfts);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 });
@@ -1008,12 +1007,88 @@ section#content {
   }
 
   .select-row {
+    width: 100%;
     position: relative;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 15px;
+    label.black {
+      width: 100%;
+      color: $mint-black;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 24px;
+      letter-spacing: 0.1em;
+      margin: 8px 0 2px 15px;
+      text-align: left;
+    }
+  }
+  select.bridge-from-chain {
+    width: 100%;
+    color: $mint-blue;
+    background-color: #ffffff;
+    border: 1px solid $mint-blue;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    font-size: 13px;
+    padding: 11px 10px 9px;
+    margin: 0 5px;
+    text-align: center;
+
+    @include breakpoint($break-sm) {
+      width: 98%;
+      margin: 0 1%;
+    }
+    @include breakpoint($break-xs) {
+      width: 98%;
+      margin: 0 1%;
+    }
+  }
+  select.bridge-from-chain::placeholder {
+    color: $mint-blue;
+    letter-spacing: 1px;
+  }
+  select.bridge-from-chain:focus {
+    border: 1px solid $mint-black;
+    outline: none;
+  }
+
+  select.bridge-to-chain {
+    width: 100%;
+    color: $mint-blue;
+    background-color: #ffffff;
+    border: 1px solid $mint-blue;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    font-size: 13px;
+    padding: 11px 10px 9px;
+    margin: 0 5px;
+    text-align: center;
+
+    @include breakpoint($break-sm) {
+      width: 98%;
+      margin: 0 1%;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      border-bottom-left-radius: 0;
+    }
+    @include breakpoint($break-xs) {
+      width: 98%;
+      margin: 0 1%;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+  select.bridge-to-chain::placeholder {
+    color: $mint-blue;
+    letter-spacing: 1px;
+  }
+  select.bridge-to-chain:focus {
+    border: 1px solid $mint-black;
+    outline: none;
   }
 
   .button-container {
@@ -1095,6 +1170,9 @@ section#content {
     margin: 10px 1% 10px 0;
     transition: 0.4s;
     cursor: pointer;
+    &:hover {
+      color: $mint-black;
+    }
   }
   .bridge-button-right {
     color: $white;
@@ -1108,6 +1186,9 @@ section#content {
     margin: 10px 0 10px 1%;
     transition: 0.4s;
     cursor: pointer;
+    &:hover {
+      color: $mint-black;
+    }
   }
 
   .back-button {
@@ -1122,14 +1203,32 @@ section#content {
     margin: 10px 0 10px 1%;
     transition: 0.4s;
     cursor: pointer;
+    &:hover {
+      color: $mint-blue;
+    }
   }
 }
 
 .bubbles-brewing {
   background-image: url("./brewingbubbles.svg");
-  background-position: center left;
+  background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;
+  @include breakpoint($break-md) {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+  @include breakpoint($break-sm) {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 600px;
+  }
+  @include breakpoint($break-xs) {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
 }
 .bubbles-one {
   background-image: url("./bubbles1.svg");
@@ -1454,120 +1553,6 @@ section#collections {
     @include breakpoint($break-xs) {
       width: 80%;
       margin: 0 auto;
-    }
-  }
-}
-
-section#music {
-  width: 100%;
-  color: $mint-black;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
-  padding: 3em 0;
-
-  .row-header {
-    width: 100%;
-    max-width: 1280px;
-    display: flex;
-    flex-direction: row;
-    align-content: flex-start;
-    justify-content: center;
-    align-items: center;
-    margin: 25px 0;
-    @include breakpoint($break-lg) {
-      width: 80%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-md) {
-      width: 83%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-sm) {
-      width: 85%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-xs) {
-      width: 85%;
-      margin: 0 auto;
-    }
-    h2 {
-      width: 100%;
-      color: $mint-black;
-      font-style: normal;
-      font-weight: 700;
-      font-size: 36px;
-      line-height: 42px;
-      text-align: left;
-      margin: 0 0 20px 20px;
-      .arrow-down {
-        margin-bottom: -5px;
-      }
-    }
-  }
-
-  .row {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-  }
-
-  .token-list {
-    width: 100%;
-    max-width: 1280px;
-    display: inline-block;
-    margin: 0 auto;
-    @include breakpoint($break-lg) {
-      width: 80%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-md) {
-      width: 86%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-sm) {
-      width: 97%;
-      margin: 0 auto;
-    }
-    @include breakpoint($break-xs) {
-      width: 80%;
-      margin: 0 auto;
-    }
-  }
-
-  .music-nft-container {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    padding: 0;
-
-    h1 {
-      color: $mint-black;
-      font-size: 1.7rem;
-      line-height: 1.8rem;
-      text-align: left;
-      margin: 0 auto 15px;
-    }
-
-    a {
-      color: $mint-black;
-      font-weight: bold;
-      border-bottom: 1px solid $mint-black;
-      text-decoration: none;
-    }
-
-    p {
-      line-height: 1.7;
-      margin-bottom: 10px;
-      text-align: center;
     }
   }
 }

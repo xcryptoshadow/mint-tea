@@ -2,7 +2,6 @@
 import { NFTStorage, Blob } from "nft.storage";
 
 const NFT_STORAGE_KEY = import.meta.env.VITE_NFT_STORAGE_KEY;
-console.log("NFT_STORAGE_KEY", NFT_STORAGE_KEY);
 
 /**
  * Store NFT Metadata in custom Attribute structure
@@ -20,9 +19,6 @@ export const nftStorage = async (
    * Create a blob to validate TypeError: property `image` must be a Blob or File
    * object at validateERC1155
    */
-  console.log("imageUrl", imageUrl);
-  console.log("audioVideoType", audioVideoType);
-
   let blob = new Blob([imageUrl], { type: audioVideoType });
 
   const nft = {
@@ -33,6 +29,7 @@ export const nftStorage = async (
     external_url: externalUrl,
     attributes: attributes,
   };
+
   /* Init NFT.Storage Client */
   const client = new NFTStorage({ token: NFT_STORAGE_KEY });
   const metadata = await client.store(nft);
