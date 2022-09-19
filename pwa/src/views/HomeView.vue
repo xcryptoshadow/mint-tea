@@ -50,7 +50,11 @@
             </div>
             <div class="select-row">
               <label class="black">Bridge From</label>
-              <select class="bridge-from-chain" v-model="bridgeFrom">
+              <select
+                class="bridge-from-chain"
+                v-model="bridgeFrom"
+                @change="updateBridgeFrom($event)"
+              >
                 <option
                   v-for="option in options"
                   :value="option.label"
@@ -59,6 +63,10 @@
                   {{ option.text }}
                 </option>
               </select>
+              <span class="bridge-step-one">
+                Select where you would like to bridge your tokens from in the
+                below dropdown
+              </span>
             </div>
             <div class="select-row">
               <label class="black">Bridge To</label>
@@ -71,9 +79,18 @@
                   {{ option.text }}
                 </option>
               </select>
+              <span class="bridge-step-one">
+                Click on your token from the list and then approve the token to
+                lock it for bridge transfer. Make sure to keep your browser
+                window open to complete the process.
+              </span>
             </div>
             <div class="button-container">
-              <button class="bridge-button-left" @click="bridgeNFT()">
+              <button
+                class="bridge-button-left"
+                @click="bridgeNFT()"
+                :disabled="!approvedBridge"
+              >
                 bridge
               </button>
               <button class="back-button" @click="switchTab('mint')">
@@ -141,10 +158,16 @@
       <aside>
         <!-- Right Side -->
         <section id="nft-modal" class="bubbles-brewing">
-          <div v-if="!imageUrl" class="nft-modal-loading">
-            <div v-if="loading" class="loading">loading ...</div>
+          <!-- Show loading if we uploading a file -->
+          <div v-if="loading && formTab === 'mint'" class="nft-modal-loading">
+            <div class="loading">loading ...</div>
           </div>
-          <div v-if="imageUrl" class="nft-modal-card">
+
+          <!-- Once file loaded, we can enter Name and Description -->
+          <div
+            v-if="imageUrl && !showBridgeTokens && formTab === 'mint'"
+            class="nft-modal-card"
+          >
             <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
               <video width="320" height="240" controls>
                 <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
@@ -177,11 +200,11 @@
               {{ externalUrl }}
             </div>
             <!-- <div class="nft-modal-description">
-            {{ animationUrl }}
-          </div> -->
+              {{ animationUrl }}
+            </div> -->
             <!-- <div class="nft-modal-description">
-            {{ youtubeUrl }}
-          </div> -->
+              {{ youtubeUrl }}
+            </div> -->
             <div class="nft-modal-attributes">
               <template v-for="(index, attr) in attributes" :key="index">
                 <div class="nft-attribute">
@@ -211,6 +234,157 @@
                   Open link
                 </a>
               </div>
+            </div>
+          </div>
+          <!-- Pull Tokens by Account to Bridge -->
+          <div
+            v-if="!imageUrlBridge && showBridgeTokens && formTab === 'bridge'"
+            class="nft-bridge-tokens"
+          >
+            <div
+              v-if="bridgeFrom === 'ethereum' || bridgeFrom === 'all'"
+              class="row"
+            >
+              <div class="row-header">
+                <h2>Ethereum <ArrowDownBlue class="arrow-down" /></h2>
+              </div>
+              <div v-if="ethereumTokens.length > 0" class="row token-list">
+                <template v-for="token in ethereumTokens" :key="token.tokenId">
+                  <NftCard
+                    v-if="token.metadata"
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
+                </template>
+              </div>
+            </div>
+            <div
+              v-if="bridgeFrom === 'polygon' || bridgeFrom === 'all'"
+              class="row"
+            >
+              <div class="row-header">
+                <h2>Polygon <ArrowDownBlue class="arrow-down" /></h2>
+              </div>
+              <div v-if="polygonTokens.length > 0" class="row token-list">
+                <template v-for="token in polygonTokens" :key="token.tokenId">
+                  <NftCard
+                    v-if="token.metadata"
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
+                </template>
+              </div>
+            </div>
+            <div
+              v-if="bridgeFrom === 'optimism' || bridgeFrom === 'all'"
+              class="row"
+            >
+              <div class="row-header">
+                <h2>Optimism <ArrowDownBlue class="arrow-down" /></h2>
+              </div>
+              <div v-if="optimismTokens.length > 0" class="row token-list">
+                <template v-for="token in optimismTokens" :key="token.tokenId">
+                  <NftCard
+                    v-if="token.metadata"
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
+                </template>
+              </div>
+            </div>
+            <div
+              v-if="bridgeFrom === 'arbitrum' || bridgeFrom === 'all'"
+              class="row"
+            >
+              <div class="row-header">
+                <h2>Arbitrum <ArrowDownBlue class="arrow-down" /></h2>
+              </div>
+              <div v-if="arbitrumTokens.length > 0" class="row token-list">
+                <template v-for="token in arbitrumTokens" :key="token.tokenId">
+                  <NftCard
+                    v-if="token.metadata"
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
+                </template>
+              </div>
+            </div>
+            <div
+              v-if="bridgeFrom === 'avalanche' || bridgeFrom === 'all'"
+              class="row"
+            >
+              <div class="row-header">
+                <h2>Avalanche <ArrowDownBlue class="arrow-down" /></h2>
+              </div>
+              <div v-if="avalancheTokens.length > 0" class="row token-list">
+                <template v-for="token in avalancheTokens" :key="token.tokenId">
+                  <NftCard
+                    v-if="token.metadata"
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
+                </template>
+              </div>
+            </div>
+          </div>
+          <!-- END Pull Tokens by Account to Bridge -->
+          <div
+            v-if="tokenIdBridge && imageUrlBridge && formTab === 'bridge'"
+            class="nft-bridge-modal-card"
+          >
+            <div
+              v-if="getUrlProtocol(imageUrlBridge) === 'mp4'"
+              class="nft-bridge-video"
+            >
+              <video width="320" height="240" controls>
+                <source
+                  :src="getUrlProtocol(imageUrlBridge)"
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div
+              v-if="getUrlProtocol(imageUrlBridge) === 'mp3'"
+              class="nft-bridge-modal-video"
+            >
+              <audio ref="player" width="320" height="240">
+                <source :src="imageUrlBridge" type="audio/mpeg" />
+              </audio>
+              <video width="320" height="240" controls>
+                <source
+                  :src="getUrlProtocol(imageUrlBridge)"
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div v-else-if="imageUrlBridge" class="nft-bridge-modal-image">
+              <img
+                v-if="imageUrlBridge"
+                :src="`${getUrlProtocol(imageUrlBridge)}`"
+                :alt="`${nameBridge}`"
+              />
+            </div>
+            <div class="nft-bridge-modal-title">
+              {{ nameBridge }}
+            </div>
+            <div class="nft-bridge-modal-tokenId">
+              Token Id : {{ tokenIdBridge }}
+            </div>
+            <div class="nft-bridge-modal-contract-address">
+              Contract Address : {{ contractAddressBridge }}
+            </div>
+            <div class="nft-bridge-modal-approve">
+              <button
+                :class="!approvedBridge ? 'approve-button' : 'approved-button'"
+                @click="ConfirmApprovedBridge(true)"
+              >
+                {{ !approvedBridge ? "Approve" : "Locked" }}
+              </button>
+              <button class="cancel-button" @click="CancelBridge()">
+                Cancel
+              </button>
             </div>
           </div>
         </section>
@@ -269,9 +443,11 @@ import { useStore } from "../store";
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
+import authNFT from "../services/authNFT.js";
 
 /* Import SVGs */
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
+import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 // import BubblesOne from "../assets/svgs/BubblesOne.vue?component";
 // import BubblesTwo from "../assets/svgs/BubblesTwo.vue?component";
@@ -287,8 +463,21 @@ import AboutSection from "@/components/AboutSection.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+import bridgeContractAbiEthereum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+import bridgeContractAbiPolygon from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+import bridgeContractAbiOptimism from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+import bridgeContractAbiArbitrum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
+import bridgeContractAbiAvalanche from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
 const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
+const bridgeContractAddressEthereum = "";
+const bridgeContractAddressOptimism = "";
+const bridgeContractAddressPolygon =
+  "0x320Af97E6E8C580D6850890C81fd7161a3332C71";
+const bridgeContractAddressAvalanche =
+  "0xb2C3a5d2296b4d6BCb272E60f4Ce10d17Afcf32a";
+const bridgeContractAddressArbitrum =
+  "0x195a17f9e714a79A9D4E1757Fe59a01a7B59Ea23";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -302,20 +491,30 @@ console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 
 /* Init Pinia Store Values and Methods */
 const store = useStore();
-const { loading, account, topTokens, latestTokens, trendingTokens } =
-  storeToRefs(store);
+const {
+  loading,
+  account,
+  topTokens,
+  latestTokens,
+  trendingTokens,
+  ethereumTokens,
+  polygonTokens,
+  optimismTokens,
+  arbitrumTokens,
+  avalancheTokens,
+} = storeToRefs(store);
 
 /* Set Form Tab */
 const formTab = ref("mint");
+const showBridgeTokens = ref(false);
 
-// File Uploader
+/* File Uploader Ref */
 const fileRef = ref(null);
 
-// NFT Form Metadata fields
+/* NFT Form Metadata fields */
 const tokenId = ref("");
 const cid = ref("");
-
-// Visible on form, above hidden on form
+/* Visible on form, above hidden on form */
 const name = ref("");
 const description = ref("");
 const imageUrl = ref(null);
@@ -323,31 +522,143 @@ const externalUrl = ref("");
 const animationUrl = ref("");
 const youtubeUrl = ref("");
 const attributes = ref([]);
-
-// Calculated on Mint and IPFS upload
+/* Calculated on Mint and IPFS upload */
 const size = ref("");
 const createdAt = ref("");
 const audioVideoType = ref("");
 
+/* Bridge Fields and Data */
 const bridgeFrom = ref("all");
 const bridgeTo = ref("all");
 const options = ref([
   { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
-  { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
   { value: 137, label: "polygon", text: "Polygon Mainnet" },
-  { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
   { value: 10, label: "optimism", text: "Optimism Mainnet" },
-  { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
   { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
-  { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
   { value: 0, label: "all", text: "All" },
 ]);
+/* Bridge NFT Details */
+const tokenIdBridge = ref("");
+const contractAddressBridge = ref("");
+const nameBridge = ref("");
+const imageUrlBridge = ref(null);
+const approvedBridge = ref(false);
+
+/* Load our Bridge NFT to approve */
+function loadNFTDetails(token) {
+  console.log("Bridge Token Loaded:", token);
+  if (token.tokenId || token.token_id) {
+    tokenIdBridge.value = token.tokenId
+      ? token.tokenId
+      : token.token_id
+      ? token.token_id
+      : "";
+    console.log("Token Id:", tokenIdBridge.value);
+  }
+  if (token.contract) {
+    contractAddressBridge.value = token.contract;
+    console.log("Contract Address Bridge:", contractAddressBridge.value);
+  }
+  console.log("Token Metdata:", token.metadata);
+  if (token.metadata.name) {
+    nameBridge.value = token.metadata.name;
+    console.log("Token Name Bridge:", nameBridge.value);
+  }
+  if (token.metadata.image) {
+    imageUrlBridge.value = token.metadata.image;
+    console.log("Token Image Bridge:", imageUrlBridge.value);
+  }
+  /* Hide the Token Panel */
+  showBridgeTokens.value = false;
+}
+
+/* Fetch NFT by Account Address */
+async function fetchTokens() {
+  if (account.value) {
+    try {
+      const authAccount = new authNFT();
+      /* Ethereum */
+      if (ethereumTokens.value.length === 0) {
+        let ethereumTokens = await authAccount.fetchAccountNfts(
+          1,
+          account.value
+        );
+        store.addEthereumTokens(...ethereumTokens);
+        let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
+          5,
+          account.value
+        );
+        store.addEthereumTokens(...ethereumTestnetTokens);
+      }
+      if (polygonTokens.value.length === 0) {
+        /* Polygon */
+        let polygonTokens = await authAccount.fetchAccountNfts(
+          137,
+          account.value
+        );
+        store.addPolygonTokens(...polygonTokens);
+        let polygonTestnetTokens = await authAccount.fetchAccountNfts(
+          80001,
+          account.value
+        );
+        store.addPolygonTokens(...polygonTestnetTokens);
+      }
+      /* Optimism */
+      // if (optimismTokens.value.length === 0) {
+      //   let optimismTokens = await authAccount.fetchAccountNfts(
+      //     10,
+      //     account.value
+      //   );
+      //   store.addOptimismTokens(...optimismTokens);
+      //   let optimismTestnetTokens = await authAccount.fetchAccountNfts(
+      //     69,
+      //     account.value
+      //   );
+      //   store.addOptimismTokens(...optimismTestnetTokens);
+      // }
+      /* Arbitrum */
+      // if (arbitrumTokens.value.length === 0) {
+      //   let arbitrumTokens = await authAccount.fetchAccountNfts(
+      //     42161,
+      //     account.value
+      //   );
+      //   store.addArbitrumTokens(...arbitrumTokens);
+      //   let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
+      //     42161,
+      //     account.value
+      //   );
+      //   store.addArbitrumTokens(...arbitrumTestnetTokens);
+      // }
+      /* Avalanche */
+      // if (avalancheTokens.value.length === 0) {
+      //   let avalancheTokens = await authAccount.fetchAccountNfts(
+      //     42161,
+      //     account.value
+      //   );
+      //   store.addAvalancheTokens(...avalancheTokens);
+      //   let avalancheTestnetTokens = await authAccount.fetchAccountNfts(
+      //     42161,
+      //     account.value
+      //   );
+      //   store.addAvalancheTokens(...avalancheTestnetTokens);
+      // }
+    } catch (error) {
+      console.log(`Error fetching tokens, please refresh to try again!`);
+    }
+  }
+}
 
 /**
  * Switch Tab
  */
 const switchTab = (value) => {
   formTab.value = value;
+  if (value === "mint") showBridgeTokens.value = false;
+  if (value === "bridge") showBridgeTokens.value = true;
 };
 
 /**
@@ -654,6 +965,138 @@ const mintNFT = async () => {
   }
 };
 
+/**
+ * Bridge NFT
+ */
+const bridgeNFT = async () => {
+  /**
+   * Bridge our NFT with custom deBridge DeNFT contracts
+   */
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      /* Get correct Contract Address and ABI for the chain */
+      let contractAddress = null;
+      let contractABI = null;
+
+      if (bridgeFrom.value === "ethereum") {
+        /* Ethereum */
+        contractAddress = bridgeContractAddressEthereum;
+        contractABI = bridgeContractAbiEthereum.abi;
+      } else if (bridgeFrom.value === "optimism") {
+        /* Optimism */
+        contractAddress = bridgeContractAddressOptimism;
+        contractABI = bridgeContractAbiOptimism.abi;
+      } else if (bridgeFrom.value === "polygon") {
+        /* Polygon */
+        contractAddress = bridgeContractAddressPolygon;
+        contractABI = bridgeContractAbiPolygon.abi;
+      } else if (bridgeFrom.value === "arbitrum") {
+        /* Arbitrum */
+        contractAddress = bridgeContractAddressArbitrum;
+        contractABI = bridgeContractAbiArbitrum.abi;
+      } else if (bridgeFrom.value === "avalanche") {
+        /* Avalanche */
+        contractAddress = bridgeContractAddressAvalanche;
+        contractABI = bridgeContractAbiAvalanche.abi;
+      }
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+
+      const styles = ["color: black", "background: green"].join(";");
+      console.log(
+        "%c🍵 Mint Tea Bridge Contract Address:  %s ",
+        styles,
+        contractAddress
+      );
+
+      let nftTxn = await contract.safeMint(
+        signer.getAddress(),
+        name.value,
+        description.value,
+        imageUrl.value,
+        externalUrl.value
+      );
+
+      const stylesMining = ["color: black", "background: yellow"].join(";");
+      console.log("%c⛏ Mining...please wait!  %s ⛏", stylesMining, nftTxn.hash);
+
+      // The OpenZeppelin base ERC721 contract emits a Transfer event
+      // when a token is issued. tx.wait() will wait until a block containing
+      // our transaction has been mined and confirmed. The transaction receipt
+      // contains events emitted while processing the transaction.
+      const receipt = await nftTxn.wait();
+
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log(
+        "%c💎 We just mined another gem! %s 💎",
+        stylesReceipt,
+        nftTxn.hash
+      );
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT Minted on Polygon, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash} %s`,
+          stylesPolygon,
+          nftTxn.hash
+        );
+
+        /* Remove loading indicator and show success notification */
+        console.log(
+          `🧬 NFT has been minted successfully, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+/**
+ * Approve Bridge Transfer
+ */
+const updateBridgeFrom = (event) => {
+  console.log("bridgeFrom.value:", event.target.value);
+  console.log("Bridge From:", bridgeFrom.value);
+  bridgeFrom.value = event.target.value;
+  console.log("Bridge From:", bridgeFrom.value);
+};
+
+/**
+ * Approve Bridge Transfer
+ */
+const ConfirmApprovedBridge = (value) => {
+  approvedBridge.value = value;
+};
+
+/**
+ * Cancel Bridge Transfer
+ */
+const CancelBridge = () => {
+  tokenIdBridge.value = "";
+  contractAddressBridge.value = "";
+  nameBridge.value = "";
+  imageUrlBridge.value = null;
+  approvedBridge.value = false;
+  showBridgeTokens.value = true;
+};
+
 onMounted(async () => {
   window.scrollTo({
     top: 0,
@@ -662,6 +1105,7 @@ onMounted(async () => {
   });
   getAccount();
   await checkIfWalletIsConnected();
+  await fetchTokens();
 
   if (trendingTokens.value.length === 0) {
     try {
@@ -682,7 +1126,6 @@ onMounted(async () => {
   }
 });
 </script>
-
 <style lang="scss" scoped>
 @import "../assets/styles/variables.scss";
 @import "../assets/styles/mixins.scss";
@@ -712,7 +1155,7 @@ section#mint {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 3em 5em;
+    padding: 2em 5em 3em;
     @include breakpoint($break-xl) {
       padding: 1em;
     }
@@ -768,9 +1211,10 @@ section#content {
 
   .form-container {
     width: 428px;
+    height: 642px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
     background: #fff;
@@ -1056,6 +1500,17 @@ section#content {
     outline: none;
   }
 
+  .bridge-step-one {
+    width: 100%;
+    color: $mint-black;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 14px;
+    margin: 8px 0 2px 15px;
+    text-align: left;
+  }
+
   select.bridge-to-chain {
     width: 100%;
     color: $mint-blue;
@@ -1174,6 +1629,11 @@ section#content {
       color: $mint-black;
     }
   }
+  .bridge-button-left:disabled {
+    background: #c6c6c6;
+    color: #101010;
+    cursor: not-allowed;
+  }
   .bridge-button-right {
     color: $white;
     background-color: $mint-blue;
@@ -1266,9 +1726,10 @@ section#nft-modal {
   color: $mint-black;
   display: flex;
   flex-direction: column;
-  align-content: center;
+  justify-content: flex-start;
+  align-content: flex-start;
   align-items: center;
-  justify-content: center;
+
   padding: 0;
 
   @include breakpoint($break-md) {
@@ -1383,7 +1844,7 @@ section#nft-modal {
     text-align: center;
     margin: 10px auto 0;
   }
-  .nft-modal-external-url {
+  .nft-modal-contract-address {
     color: #1a1a1a;
     width: 100%;
     font-size: 14px;
@@ -1399,27 +1860,6 @@ section#nft-modal {
     flex-flow: row;
     justify-content: space-evenly;
     .file-image-url {
-      background: $mint-green;
-      border: none;
-      border-radius: 30px;
-      padding: 2px 12px;
-      cursor: pointer;
-      a {
-        color: $mint-black;
-        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-          "Droid Sans", "Helvetica Neue", sans-serif;
-        font-style: normal;
-        font-weight: 800;
-        font-size: 14px;
-        line-height: 24px;
-        text-align: center;
-        transition: 0.4s;
-        &:hover {
-          color: $mint-black;
-        }
-      }
-    }
-    .file-copy-url {
       background: $mint-blue;
       border: none;
       border-radius: 30px;
@@ -1440,35 +1880,293 @@ section#nft-modal {
         }
       }
     }
+    .file-copy-url {
+      background: $mint-black;
+      border: none;
+      border-radius: 30px;
+      padding: 2px 12px;
+      cursor: pointer;
+      a {
+        color: $white;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 24px;
+        text-align: center;
+        transition: 0.4s;
+        &:hover {
+          color: $mint-blue;
+        }
+      }
+    }
+  }
+}
+.nft-bridge-tokens {
+  width: 95%;
+  height: 700px;
+  color: $mint-black;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background: #f4f4f4;
+  border: 4px solid var(--gradient-100);
+  box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+  border-radius: 10px;
+  padding: 20px 20px 10px 20px;
+  overflow: scroll;
+
+  @include breakpoint($break-lg) {
+    padding: 0 0 3em 1em;
+  }
+  @include breakpoint($break-md) {
+    padding: 0 0 3em 0;
+  }
+  @include breakpoint($break-sm) {
+    padding: 0 0 3em 0;
+  }
+  @include breakpoint($break-xs) {
+    padding: 0 0 3em 0;
   }
 
-  .nft-modal-file-type {
+  .row-header {
+    width: 100%;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    margin: 25px 0;
+    @include breakpoint($break-lg) {
+      width: 100%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-md) {
+      width: 100%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-sm) {
+      width: 85%;
+      margin: 0 auto;
+    }
+    @include breakpoint($break-xs) {
+      width: 85%;
+      margin: 0 auto;
+    }
+    h2 {
+      width: 100%;
+      color: $mint-black;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 42px;
+      text-align: left;
+      margin: 0 0 20px 20px;
+      .arrow-down {
+        margin: 10px 0 -10px 10px;
+      }
+    }
   }
 
-  .nft-modal-file-size {
+  .row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
   }
 
-  // .mint-button {
-  //   color: #fff;
-  //   background-color: $mint-black;
-  //   font-size: 18px;
-  //   font-weight: bold;
-  //   width: 100%;
-  //   max-width: 360px;
-  //   height: 55px;
-  //   border: 0;
-  //   padding-left: 87px;
-  //   padding-right: 87px;
-  //   border-radius: 10px;
-  //   transition: 0.4s;
-  //   cursor: pointer;
-  // }
+  .token-list {
+    width: 100%;
+    max-width: 1280px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+    @include breakpoint($break-lg) {
+      width: 100%;
+      margin: 0 auto;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @include breakpoint($break-md) {
+      width: 100%;
+      margin: 0 auto;
+      grid-template-columns: repeat(1, 1fr);
+    }
+    @include breakpoint($break-sm) {
+      width: 100%;
+      margin: 0 auto;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @include breakpoint($break-xs) {
+      width: 100%;
+      margin: 0 auto;
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+}
 
-  // .mint-button:disabled {
-  //   background: #c6c6c6;
-  //   color: $mint-orange;
-  //   cursor: not-allowed;
-  // }
+.nft-bridge-modal-card {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background: #f4f4f4;
+  border: 4px solid var(--gradient-100);
+  box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+  border-radius: 10px;
+  padding: 20px 20px 10px 20px;
+  @include breakpoint($break-lg) {
+    width: 89%;
+    padding: 20px 20px 10px 20px;
+  }
+  @include breakpoint($break-md) {
+    width: 81%;
+    padding: 20px 20px 10px 20px;
+  }
+  @include breakpoint($break-sm) {
+    width: 81%;
+    padding: 20px 20px 10px 20px;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 20px 20px 10px 20px;
+  }
+
+  .nft-bridge-modal-video {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    background: #f4f4f4;
+  }
+  .nft-bridge-modal-image {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+
+    img,
+    svg {
+      width: 100%;
+      max-width: 560px;
+      height: 100%;
+      object-fit: contain;
+      overflow: hidden;
+    }
+  }
+
+  .nft-bridge-modal-title {
+    width: 100%;
+    color: $mint-black;
+    font-size: 1.7rem;
+    font-weight: 400;
+    text-align: center;
+    margin: 10px auto 0;
+  }
+
+  .nft-bridge-modal-tokenId {
+    color: $mint-black;
+    width: 100%;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px auto 0;
+  }
+  .nft-bridge-modal-contract-address {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px auto 5px;
+  }
+  .nft-bridge-modal-approve {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    .approve-button {
+      color: $white;
+      background-color: $mint-blue;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
+      border-radius: 30px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
+      cursor: pointer;
+      &:hover {
+        color: $mint-black;
+      }
+    }
+    .approved-button {
+      color: $black;
+      background-color: $mint-green;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
+      border-radius: 30px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
+      cursor: not-allowed;
+      &:hover {
+        color: $mint-black;
+      }
+    }
+    .cancel-button {
+      color: $white;
+      background-color: $mint-black;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
+      border-radius: 30px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
+      cursor: pointer;
+      &:hover {
+        color: $mint-blue;
+      }
+    }
+  }
 }
 
 section#collections {

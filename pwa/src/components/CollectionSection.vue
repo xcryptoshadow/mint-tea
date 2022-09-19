@@ -6,8 +6,7 @@
         <ArrowDownWhite class="arrow-down" />
       </h2>
       <h2 class="right">
-        <span class="artists-collection">FOOD=LOVE</span
-        ><span class="artist-name">BY SHOKUMOTSU</span>
+        <span class="artists-collection">FOOD=LOVE BY SHOKUMOTSU</span>
       </h2>
     </div>
     <div class="row token-list">
@@ -126,7 +125,7 @@
         </div>
       </a>
       <!-- #7 -->
-      <a
+      <!-- <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565707281602707466"
         target="_blank"
         alt="#07 TAIYAKI I SCREAM"
@@ -143,9 +142,9 @@
             art I don’t know what is…
           </div>
         </div>
-      </a>
+      </a> -->
       <!-- #8 -->
-      <a
+      <!-- <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565708381114335242"
         target="_blank"
         alt="#08 SWEET&amp;SOUR CRISPS"
@@ -161,9 +160,9 @@
             crispies for all ETERNITY!
           </div>
         </div>
-      </a>
+      </a> -->
       <!-- #9 -->
-      <a
+      <!-- <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565709480625963018"
         target="_blank"
         alt="#09 FALAFEL"
@@ -181,7 +180,7 @@
             WARNING: your aura will be pure garlic for 3 days STRAIGHT!
           </div>
         </div>
-      </a>
+      </a> -->
       <!-- #10 -->
       <!-- <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565710580137590794"
@@ -244,6 +243,7 @@
 </template>
 <script setup>
 import { onMounted } from "vue";
+
 /* Import our Pinia Store & Refs */
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
@@ -253,20 +253,20 @@ import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 
 /* Init Pinia Store Values and Methods */
 const store = useStore();
-const { anneTokens } = storeToRefs(store);
+const { trendingTokens } = storeToRefs(store);
 
 onMounted(async () => {
-  /* Annes NFT Collection */
-  if (anneTokens.value.length === 0) {
+  /* Get NFT Collection with NFT Port API */
+  if (trendingTokens.value.length === 0) {
     try {
-      let anneTokens = await store.detailsNftSearch(
+      let trendingTokens = await store.detailsNftSearch(
         "0x1b1bff222999bcd6fd07b64d7880e6a95d54acaa",
         "7687",
         "ethereum",
         true
       );
-      if (anneTokens.nfts) {
-        store.addTrendingTokens(...anneTokens.nfts);
+      if (trendingTokens.nfts) {
+        store.addTrendingTokens(...trendingTokens.nfts);
       }
     } catch (error) {
       console.log(error);
@@ -308,10 +308,12 @@ section#artists {
     @include breakpoint($break-sm) {
       width: 85%;
       margin: 0 auto;
+      flex-direction: column;
     }
     @include breakpoint($break-xs) {
       width: 85%;
       margin: 0 auto;
+      flex-direction: column;
     }
     h2.left {
       width: 50%;
@@ -323,15 +325,22 @@ section#artists {
       text-align: left;
       margin: 0 0 20px 20px;
       display: flex;
-      flex-direction: row;
+      flex-direction: row wrap;
       align-content: center;
       justify-content: flex-start;
       align-items: center;
+      @include breakpoint($break-sm) {
+        width: 100%;
+        justify-content: center;
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+      }
       .mint-blue {
         color: $mint-blue;
       }
       .arrow-down {
-        margin: 10px 0 -10px 10px;
+        margin: 0 0 0 10px;
       }
     }
     h2.right {
@@ -348,15 +357,25 @@ section#artists {
       align-content: center;
       justify-content: flex-end;
       align-items: center;
+      @include breakpoint($break-sm) {
+        width: 100%;
+        justify-content: center;
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+      }
       .mint-blue {
         color: $mint-blue;
       }
       .artists-collection {
         color: $mint-black;
         margin-left: 30px;
-      }
-      .artists-name {
-        margin-left: 30px;
+        @include breakpoint($break-sm) {
+          margin-left: 0;
+        }
+        @include breakpoint($break-xs) {
+          margin-left: 0;
+        }
       }
     }
   }
@@ -407,16 +426,16 @@ section#artists {
       cursor: pointer;
 
       @include breakpoint($break-md) {
-        width: 400px;
+        width: 380px;
         padding: 20px 20px 10px;
       }
       @include breakpoint($break-sm) {
-        width: 98%;
-        margin: 0 auto 1%;
+        width: 100%;
+        margin: 0;
       }
       @include breakpoint($break-xs) {
-        width: 98%;
-        margin: 0 auto 1%;
+        width: 100%;
+        margin: 0;
       }
 
       &:hover {
@@ -454,21 +473,6 @@ section#artists {
         font-weight: normal;
         text-align: center;
         margin: 0;
-      }
-    }
-    &:nth-child(3) {
-      margin: 0 0 25px 13px;
-      @include breakpoint($break-md) {
-        width: 400px;
-        padding: 20px 20px 10px;
-      }
-      @include breakpoint($break-sm) {
-        width: 98%;
-        margin: 0 auto 1%;
-      }
-      @include breakpoint($break-xs) {
-        width: 98%;
-        margin: 0 auto 1%;
       }
     }
   }

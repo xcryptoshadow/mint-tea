@@ -33,11 +33,6 @@ Mourad Bouabdallah - Solidity & Smart Contracts
 LinkedIn: <https://www.linkedin.com/in/mourad-bouabdallah/>
 GitHub: <https://github.com/mourad96>
 
-Kerem Demirayak - Product Manager / NFT Music & Art
-Twitter: [@karakter_music](https://twitter.com/karakter_music)
-Opensea: <https://opensea.io/collection/algobeats-by-han-x-nicolas-daniel>
-GitHub: <https://github.com/kdemirayak>
-
 ## Tableland Example
 
 The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test purposes at: 0xbE3601f014e0A861bc837bD1f24822cE23592422
@@ -146,11 +141,11 @@ Tableland - Tableland was used to create a SQL table on contract creation which 
 Sponsor Note: Kindly refer to pwa > src > services for examples of IPFS, NFT.Storage and NFT Port usage. These are used in the Upload and Mint functionality.
 
 Polygon - 🍵 Mint Tea is deployed to the Polygon Mumbai network and uses Matic for payments and minting, Mumbai Testnet for demo purposes only please!
-Spheron - The 🍵 Mint Tea web app is deployed seemlessly using Spheron, and served to the world via IPFS, also stored on Filecoin.
+Spheron - The 🍵 Mint Tea web app is deployed seamlessly using Spheron, and served to the world via IPFS, also stored on Filecoin.
 Hardhat - Hardhat takes care of all our deployments and smart contract compilation and testing
 Vue.js - It's green for go ;)
 Pinia - State management using Pinia store
-SASS,SCSS - Styled beatifully to match our fabulous designs by Anne Krauwer
+SASS,SCSS - Styled beautifully to match our fabulous designs by Anne Krauwer
 
 ## Hardhat Project Setup
 

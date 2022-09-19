@@ -85,8 +85,8 @@ export default class nftPort {
           console.log("Error Message: ", error.message);
           store.setErrorMessage(error.message);
         }
-        console.log("error.config", error.config);
-        console.log("error.toJSON()", error.toJSON());
+        // console.log("error.config", error.config);
+        // console.log("error.toJSON()", error.toJSON());
         return error.toJSON();
       });
 
@@ -175,6 +175,7 @@ export default class nftPort {
           console.error("Error Request: ", error.request);
         } else {
           /* Something happened in setting up the request that triggered an Error */
+          /* https://docs.nftport.xyz/docs/nftport/ZG9jOjU5MTMzOTk3-error-codes */
           console.log("Error Code: ", error.code);
           store.setErrorCode(error.code);
 
@@ -184,8 +185,8 @@ export default class nftPort {
           console.log("Error Message: ", error.message);
           store.setErrorMessage(error.message);
         }
-        console.log("error.config", error.config);
-        console.log("error.toJSON()", error.toJSON());
+        // console.log("error.config", error.config);
+        // console.log("error.toJSON()", error.toJSON());
         return error.toJSON();
       });
 
@@ -265,7 +266,7 @@ export default class nftPort {
           console.log("Error", error.message);
         }
         // console.log("error.config", error.config);
-        console.log("error.toJSON()", error.toJSON());
+        // console.log("error.toJSON()", error.toJSON());
       });
 
     const nftCollection = {
@@ -340,7 +341,7 @@ export default class nftPort {
             console.log("Error", error.message);
           }
           // console.log("error.config", error.config);
-          console.log("error.toJSON()", error.toJSON());
+          // console.log("error.toJSON()", error.toJSON());
         });
 
       const account = {
@@ -412,7 +413,7 @@ export default class nftPort {
           console.log("Error", error.message);
         }
         // console.log("error.config", error.config);
-        console.log("error.toJSON()", error.toJSON());
+        // console.log("error.toJSON()", error.toJSON());
       });
 
     const nft = {

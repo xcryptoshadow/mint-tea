@@ -823,6 +823,12 @@ section#search-bar {
     }
     /*Advanced Serach Options */
     .advanced-search {
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      margin: 10px auto;
       @include breakpoint($break-lg) {
         width: 100%;
         margin: 10px auto;
@@ -920,7 +926,7 @@ section#search-bar {
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
-        width: auto;
+        min-width: 400px;
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
@@ -957,7 +963,7 @@ section#search-results {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  height: 400px;
+  min-height: 430px;
   padding: 30px 0 10px;
 
   img,
@@ -988,7 +994,7 @@ section#search-results {
       width: 100%;
       max-width: 1279px;
       display: inline-block;
-      margin: 0 auto;
+      margin: 10px auto;
       .loading-bar {
         display: flex;
         flex-direction: column;

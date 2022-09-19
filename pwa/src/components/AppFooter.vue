@@ -3,14 +3,10 @@
     <div class="footer-sponsors">
       <SponsorLogos />
     </div>
-    <div class="footer-logo">
-      <GreenLogo />
-    </div>
   </footer>
 </template>
 <script setup>
 /* Import SVG */
-import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
 import SponsorLogos from "../assets/svgs/SponsorLogos.vue?component";
 </script>
 <style lang="scss">
@@ -19,7 +15,7 @@ import SponsorLogos from "../assets/svgs/SponsorLogos.vue?component";
 
 footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   align-content: center;
   color: $white;
@@ -28,61 +24,27 @@ footer {
   padding: 3em 3em 2em 3em;
   overflow: hidden;
 
-  @include breakpoint($break-lg) {
-    width: 100%;
-    padding: 2em 2em 1em 0.8em;
-  }
-  @include breakpoint($break-md) {
-    width: 100%;
-    padding: 1em 1% 1em 0;
-  }
-  @include breakpoint($break-sm) {
-    width: 100%;
-    padding: 1em 1% 1em 0;
-  }
-  @include breakpoint($break-xs) {
-    width: 100%;
-    padding: 1em 1% 1em 0;
-  }
-
   .footer-sponsors {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     align-content: center;
-    width: 48%;
-    margin-left: 2%;
-  }
+    width: 100%;
+    padding-left: 2%;
 
-  .footer-logo {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    align-content: center;
-    width: 50%;
-    padding-right: 40px;
-    @include breakpoint($break-md) {
-      padding-right: 10px;
-    }
-    @include breakpoint($break-sm) {
-      padding-right: 0;
-    }
-    @include breakpoint($break-xs) {
-      padding-right: 0;
-    }
     img,
     svg {
-      width: 240px;
+      width: 100%;
       object-fit: contain;
       overflow: hidden;
       @include breakpoint($break-md) {
-        width: 200px;
+        width: 100%;
       }
       @include breakpoint($break-sm) {
-        width: 190px;
+        width: 100%;
       }
       @include breakpoint($break-xs) {
-        width: 180px;
+        width: 100%;
       }
     }
   }
