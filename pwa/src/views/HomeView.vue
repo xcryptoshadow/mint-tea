@@ -961,20 +961,19 @@ const bridgeNFT = async () => {
   try {
     const { ethereum } = window;
     if (ethereum) {
-      console.log(bridgeFrom.value);
       const chainIdFrom = options.value.find((chain) => {
-        console.log(chain);
         return chain.label === bridgeFrom.value;
       })?.value;
 
       const chainIdTo = options.value.find((chain) => {
         return chain.label === bridgeTo.value;
       })?.value;
-      console.log(chainIdFrom);
+
       await ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: BigNumber.from(chainIdFrom).toHexString() }],
       });
+
       // TODO:
       const nftContractAddress = "0x03e055692e77e56aBf7f5570D9c64C194BA15616";
       const tokenId = 5001;

@@ -57,7 +57,6 @@ export const bridge = async (
     throw Error(`chain Id: ${chainIdFrom} is not supported`);
   }
 
-  console.log(chainIdTo);
   if (!isSupported(chainIdTo)) {
     throw Error(`chain Id: ${chainIdTo} is not supported`);
   }
