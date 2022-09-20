@@ -86,11 +86,7 @@
               </span>
             </div>
             <div class="button-container">
-              <button
-                class="bridge-button-left"
-                @click="bridgeNFT()"
-                :disabled="!approvedBridge"
-              >
+              <button class="bridge-button-left" @click="bridgeNFT()">
                 bridge
               </button>
               <button class="back-button" @click="switchTab('mint')">
@@ -431,7 +427,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 /* Import Libraries */
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 // import { BigNumber } from "bignumber.js";
 import moment from "moment";
 
@@ -444,6 +440,9 @@ import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
+
+/* Import our debridge Services */
+import { bridge } from "../services/debridge.js";
 
 /* Import SVGs */
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
@@ -463,21 +462,8 @@ import AboutSection from "@/components/AboutSection.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiEthereum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiPolygon from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiOptimism from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiArbitrum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiAvalanche from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
 const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
-const bridgeContractAddressEthereum = "";
-const bridgeContractAddressOptimism = "";
-const bridgeContractAddressPolygon =
-  "0x320Af97E6E8C580D6850890C81fd7161a3332C71";
-const bridgeContractAddressAvalanche =
-  "0xb2C3a5d2296b4d6BCb272E60f4Ce10d17Afcf32a";
-const bridgeContractAddressArbitrum =
-  "0x195a17f9e714a79A9D4E1757Fe59a01a7B59Ea23";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -975,89 +961,33 @@ const bridgeNFT = async () => {
   try {
     const { ethereum } = window;
     if (ethereum) {
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
+      console.log(bridgeFrom.value);
+      const chainIdFrom = options.value.find((chain) => {
+        console.log(chain);
+        return chain.label === bridgeFrom.value;
+      })?.value;
 
-      /* Get correct Contract Address and ABI for the chain */
-      let contractAddress = null;
-      let contractABI = null;
-
-      if (bridgeFrom.value === "ethereum") {
-        /* Ethereum */
-        contractAddress = bridgeContractAddressEthereum;
-        contractABI = bridgeContractAbiEthereum.abi;
-      } else if (bridgeFrom.value === "optimism") {
-        /* Optimism */
-        contractAddress = bridgeContractAddressOptimism;
-        contractABI = bridgeContractAbiOptimism.abi;
-      } else if (bridgeFrom.value === "polygon") {
-        /* Polygon */
-        contractAddress = bridgeContractAddressPolygon;
-        contractABI = bridgeContractAbiPolygon.abi;
-      } else if (bridgeFrom.value === "arbitrum") {
-        /* Arbitrum */
-        contractAddress = bridgeContractAddressArbitrum;
-        contractABI = bridgeContractAbiArbitrum.abi;
-      } else if (bridgeFrom.value === "avalanche") {
-        /* Avalanche */
-        contractAddress = bridgeContractAddressAvalanche;
-        contractABI = bridgeContractAbiAvalanche.abi;
-      }
-
-      const contract = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        signer
-      );
-
-      const styles = ["color: black", "background: green"].join(";");
-      console.log(
-        "%c🍵 Mint Tea Bridge Contract Address:  %s ",
-        styles,
-        contractAddress
-      );
-
-      let nftTxn = await contract.safeMint(
-        signer.getAddress(),
-        name.value,
-        description.value,
-        imageUrl.value,
-        externalUrl.value
-      );
-
-      const stylesMining = ["color: black", "background: yellow"].join(";");
-      console.log("%c⛏ Mining...please wait!  %s ⛏", stylesMining, nftTxn.hash);
-
-      // The OpenZeppelin base ERC721 contract emits a Transfer event
-      // when a token is issued. tx.wait() will wait until a block containing
-      // our transaction has been mined and confirmed. The transaction receipt
-      // contains events emitted while processing the transaction.
-      const receipt = await nftTxn.wait();
-
-      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
-      console.log(
-        "%c💎 We just mined another gem! %s 💎",
-        stylesReceipt,
-        nftTxn.hash
+      const chainIdTo = options.value.find((chain) => {
+        return chain.label === bridgeTo.value;
+      })?.value;
+      console.log(chainIdFrom);
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: BigNumber.from(chainIdFrom).toHexString() }],
+      });
+      // TODO:
+      const nftContractAddress = "0x03e055692e77e56aBf7f5570D9c64C194BA15616";
+      const tokenId = 5001;
+      const receipt = await bridge(
+        nftContractAddress,
+        tokenId,
+        chainIdFrom,
+        chainIdTo
       );
 
       /* Check our Transaction results */
       if (receipt.status === 1) {
-        /**
-         * @dev NOTE: Switch up these links once we go to Production
-         * Currently set to use Polygon Mumbai Testnet
-         */
-        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
-        console.log(
-          `%c🧬 NFT Minted on Polygon, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash} %s`,
-          stylesPolygon,
-          nftTxn.hash
-        );
-
-        /* Remove loading indicator and show success notification */
-        console.log(
-          `🧬 NFT has been minted successfully, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
-        );
+        console.log("ok");
       }
       return;
     } else {
