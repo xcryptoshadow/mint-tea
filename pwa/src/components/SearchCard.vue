@@ -30,20 +30,20 @@
         :alt="`${token.name}`"
       />
     </div>
+    <div v-if="token.mint_date" class="search-nft-description">
+      Mint Date: {{ token.mint_date }}
+    </div>
+    <div v-if="token.chain" class="search-nft-description">
+      Blockchain: {{ token.chain }}
+    </div>
     <div v-if="token.name" class="search-nft-title">
       {{ token.name }}
     </div>
     <div v-if="token.description" class="search-nft-description">
       {{ token.description }}
     </div>
-    <div v-if="token.mint_date" class="search-nft-description">
-      {{ token.mint_date }}
-    </div>
-    <div v-if="token.chain" class="search-nft-description">
-      {{ token.chain }}
-    </div>
     <div v-if="token.contract" class="search-nft-description">
-      {{ token.contract }}
+      {{ token.contract ? token.contract : token.contract_address }}
     </div>
   </div>
 </template>

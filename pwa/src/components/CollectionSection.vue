@@ -17,7 +17,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/LOADED_NACHOS.svg" alt="#01 LOADED NACHOS" />
+            <img src="/01.png" alt="#01 LOADED NACHOS" />
           </div>
           <div class="nft-title">#01 LOADED NACHOS</div>
           <div class="nft-description">
@@ -36,7 +36,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/COCKTAIL.svg" alt="#02 COCKTAIL" />
+            <img src="/02.png" alt="#02 COCKTAIL" />
           </div>
           <div class="nft-title">#02 COCKTAIL</div>
           <div class="nft-description">
@@ -55,7 +55,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/BANANA_SPLIT.svg" alt="#03 BANANA SPLIT" />
+            <img src="/03.png" alt="#03 BANANA SPLIT" />
           </div>
           <div class="nft-title">#03 BANANA SPLIT</div>
           <div class="nft-description">
@@ -74,7 +74,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/SURPRISE.svg" alt="#04 SURPRISE" />
+            <img src="/04.png" alt="#04 SURPRISE" />
           </div>
           <div class="nft-title">#04 SURPRISE</div>
           <div class="nft-description">
@@ -93,7 +93,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/RAMEN_BOWL.svg" alt="#05 RAMEN BOWL" />
+            <img src="/05.png" alt="#05 RAMEN BOWL" />
           </div>
           <div class="nft-title">#05 RAMEN BOWL</div>
           <div class="nft-description">
@@ -112,7 +112,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/HOT_SPICY_CRISPS.svg" alt="#06 HOT&SPICY CRISPS" />
+            <img src="/06.png" alt="#06 HOT&SPICY CRISPS" />
           </div>
           <div class="nft-title">#06 HOT&amp;SPICY CRISPS</div>
           <div class="nft-description">
@@ -125,14 +125,14 @@
         </div>
       </a>
       <!-- #7 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565707281602707466"
         target="_blank"
         alt="#07 TAIYAKI I SCREAM"
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/TAIYAKI_I_SCREAM.svg" alt="#07 TAIYAKI I SCREAM" />
+            <img src="/07.png" alt="#07 TAIYAKI I SCREAM" />
           </div>
           <div class="nft-title">#07 TAIYAKI I SCREAM</div>
           <div class="nft-description">
@@ -142,16 +142,16 @@
             art I don’t know what is…
           </div>
         </div>
-      </a> -->
+      </a>
       <!-- #8 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565708381114335242"
         target="_blank"
         alt="#08 SWEET&amp;SOUR CRISPS"
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/SWEET_SOUR_CRISPS.svg" alt="#08 SWEET&amp;SOUR CRISPS" />
+            <img src="/08.png" alt="#08 SWEET&amp;SOUR CRISPS" />
           </div>
           <div class="nft-title">#08 SWEET&amp;SOUR CRISPS</div>
           <div class="nft-description">
@@ -160,16 +160,16 @@
             crispies for all ETERNITY!
           </div>
         </div>
-      </a> -->
+      </a>
       <!-- #9 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565709480625963018"
         target="_blank"
         alt="#09 FALAFEL"
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/FALAFEL.svg" alt="#09 FALAFEL" />
+            <img src="/09.png" alt="#09 FALAFEL" />
           </div>
           <div class="nft-title">#09 FALAFEL</div>
           <div class="nft-description">
@@ -180,16 +180,16 @@
             WARNING: your aura will be pure garlic for 3 days STRAIGHT!
           </div>
         </div>
-      </a> -->
+      </a>
       <!-- #10 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565710580137590794"
         target="_blank"
         alt="#10 SURPRISE "
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/CAKE_SURPRISE.svg" alt="#10 SURPRISE " />
+            <img src="/10.png" alt="#10 SURPRISE " />
           </div>
           <div class="nft-title">#10 SURPRISE</div>
           <div class="nft-description">
@@ -200,16 +200,16 @@
             You KNOW you want to :)
           </div>
         </div>
-      </a> -->
+      </a>
       <!-- #11 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565713878672474122"
         target="_blank"
         alt="#11 MILKSHAKE"
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/MILKSHAKE.svg" alt="#11 MILKSHAKE" />
+            <img src="/11.png" alt="#11 MILKSHAKE" />
           </div>
           <div class="nft-title">#11 MILKSHAKE</div>
           <div class="nft-description">
@@ -219,16 +219,16 @@
             complete strangers. Just make sure you drink it before they do!
           </div>
         </div>
-      </a> -->
+      </a>
       <!-- #12 -->
-      <!-- <a
+      <a
         href="https://opensea.io/assets/matic/0x2953399124f0cbb46d2cbacd8a89cf0599974963/105770812904831397821768795105553865295768233994518189659134565714978184101898"
         target="_blank"
         alt="#12 HOT SAUCE"
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/HOT_SAUCE.svg" alt="#12 HOT SAUCE" />
+            <img src="/12.png" alt="#12 HOT SAUCE" />
           </div>
           <div class="nft-title">#12 HOT SAUCE</div>
           <div class="nft-description">
@@ -237,7 +237,7 @@
             invincible. WHAM!!!
           </div>
         </div>
-      </a> -->
+      </a>
     </div>
   </section>
 </template>
@@ -316,7 +316,7 @@ section#artists {
       flex-direction: column;
     }
     h2.left {
-      width: 50%;
+      width: 40%;
       color: $mint-black;
       font-style: normal;
       font-weight: 700;
@@ -334,6 +334,7 @@ section#artists {
         justify-content: center;
       }
       @include breakpoint($break-xs) {
+        justify-content: center;
         width: 100%;
       }
       .mint-blue {
@@ -344,7 +345,7 @@ section#artists {
       }
     }
     h2.right {
-      width: 50%;
+      width: 60%;
       color: $mint-black;
       font-style: normal;
       font-weight: 700;
@@ -352,6 +353,7 @@ section#artists {
       line-height: 42px;
       text-align: left;
       margin: 0 0 20px 20px;
+      padding-right: 20px;
       display: flex;
       flex-direction: row;
       align-content: center;
@@ -425,13 +427,20 @@ section#artists {
       transition: 0.4s;
       cursor: pointer;
 
+      @include breakpoint($break-lg) {
+        width: 380px;
+        height: 565px;
+        padding: 20px 20px 10px;
+      }
       @include breakpoint($break-md) {
         width: 380px;
+        height: 565px;
         padding: 20px 20px 10px;
       }
       @include breakpoint($break-sm) {
-        width: 100%;
-        margin: 0;
+        width: 94%;
+        height: 600px;
+        margin: 0 3% 20px;
       }
       @include breakpoint($break-xs) {
         width: 100%;

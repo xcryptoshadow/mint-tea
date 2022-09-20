@@ -9,7 +9,7 @@ export default class nftPort {
   }
 
   /**
-   *
+   * NFT Port Search
    * @param {String} text Required Search query
    * @param {String} chain Allowed values: polygon / ethereum / all
    * @param {String} filter_by_contract_address Results will only include NFTs from this contract address.
@@ -109,43 +109,41 @@ export default class nftPort {
 
   /**
    *
-   * @param {String} image Required Search query
-   * @param {String} chain Allowed values: polygon / ethereum / all
-   * @param {String} filter_by_contract_address Results will only include NFTs from this contract address.
-   * @param {String} sort_order Allowed values: desc / asc
-   * @param {String} order_by Allowed values: relevance / mint_date
+   * NFT PORT API - Search NFTs by Image URL and filter by Contract Address
+   * @param {String} contract Results will only include NFTs from this contract address.
+   * @param {String} imageUrl URL that points to the image that returns a Content-Length and Content-Type header or contains the file extension. Supports .JPG, .JPEG, .PNG, .WebP, .PPM, .BMP, .PGM, .TIF, .TIFF file formats.
    * @param {Integer} page_size Required Search query
    * @param {Integer} page_number Required Search query
+   * @param {Float} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
    * @returns {Promise<String|Error>}
    *
    */
   async nftSearchImage(
-    image,
+    imageUrl,
     filter_by_contract_address,
-    chain,
-    sort_order,
-    order_by,
     page_size,
-    page_number
+    page_number,
+    threshold
   ) {
+    console.log("Search Image:", imageUrl);
     console.log("Filter by Contract:", filter_by_contract_address);
-    console.log("Search Image:", image);
-    console.log("Search Chain:", chain);
-    console.log("Search sort_order:", sort_order);
-    console.log("Search order_by:", order_by);
     console.log("Search page_size:", page_size);
     console.log("Search page_number:", page_number);
+    console.log("Search threshold:", threshold);
+
     const options = {
-      method: "GET",
-      url: this.endpoint + "search",
-      params: {
-        image: image,
-        filter_by_contract_address: filter_by_contract_address,
-        chain: chain,
-      },
+      method: "POST",
+      url: this.endpoint + "duplicates/urls",
       headers: {
         "Content-Type": "application/json",
         Authorization: nftPortApiKey,
+      },
+      data: {
+        url: imageUrl,
+        filter_by_contract_address: filter_by_contract_address,
+        page_number: page_number,
+        page_size: page_size,
+        threshold: threshold,
       },
     };
 
@@ -192,14 +190,141 @@ export default class nftPort {
 
     // {
     //   "response": "OK",
-    //   "search_results": [
+    //   "is_similar": true,
+    //   "similar_nfts": [
     //     {
+    //       "contract_address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+    //       "token_id": "3100",
     //       "chain": "ethereum",
-    //       "contract_address": "0x12f28e2106ce8fd8464885b80ea865e98b465149",
-    //       "token_id": "100030071",
-    //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x12f28e2106ce8fd8464885b80ea865e98b465149_t_100030071_raw_asset.png",
-    //       "name": "Name field value in NFT metadata",
-    //       "description": "Description field value in NFT metadata",
+    //       "similarity": 0.999998,
+    //       "file_url": "https://www.larvalabs.com/cryptopunks/cryptopunk3100.png",
+    //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb_t_3100_raw_asset.png",
+    //       "metadata_url": "https://api.niftygateway.com/beeple/100030071/",
+    //       "metadata": {
+    //         "description": "ok first off it's a fucking dollar, if you need extra convincing from some BS artist's notes wether you want to spend a dollar on this i will punch you in the god damn face. smash the buy button ya jabroni.",
+    //         "background_color": "ffffff",
+    //         "external_url": "https://niftygateway.com/#/",
+    //         "image": "https://res.cloudinary.com/nifty-gateway/video/upload/v1603975889/Beeple/POLITICAL_BULLSHIT_uqbc8x.png",
+    //         "name": "POLITICS IS BULLSHIT #71/100",
+    //         "animation_url": "https://res.cloudinary.com/nifty-gateway/video/upload/v1603975889/Beeple/POLITICAL_BULLSHIT_uqbc8x.mp4"
+    //       },
+    //       "mint_date": "2020-10-29T15:03:54.838612"
+    //     }
+    //   ]
+    // }
+    return results;
+  }
+
+  /**
+   *
+   * @param {String} contract Results will only include NFTs from this contract address.
+   * @param {String} filter_out_contract_address NFTs from this contract address will be filtered out. Useful for examples where the whole NFT collection is visually very similar e.g. CryptoPunks.
+   * @param {String} token_id A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+   * @param {String} chain Blockchain where the NFT has been minted. Allowed values: polygon / ethereum / all
+   * @param {Integer} page_size Required Search query
+   * @param {Integer} page_number Required Search query
+   * @param {Number} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
+   * @returns {Promise<String|Error>}
+   *
+   */
+  async nftSearchTokenId(
+    contract_address,
+    filter_out_contract_address,
+    token_id,
+    text,
+    chain,
+    page_size,
+    page_number,
+    threshold
+  ) {
+    console.log("Contract Address:", contract_address);
+    console.log("Filter by Contract:", filter_out_contract_address);
+    console.log("Search Token Id:", token_id);
+    console.log("Search Text:", text);
+    console.log("Search Chain:", chain);
+    console.log("Search Page Size:", page_size);
+    console.log("Search Page Number:", page_number);
+    console.log("Search Threshold:", threshold);
+
+    const options = {
+      method: "POST",
+      url: this.endpoint + "duplicates/tokens",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: nftPortApiKey,
+      },
+      data: {
+        chain: chain,
+        contract_address: contract_address,
+        token_id: token_id,
+        text: text,
+        page_number: page_number,
+        page_size: page_size,
+        threshold: threshold,
+      },
+    };
+
+    const results = await axios
+      .request(options)
+      .then(function (response) {
+        const data = response.data;
+        return data;
+      })
+      .catch(function (error) {
+        const store = useStore();
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log("Error Code: ", error.response.data.error.code);
+          store.setErrorCode(error.response.data.error.code);
+
+          console.log("Error Status: ", error.response.status);
+          store.setErrorStatus(error.response.status);
+
+          console.log("Error Message: ", error.response.data.error.message);
+          store.setErrorMessage(error.response.data.error.message);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.error("Error Request: ", error.request);
+        } else {
+          /* Something happened in setting up the request that triggered an Error */
+          /* https://docs.nftport.xyz/docs/nftport/ZG9jOjU5MTMzOTk3-error-codes */
+          console.log("Error Code: ", error.code);
+          store.setErrorCode(error.code);
+
+          console.log("Error Status: ", error.status);
+          store.setErrorStatus(error.status);
+
+          console.log("Error Message: ", error.message);
+          store.setErrorMessage(error.message);
+        }
+        // console.log("error.config", error.config);
+        // console.log("error.toJSON()", error.toJSON());
+        return error.toJSON();
+      });
+
+    // {
+    //   "response": "OK",
+    //   "is_similar": true,
+    //   "similar_nfts": [
+    //     {
+    //       "contract_address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+    //       "token_id": "3100",
+    //       "chain": "ethereum",
+    //       "similarity": 0.999998,
+    //       "file_url": "https://www.larvalabs.com/cryptopunks/cryptopunk3100.png",
+    //       "cached_file_url": "https://storage.googleapis.com/sentinel-nft/raw-assets/c_0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb_t_3100_raw_asset.png",
+    //       "metadata_url": "https://api.niftygateway.com/beeple/100030071/",
+    //       "metadata": {
+    //         "description": "ok first off it's a fucking dollar, if you need extra convincing from some BS artist's notes wether you want to spend a dollar on this i will punch you in the god damn face. smash the buy button ya jabroni.",
+    //         "background_color": "ffffff",
+    //         "external_url": "https://niftygateway.com/#/",
+    //         "image": "https://res.cloudinary.com/nifty-gateway/video/upload/v1603975889/Beeple/POLITICAL_BULLSHIT_uqbc8x.png",
+    //         "name": "POLITICS IS BULLSHIT #71/100",
+    //         "animation_url": "https://res.cloudinary.com/nifty-gateway/video/upload/v1603975889/Beeple/POLITICAL_BULLSHIT_uqbc8x.mp4"
+    //       },
     //       "mint_date": "2020-10-29T15:03:54.838612"
     //     }
     //   ]

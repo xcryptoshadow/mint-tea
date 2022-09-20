@@ -240,32 +240,62 @@ export const useStore = defineStore({
     /**
      * NFT PORT API - Search NFTs by Image URL and filter by Contract Address
      * @param {String} contract Results will only include NFTs from this contract address.
-     * @param {String} image Required Search query
-     * @param {String} chain Allowed values: polygon / ethereum / all
-     * @param {String} sort_order Allowed values: desc / asc
-     * @param {String} order_by Allowed values: relevance / mint_date
+     * @param {String} imageUrl URL that points to the image that returns a Content-Length and Content-Type header or contains the file extension. Supports .JPG, .JPEG, .PNG, .WebP, .PPM, .BMP, .PGM, .TIF, .TIFF file formats.
      * @param {Integer} page_size Required Search query
      * @param {Integer} page_number Required Search query
+     * @param {Number} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
      */
     async searchNFTImage(
       contract,
-      image,
-      chain,
-      sort_order,
-      order_by,
+      imageUrl,
       page_size,
-      page_number
+      page_number,
+      threshold
     ) {
       /* NFT Port API Search */
       const nftPortApi = new nftPort();
       const results = await nftPortApi.nftSearchImage(
-        image,
+        imageUrl,
         contract,
-        chain,
-        sort_order,
-        order_by,
         page_size,
-        page_number
+        page_number,
+        threshold
+      );
+      return results;
+    },
+
+    /**
+     * NFT PORT API - Search NFTs by Token Id and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} contractFilter NFTs from this contract address will be filtered out. Useful for examples where the whole NFT collection is visually very similar e.g. CryptoPunks.
+     * @param {String} text
+     * @param {String} tokenId A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+     * @param {String} chain Blockchain where the NFT has been minted. Allowed values: polygon / ethereum / all
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
+     * @param {Number} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
+     */
+    async searchNFTTokenId(
+      contract,
+      contractFilter,
+      tokenId,
+      text,
+      chain,
+      page_size,
+      page_number,
+      threshold
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.nftSearchTokenId(
+        contract,
+        contractFilter,
+        tokenId,
+        text,
+        chain,
+        page_size,
+        page_number,
+        threshold
       );
       return results;
     },
