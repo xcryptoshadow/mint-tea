@@ -20,7 +20,6 @@
             v-model="name"
             class="search-name"
             placeholder="Search by name"
-            @input="searchTokens('name')"
           />
           <select class="search-chain" v-model="chain">
             <option
@@ -32,17 +31,40 @@
             </option>
           </select>
           <button
-            :class="
-              !showAdvancedSearch
-                ? 'show-advanced-button'
-                : 'hide-advanced-button'
-            "
-            @click="showAdvancedSearch = !showAdvancedSearch"
+            class="search-button-name"
+            @click="searchTokens('name')"
+            title="Search"
           >
-            {{ !showAdvancedSearch ? "Advanced" : "Close" }}
+            Search
           </button>
-          <button class="search-clear-button" @click="clearSearch()">X</button>
-          <button class="search-clear-button-mobile" @click="clearSearch()">
+          <button
+            v-if="showAdvancedSearch"
+            class="show-advanced-button"
+            @click="showAdvancedSearch = !showAdvancedSearch"
+            title="Show advanced search"
+          >
+            <ArrowDownWhite class="arrow-down-small" />
+          </button>
+          <button
+            v-if="!showAdvancedSearch"
+            class="hide-advanced-button"
+            @click="showAdvancedSearch = !showAdvancedSearch"
+            title="Hide advanced search"
+          >
+            <ArrowDownWhite class="arrow-down-small" />
+          </button>
+          <button
+            class="search-clear-button"
+            @click="clearSearch()"
+            title="Clear search"
+          >
+            X
+          </button>
+          <button
+            class="search-clear-button-mobile"
+            @click="clearSearch()"
+            title="Clear search"
+          >
             Clear
           </button>
         </div>
@@ -50,24 +72,38 @@
         <div v-if="showAdvancedSearch" class="advanced-search">
           <input
             type="text"
-            v-model="contractAdvanced"
+            v-model="contractFilter"
             class="search-advanced-contract"
-            placeholder="Filter by contract"
+            placeholder="Filter out contract address"
           />
           <input
             type="text"
             v-model="tokenId"
             class="search-tokenId"
             placeholder="Find duplicate by token id"
-            @input="searchTokens('advanced')"
           />
+          <button
+            class="search-button-advanced"
+            @click="searchTokens('tokenId')"
+            title="Find duplicates"
+            :disabled="!tokenId"
+          >
+            Go
+          </button>
           <input
             type="text"
             v-model="duplicateUrl"
             class="search-duplicates"
             placeholder="Find duplicate NFTS by url"
-            @input="searchTokens('advanced')"
           />
+          <button
+            class="search-button-advanced"
+            @click="searchTokens('image')"
+            title="Find duplicates"
+            :disabled="!duplicateUrl"
+          >
+            Go
+          </button>
         </div>
         <!-- END Advanced Search Options Panel -->
       </div>
@@ -191,9 +227,9 @@ const options = ref([
 const show = ref(false);
 const showAdvancedSearch = ref(false);
 
-/* NFT Port Search Defaults */
+/* 🦸🏻 NFT Port Search Defaults */
 const contract = ref("");
-const contractAdvanced = ref("");
+const contractFilter = ref("");
 const tokenId = ref(null);
 const name = ref("");
 const image = ref("");
@@ -202,6 +238,7 @@ const sort_order = ref("asc");
 const order_by = ref("relevance");
 const page_size = ref(50);
 const page_number = ref(1);
+const threshold = ref(0.9);
 
 /**
  * Check if our Wallet is Connected to 🦊 Metamask
@@ -229,63 +266,63 @@ async function checkIfWalletIsConnected() {
 }
 
 /**
- * Fetch NFTs using NFT Port API for our Marketplace Example
+ * Fetch NFTs using 🦸🏻 NFT Port API for our Marketplace Example
  */
-// async function fetchTokens() {
-//   if (topTokens.value.length === 0) {
-//     try {
-//       let topTokens = await store.contractNftSearch(
-//         "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
-//         "ethereum",
-//         "metadata",
-//         "true",
-//         10,
-//         1
-//       );
-//       if (topTokens.nfts && topTokens.total > 0) {
-//         store.addTopTokens(...topTokens.nfts);
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
+async function fetchTokens() {
+  if (topTokens.value.length === 0) {
+    try {
+      let topTokens = await store.contractNftSearch(
+        "0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7",
+        "ethereum",
+        "metadata",
+        "true",
+        10,
+        1
+      );
+      if (topTokens.nfts && topTokens.total > 0) {
+        store.addTopTokens(...topTokens.nfts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-//   if (latestTokens.value.length === 0) {
-//     try {
-//       let latestTokens = await store.contractNftSearch(
-//         "0x1A92f7381B9F03921564a437210bB9396471050C",
-//         "ethereum",
-//         "metadata",
-//         "true",
-//         15,
-//         1
-//       );
-//       if (latestTokens.nfts && latestTokens.total > 0) {
-//         store.addLatestTokens(...latestTokens.nfts);
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
+  if (latestTokens.value.length === 0) {
+    try {
+      let latestTokens = await store.contractNftSearch(
+        "0x1A92f7381B9F03921564a437210bB9396471050C",
+        "ethereum",
+        "metadata",
+        "true",
+        15,
+        1
+      );
+      if (latestTokens.nfts && latestTokens.total > 0) {
+        store.addLatestTokens(...latestTokens.nfts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-//   if (trendingTokens.value.length === 0) {
-//     try {
-//       let trendingTokens = await store.contractNftSearch(
-//         "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
-//         "ethereum",
-//         "metadata",
-//         "true",
-//         10,
-//         1
-//       );
-//       if (trendingTokens.nfts) {
-//         store.addTrendingTokens(...trendingTokens.nfts);
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
-// }
+  if (trendingTokens.value.length === 0) {
+    try {
+      let trendingTokens = await store.contractNftSearch(
+        "0x19b86299c21505cdf59cE63740B240A9C822b5E4",
+        "ethereum",
+        "metadata",
+        "true",
+        10,
+        1
+      );
+      if (trendingTokens.nfts) {
+        store.addTrendingTokens(...trendingTokens.nfts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
 
 /**
  * NFTPort Search
@@ -294,7 +331,8 @@ async function checkIfWalletIsConnected() {
 async function searchTokens(type) {
   /* Set Loading */
   store.setLoading(true);
-  /* Clear our last response */
+
+  /* Clear our last response from Pinia Store */
   store.setErrorCode(null);
   store.setErrorStatus(null);
   store.setErrorMessage("");
@@ -305,16 +343,17 @@ async function searchTokens(type) {
   }
 
   console.log("Search type:", type);
-  console.log("contract:", contract.value);
-  console.log("name:", name.value);
-  console.log("chain:", chain.value);
-  console.log("image:", image.value);
-  console.log("sort_order:", sort_order.value);
-  console.log("order_by:", order_by.value);
-  console.log("page_size:", page_size.value);
-  console.log("page_number:", page_number.value);
 
   if (type === "name") {
+    console.log("contract:", contract.value);
+    console.log("name:", name.value);
+    console.log("chain:", chain.value);
+    console.log("sort_order:", sort_order.value);
+    console.log("order_by:", order_by.value);
+    console.log("page_size:", page_size.value);
+    console.log("page_number:", page_number.value);
+
+    /* Name Search */
     try {
       const results = await store.searchNFTs(
         contract.value,
@@ -328,7 +367,7 @@ async function searchTokens(type) {
 
       const stylesResults = ["color: black", "background: grey"].join(";");
       console.log(
-        "%c📻 NFT Port Search by Name fetched : %s",
+        "%c🦸🏻 NFT Port Search by Name fetched : %s",
         stylesResults,
         JSON.stringify(results)
       );
@@ -341,28 +380,86 @@ async function searchTokens(type) {
       console.log(error);
       store.setLoading(false);
     }
-  } else {
+  } else if (type === "image") {
+    console.log("Contract Address :", contract.value);
+    console.log("Contract Filter Address :", contractFilter.value);
+    console.log("Duplicate Url :", duplicateUrl.value);
+    console.log("Page Size :", page_size.value);
+    console.log("Page Number :", page_number.value);
+    console.log("Threshold :", page_number.value);
     /* Image Search */
     try {
       const results = await store.searchNFTImage(
-        contract.value,
-        image.value,
-        chain.value,
-        sort_order.value,
-        order_by.value,
+        contractFilter.value,
+        duplicateUrl.value,
         page_size.value,
-        page_number.value
+        page_number.value,
+        threshold.value
       );
 
       const stylesResults = ["color: black", "background: grey"].join(";");
       console.log(
-        "%c📻 NFT Port Search by Image fetched : %s",
+        "%c🦸🏻 NFT Port Search by Image URL : %s",
         stylesResults,
-        results
+        JSON.stringify(results, 0, 4)
       );
 
-      if (results.search_results && results.search_results.length > 0) {
+      if (
+        results.is_similar &&
+        results.similar_nfts &&
+        results.similar_nfts.length > 0
+      ) {
         store.addSearchResults(...results.search_results);
+      }
+      if (!results.is_similar) {
+        store.setErrorCode(404);
+        store.setErrorStatus("NOT_FOUND");
+        store.setErrorMessage("No similar results found!");
+      }
+      store.setLoading(false);
+    } catch (error) {
+      console.log(error);
+      store.setLoading(false);
+    }
+  } else if (type === "tokenId") {
+    console.log("chain:", chain.value);
+    console.log("contract:", contract.value);
+    console.log("contractFilter:", contractFilter.value);
+    console.log("name:", name.value);
+    console.log("tokenId:", tokenId.value);
+    console.log("page_size:", page_size.value);
+    console.log("page_number:", page_number.value);
+    /* Token Id Search */
+    try {
+      const results = await store.searchNFTTokenId(
+        contract.value,
+        contractFilter.value,
+        tokenId.value,
+        name.value,
+        chain.value,
+        page_size.value,
+        page_number.value,
+        threshold.value
+      );
+
+      const stylesResults = ["color: black", "background: grey"].join(";");
+      console.log(
+        "%c🦸🏻 NFT Port Search by Token Id : %s",
+        stylesResults,
+        JSON.stringify(results, 0, 4)
+      );
+
+      if (
+        results.is_similar &&
+        results.similar_nfts &&
+        results.similar_nfts.length > 0
+      ) {
+        store.addSearchResults(...results.search_results);
+      }
+      if (!results.is_similar) {
+        store.setErrorCode(404);
+        store.setErrorStatus("NOT_FOUND");
+        store.setErrorMessage("No similar results found!");
       }
       store.setLoading(false);
     } catch (error) {
@@ -379,8 +476,11 @@ function clearSearch() {
   store.setErrorMessage("");
   chain.value = "all";
   contract.value = "";
+  contractFilter.value = "";
+  tokenId.value = "";
   name.value = "";
   image.value = "";
+  duplicateUrl.value = "";
   sort_order.value = "asc";
   order_by.value = "relevance";
   page_size.value = 50;
@@ -394,7 +494,7 @@ onMounted(async () => {
     behavior: "smooth",
   });
   await checkIfWalletIsConnected();
-  // await fetchTokens();
+  await fetchTokens();
 });
 </script>
 <style lang="scss" scoped>
@@ -456,6 +556,12 @@ section#search-bar {
     }
 
     .search {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
       @include breakpoint($break-lg) {
         width: 100%;
         margin: 0 auto;
@@ -612,17 +718,17 @@ section#search-bar {
         outline: none;
       }
       /* Desktopn & Tablet Versions */
-      .show-button {
+      .search-button-name {
         color: $white;
         background-color: $mint-blue;
         border: 0;
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
-        min-width: 70px;
+        min-width: 100px;
         padding: 10px;
         text-align: center;
-        margin-right: 5px;
+        margin: 0 5px;
         transition: 0.4s;
         cursor: pointer;
         display: inline-block;
@@ -640,14 +746,14 @@ section#search-bar {
           display: none;
         }
       }
-      .show-advanced-button {
+      .show-button {
         color: $white;
         background-color: $mint-blue;
         border: 0;
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
-        min-width: 100px;
+        min-width: 70px;
         padding: 10px;
         text-align: center;
         margin-right: 5px;
@@ -694,21 +800,61 @@ section#search-bar {
           display: none;
         }
       }
-      .hide-advanced-button {
+
+      .show-advanced-button {
         color: $white;
         background-color: $mint-black;
         border: 0;
-        border-radius: 30px;
+        border-radius: 100px;
         letter-spacing: 1px;
         font-size: 14px;
-        min-width: 100px;
-        padding: 10px;
+        padding: 7px 7px 4px 7px;
         text-align: center;
-        margin-right: 5px;
+        margin: 0;
+        transition: 0.4s;
         cursor: pointer;
         display: inline-block;
         &:hover {
           color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 10px;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
+        .arrow-down-small {
+          width: 15px;
+          height: 15px;
+          img,
+          svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            overflow: hidden;
+          }
+        }
+      }
+
+      .hide-advanced-button {
+        color: $white;
+        background-color: $mint-blue;
+        border: 0;
+        border-radius: 100px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        padding: 7px 7px 4px 7px;
+        text-align: center;
+        margin: 0;
+        transition: 0.4s;
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          color: $mint-black;
         }
         @include breakpoint($break-md) {
           display: inline-block;
@@ -718,6 +864,19 @@ section#search-bar {
         }
         @include breakpoint($break-xs) {
           display: none;
+        }
+        .arrow-down-small {
+          width: 15px;
+          height: 15px;
+          -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
+          filter: invert(1);
+          img,
+          svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            overflow: hidden;
+          }
         }
       }
       /* END Desktopn & Tablet Versions */
@@ -777,13 +936,13 @@ section#search-bar {
       /* END Mobile Versions */
       .search-clear-button {
         color: $white;
-        background-color: $mint-blue;
+        background-color: $mint-orange;
         border-radius: 100px;
         border: 0;
         font-size: 14px;
-        padding: 8px 8px 6px 8px;
+        padding: 9px 9px 7px 9px;
         text-align: center;
-        margin: 10px 5px 0 5px;
+        margin: 0 5px 0 5px;
         transition: 0.4s;
         cursor: pointer;
         &:hover {
@@ -857,7 +1016,7 @@ section#search-bar {
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
-        min-width: 400px;
+        min-width: 330px;
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
@@ -926,7 +1085,7 @@ section#search-bar {
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 13px;
-        min-width: 400px;
+        min-width: 330px;
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
@@ -949,6 +1108,40 @@ section#search-bar {
       input.search-duplicates:focus {
         border: 1px solid $mint-black;
         outline: none;
+      }
+
+      .search-button-advanced {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 25px;
+        padding: 10px;
+        text-align: center;
+        margin: 0 0 0 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 10px;
+        }
+        @include breakpoint($break-sm) {
+          display: none;
+        }
+        @include breakpoint($break-xs) {
+          display: none;
+        }
+      }
+      .search-button-advanced:disabled {
+        background: #c6c6c6;
+        color: #101010;
+        cursor: not-allowed;
       }
     }
   }
@@ -1130,27 +1323,6 @@ section#marketplace {
       width: 80%;
       margin: 0 auto;
     }
-  }
-
-  .mint-button {
-    color: #fff;
-    background-color: $mint-black;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    max-width: 360px;
-    height: 55px;
-    border: 0;
-    padding-left: 87px;
-    padding-right: 87px;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-
-  .mint-button:disabled {
-    background: #c6c6c6;
-    color: $mint-orange;
-    cursor: not-allowed;
   }
 
   a {
