@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { DEFAULT_DEBRIDGE_GATE_ADDRESS } from "@debridge-finance/desdk/lib/evm/context";
 import { evm } from "@debridge-finance/desdk";
+import { useStore } from "../store";
 
 const NFT_BRIDGE_ADDRESS = "0x320Af97E6E8C580D6850890C81fd7161a3332C71";
 const REFERRAL_CODE = 0;
@@ -22,10 +23,15 @@ const isSupported = (chainId) => {
 // not the best solution...
 const TX_HASH_LOCAL_STORAGE_KEY = "debridge_tx_hash";
 const storeTxHash = (txHash) => {
-  localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
+  const store = useStore();
+  store.setTxHashKey(TX_HASH_LOCAL_STORAGE_KEY);
+  store.setTxHash(txHash);
+  // localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
 };
 const getTxHash = () => {
-  return localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
+  const store = useStore();
+  return store.getTxHashKey();
+  // return localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
 };
 
 /**

@@ -56,7 +56,7 @@
                 @change="updateBridgeFrom($event)"
               >
                 <option
-                  v-for="option in options"
+                  v-for="option in bridgeFromOptions"
                   :value="option.label"
                   :key="option.key"
                 >
@@ -70,9 +70,13 @@
             </div>
             <div class="select-row">
               <label class="black">Bridge To</label>
-              <select class="bridge-to-chain" v-model="bridgeTo">
+              <select
+                class="bridge-to-chain"
+                v-model="bridgeTo"
+                @change="updateBridgeTo($event)"
+              >
                 <option
-                  v-for="option in options"
+                  v-for="option in bridgeToOptions"
                   :value="option.label"
                   :key="option.key"
                 >
@@ -86,13 +90,18 @@
               </span>
             </div>
             <div class="button-container">
-              <button class="bridge-button-left" @click="bridgeNFT()">
+              <button
+                class="bridge-button-left"
+                @click="bridgeNFT()"
+                :disabled="!approvedBridge"
+              >
                 bridge
               </button>
               <button class="back-button" @click="switchTab('mint')">
                 back
               </button>
             </div>
+            <div class="tx-hash-messages">{{ txHashKey + ":" + txHash }}</div>
           </div>
           <!-- END Bridge Tab -->
 
@@ -237,10 +246,7 @@
             v-if="!imageUrlBridge && showBridgeTokens && formTab === 'bridge'"
             class="nft-bridge-tokens"
           >
-            <div
-              v-if="bridgeFrom === 'ethereum' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'ethereum'" class="row">
               <div class="row-header">
                 <h2>Ethereum <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -254,10 +260,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'polygon' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'polygon'" class="row">
               <div class="row-header">
                 <h2>Polygon <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -271,10 +274,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'optimism' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'optimism'" class="row">
               <div class="row-header">
                 <h2>Optimism <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -288,10 +288,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'arbitrum' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'arbitrum'" class="row">
               <div class="row-header">
                 <h2>Arbitrum <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -305,10 +302,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'avalanche' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'avalanche'" class="row">
               <div class="row-header">
                 <h2>Avalanche <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -441,7 +435,7 @@ import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
 import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
 
-/* Import our debridge Services */
+/* Import our deBridge Services */
 import { bridge } from "../services/debridge.js";
 
 /* Import SVGs */
@@ -478,6 +472,8 @@ console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 /* Init Pinia Store Values and Methods */
 const store = useStore();
 const {
+  txHashKey,
+  txHash,
   loading,
   account,
   topTokens,
@@ -514,17 +510,31 @@ const createdAt = ref("");
 const audioVideoType = ref("");
 
 /* Bridge Fields and Data */
-const bridgeFrom = ref("all");
-const bridgeTo = ref("all");
-const options = ref([
-  { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
+const bridgeFrom = ref("ethereum");
+const bridgeFromOptions = ref([
+  { value: 1, label: "ethereum", text: "Ethereum" },
   // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon Mainnet" },
+  { value: 137, label: "polygon", text: "Polygon" },
   // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism Mainnet" },
+  { value: 10, label: "optimism", text: "Optimism" },
   // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum" },
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 43114, label: "avalanche", text: "Avalanche" },
+  // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
+]);
+const bridgeTo = ref("all");
+const bridgeToOptions = ref([
+  { value: 1, label: "ethereum", text: "Ethereum" },
+  // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  { value: 137, label: "polygon", text: "Polygon" },
+  // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  { value: 10, label: "optimism", text: "Optimism" },
+  // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 43114, label: "avalanche", text: "Avalanche" },
+  // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
   { value: 0, label: "all", text: "All" },
 ]);
 /* Bridge NFT Details */
@@ -588,7 +598,7 @@ async function fetchTokens() {
         );
         store.addPolygonTokens(...polygonTokens);
         let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-          80001,
+          0x13881,
           account.value
         );
         store.addPolygonTokens(...polygonTestnetTokens);
@@ -961,11 +971,11 @@ const bridgeNFT = async () => {
   try {
     const { ethereum } = window;
     if (ethereum) {
-      const chainIdFrom = options.value.find((chain) => {
+      const chainIdFrom = bridgeFromOptions.value.find((chain) => {
         return chain.label === bridgeFrom.value;
       })?.value;
 
-      const chainIdTo = options.value.find((chain) => {
+      const chainIdTo = bridgeToOptions.value.find((chain) => {
         return chain.label === bridgeTo.value;
       })?.value;
 
@@ -974,9 +984,8 @@ const bridgeNFT = async () => {
         params: [{ chainId: BigNumber.from(chainIdFrom).toHexString() }],
       });
 
-      // TODO:
-      const nftContractAddress = "0x03e055692e77e56aBf7f5570D9c64C194BA15616";
-      const tokenId = 5001;
+      const nftContractAddress = contractAddressBridge.value;
+      const tokenId = tokenIdBridge.value;
       const receipt = await bridge(
         nftContractAddress,
         tokenId,
@@ -998,13 +1007,23 @@ const bridgeNFT = async () => {
 };
 
 /**
- * Approve Bridge Transfer
+ * Update Bridge From Chain
  */
 const updateBridgeFrom = (event) => {
   console.log("bridgeFrom.value:", event.target.value);
   console.log("Bridge From:", bridgeFrom.value);
   bridgeFrom.value = event.target.value;
   console.log("Bridge From:", bridgeFrom.value);
+};
+
+/**
+ * Update Bridge To Chain
+ */
+const updateBridgeTo = (event) => {
+  console.log("bridgeTo.value:", event.target.value);
+  console.log("Bridge To:", bridgeTo.value);
+  bridgeTo.value = event.target.value;
+  console.log("Bridge To:", bridgeTo.value);
 };
 
 /**
