@@ -45,7 +45,8 @@
             <div class="input-row">
               <p>
                 Browse all your NFTs across all the best blockchains like
-                Ethereum, Polygon, Optimism and more coming soon...
+                Ethereum, Polygon, Optimism, Avalanche, Arbitrum and more coming
+                soon...
               </p>
             </div>
             <div class="button-container">
@@ -127,6 +128,7 @@ import { useStore } from "../store";
 import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
+import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 
 /* Components */
@@ -428,7 +430,7 @@ section#mint {
 
         img,
         svg {
-          width: 200px;
+          width: 220px;
           margin: 10px auto 20px;
           object-fit: contain;
           overflow: hidden;

@@ -21,8 +21,24 @@ footer {
   color: $white;
   background: #2b2b2b;
   border-top: 1px solid #fff;
-  padding: 3em 3em 2em 3em;
+  padding: 1em 0 0 0;
   overflow: hidden;
+  @include breakpoint($break-lg) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-md) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-sm) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
 
   .footer-sponsors {
     display: flex;

@@ -24,14 +24,18 @@ const isSupported = (chainId) => {
 const TX_HASH_LOCAL_STORAGE_KEY = "debridge_tx_hash";
 const storeTxHash = (txHash) => {
   const store = useStore();
+  /* Store this for the Front-end to read txn */
   store.setTxHashKey(TX_HASH_LOCAL_STORAGE_KEY);
   store.setTxHash(txHash);
-  // localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
+  /* Use local storage to persist state or reload of browser */
+  localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
 };
 const getTxHash = () => {
+  /* Store this for the Front-end to read txn */
   const store = useStore();
-  return store.getTxHashKey();
-  // return localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
+  store.getTxHashKey();
+  /* Use local storage to persist state or reload of browser */
+  return localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
 };
 
 /**

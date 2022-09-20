@@ -5,7 +5,7 @@
         <!-- Left Side -->
         <section id="content">
           <!-- Connect Tab -->
-          <div v-if="!account" class="form-container">
+          <div v-if="!account" class="form-container home">
             <div class="header-logo">
               <BlueLogo />
             </div>
@@ -929,7 +929,7 @@ const mintNFT = async () => {
 
       const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
       console.log(
-        "%c💎 We just mined another gem! %s 💎",
+        "%c🍵 Mint Tea just brewed a fresh one %s ",
         stylesReceipt,
         nftTxn.hash
       );
@@ -1239,6 +1239,11 @@ section#content {
     .mb-10 {
       margin-bottom: 10px;
     }
+  }
+
+  .form-container.home {
+    width: 428px;
+    height: auto;
   }
 
   .input-row-first {
