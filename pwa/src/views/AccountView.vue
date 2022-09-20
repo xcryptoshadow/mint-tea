@@ -101,6 +101,16 @@
               </template>
             </div>
           </div>
+          <div class="row">
+            <div class="row-header">
+              <h2>Avalanche <ArrowDownBlue class="arrow-down" /></h2>
+            </div>
+            <div v-if="avalancheTokens.length > 0" class="row token-list">
+              <template v-for="token in avalancheTokens" :key="token.tokenId">
+                <NftCard v-if="token.metadata" :token="token" />
+              </template>
+            </div>
+          </div>
         </section>
       </aside>
     </section>
