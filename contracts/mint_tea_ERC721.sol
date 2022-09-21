@@ -292,7 +292,7 @@ contract MTEA is ERC721, AccessControl {
         string memory base = _baseURI();
         return string.concat(
             base,
-            "mode=list&s=", 
+            "unwrap=true&extract=false&s=", 
             "SELECT%20*%20FROM%20",
             mainTable
         );
@@ -305,7 +305,7 @@ contract MTEA is ERC721, AccessControl {
         string memory base = _baseURI();
         return string.concat(
             base,
-            "mode=list&s=", 
+            "unwrap=true&extract=false&s=", 
             "SELECT%20*%20FROM%20",
             attributesTable
         );
@@ -353,12 +353,12 @@ contract MTEA is ERC721, AccessControl {
             )
         );
         // Return the baseURI with a query string, which looks up the token id in a row.
-        // `&mode=list` formats into the proper JSON object expected by metadata standards.
+        // `unwrap=true&extract=true` formats into the proper JSON object expected by metadata standards.
         return
             string(
                 abi.encodePacked(
                     baseURI,
-                    "mode=list&s=",
+                    "unwrap=true&extract=true&s=",
                     query,
                     Strings.toString(_tokenId),
                     "%20group%20by%20tokenid"
