@@ -426,6 +426,7 @@ import { bridge } from "../services/debridge.js";
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
+// import BrewingBubbles from "../assets/brewingbubbles.png";
 // import BrewBubbles from "../assets/brewingbubbles.svg";
 // import BrewTube from "../assets/brewtube.svg";
 
@@ -1022,6 +1023,10 @@ const CancelBridge = () => {
 };
 
 onMounted(async () => {
+  window.document.getElementById("bg-gradient").style.backgroundImage =
+    "url('/brewtube.png')";
+  window.document.getElementById("nft-modal").style.backgroundImage =
+    "url('/brewingbubbles.svg')";
   window.scrollTo({
     top: 0,
     left: 0,
@@ -1598,7 +1603,7 @@ section#content {
 }
 
 .bubbles-brewing {
-  background-image: url("./brewingbubbles.png");
+  // background-image: url("./brewingbubbles.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;

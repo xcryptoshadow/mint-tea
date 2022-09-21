@@ -4,7 +4,7 @@ import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
 </script>
 <template>
-  <div class="bg-gradient">
+  <div id="bg-gradient">
     <AppHeader />
     <RouterView />
     <AppFooter />
@@ -14,8 +14,8 @@ import AppFooter from "./components/AppFooter.vue";
 @import "./assets/styles/variables.scss";
 @import "./assets/styles/mixins.scss";
 
-.bg-gradient {
-  background-image: url("/brewtube.svg?raw");
+#bg-gradient {
+  // background-image: url("/brewtube.svg?url");
   background-position: center top;
   background-repeat: no-repeat;
   background-size: auto;
