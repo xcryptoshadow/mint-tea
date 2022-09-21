@@ -63,7 +63,7 @@ contract MTEA is ERC721, AccessControl {
       uint256 _trait_id
     );
 
-    constructor( address registry) ERC721("MTEA", "MT") {
+    constructor( address registry) ERC721("Mint Tea", "mNFT") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         /* 

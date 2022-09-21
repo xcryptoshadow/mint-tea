@@ -1,34 +1,13 @@
 <template>
   <footer id="footer">
-    <div class="footer-title">
-      <span>Mint, brew &amp; bridge NFTs cross-chain</span>
-    </div>
-    <div class="footer-logo">
-      <GreenLogo />
-    </div>
-    <div class="footer-menu">
-      <nav class="footer-navbar">
-        <a
-          href="https://ethglobal.com/showcase/mint-tea-2nn7k"
-          alt="ETH Online 2022"
-          target="_blank"
-          rel="noopener"
-          >ETHOnline</a
-        >
-        <a
-          href="https://github.com/Mint-Tea-ETHOnline"
-          alt="GitHub"
-          target="_blank"
-          rel="noopener"
-          >GitHub</a
-        >
-      </nav>
+    <div class="footer-sponsors">
+      <SponsorLogos />
     </div>
   </footer>
 </template>
 <script setup>
 /* Import SVG */
-import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
+import SponsorLogos from "../assets/svgs/SponsorLogos.vue?component";
 </script>
 <style lang="scss">
 @import "../assets/styles/variables.scss";
@@ -36,74 +15,52 @@ import GreenLogo from "../assets/svgs/GreenLogo.vue?component";
 
 footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   align-content: center;
-  padding: 0.8em;
   color: $white;
-  background: $mint-black;
-
-  .footer-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    width: 45%;
-
-    span {
-      font-size: 0.8rem;
-      a {
-        font-size: 0.8rem;
-        color: $white;
-        cursor: pointer;
-
-        &.active {
-          font-weight: bold;
-        }
-      }
-    }
+  background: #2b2b2b;
+  border-top: 1px solid #fff;
+  padding: 1em 0 0 0;
+  overflow: hidden;
+  @include breakpoint($break-lg) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-md) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-sm) {
+    width: 100%;
+    padding: 10px 0 0 0;
+  }
+  @include breakpoint($break-xs) {
+    width: 100%;
+    padding: 10px 0 0 0;
   }
 
-  .footer-logo {
+  .footer-sponsors {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
-    width: 10%;
+    width: 100%;
+    padding-left: 2%;
 
     img,
     svg {
-      width: 70px;
+      width: 100%;
       object-fit: contain;
       overflow: hidden;
-    }
-  }
-
-  .footer-menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    width: 45%;
-
-    .footer-navbar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-
-      a {
-        font-size: 0.8rem;
-        color: $white;
-        margin: 0 15px 0 0;
-        cursor: pointer;
+      @include breakpoint($break-md) {
+        width: 100%;
       }
-      a:hover {
-        color: $mint-orange !important;
-        font-weight: bold;
+      @include breakpoint($break-sm) {
+        width: 100%;
       }
-      a:active {
-        font-weight: bold;
+      @include breakpoint($break-xs) {
+        width: 100%;
       }
     }
   }

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 /* Async Components */
 const HomeView = () => import("../views/HomeView.vue");
-const MarketplaceView = () => import("../views/MarketplaceView.vue");
+const ExploreView = () => import("../views/ExploreView.vue");
 const AccountView = () => import("../views/AccountView.vue");
 
 /* Create our Router */
@@ -10,7 +10,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return window.scrollTo({
-        top: document.querySelector(to.hash).offsetTop - 135,
+        top: document.querySelector(to.hash).offsetTop + 140,
         behavior: "smooth",
       });
     } else {
@@ -25,9 +25,9 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: "/marketplace",
-      name: "marketplace",
-      component: MarketplaceView,
+      path: "/explore",
+      name: "explore",
+      component: ExploreView,
     },
     {
       path: "/account",

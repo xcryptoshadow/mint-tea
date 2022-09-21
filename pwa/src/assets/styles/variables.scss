@@ -1,12 +1,13 @@
 /* Mint Tea Colours */
-$mint-green: #69d6ac;
-$mint-blue: #3f68ff;
+$mint-green: #92FFD5;
+$mint-blue: #3F68FF;
 $mint-orange: #e47969;
-$mint-pink: #69d6ac;
-$mint-black: #2b2b2b;
+$mint-pink: #FBE2FF;
+$mint-yellow: #f7ff90;
+$mint-black: #000000;
 
 /* Greys, Blacks & Whites */
-$black: #2b2b2b;
+$black: #000000;
 $grey-100: #101010;
 $grey-90: #262626;
 $grey-80: #525252;
@@ -19,9 +20,11 @@ $grey-20: #f4f4f4;
 $white: #ffffff;
 
 /* Responsive Breakpoints */
+$break-xs: 360px !default;
 $break-xs: 479px !default;
 $break-sm: 839px !default;
 $break-md: 959px !default;
-$break-lg: 1279px !default;
-$break-xl: 1439px !default;
-$break-xxl: 2872px !default;
+$break-lg: 1023px !default;
+$break-xl: 1279px !default;
+$break-xxl: 1439px !default;
+$break-xxxl: 2872px !default;

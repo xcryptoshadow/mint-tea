@@ -5,13 +5,19 @@ import nftPort from "../services/nftPort.js";
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
-// const contractAddress = "0x8d57FfB931426aAa612591F846BD00d6c580A59c";
+// const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
 
 /* LFG */
 export const useStore = defineStore({
   id: "store",
   state: () => ({
+    txHashKey: null,
+    txHash: null,
+    errorCode: null,
+    errorStatus: null,
+    errorMessage: "",
     loading: false,
+    fileLoading: false,
     account: null,
     balance: null,
     searchChainId: 1,
@@ -23,14 +29,33 @@ export const useStore = defineStore({
     polygonTokens: [],
     optimismTokens: [],
     arbitrumTokens: [],
+    avalancheTokens: [],
     anneTokens: [],
-    keremTokens: [],
+    trendingTokens: [],
     topTokens: [],
     latestTokens: [],
   }),
   getters: {
+    getTxHashKey(state) {
+      return state.txHashKey;
+    },
+    getTxHash(state) {
+      return state.txHash;
+    },
+    isErrorCode(state) {
+      return state.errorCode;
+    },
+    isErrorStatus(state) {
+      return state.errorStatus;
+    },
+    isErrorMessage(state) {
+      return state.errorMessage;
+    },
     isLoading(state) {
       return state.loading;
+    },
+    isFileLoading(state) {
+      return state.fileLoading;
     },
     getAccount(state) {
       return state.account;
@@ -65,11 +90,14 @@ export const useStore = defineStore({
     getArbitrumTokens(state) {
       return state.arbitrumTokens;
     },
+    getAvalancheTokens(state) {
+      return state.avalancheTokens;
+    },
     getAnneTokens(state) {
       return state.anneTokens;
     },
-    getKeremTokens(state) {
-      return state.keremTokens;
+    getTrendingTokens(state) {
+      return state.trendingTokens;
     },
     getTopTokens(state) {
       return state.topTokens;
@@ -79,8 +107,26 @@ export const useStore = defineStore({
     },
   },
   actions: {
+    setTxHashKey(value) {
+      this.txHashKey = value;
+    },
+    setTxHash(value) {
+      this.txHash = value;
+    },
+    setErrorCode(value) {
+      this.errorCode = value;
+    },
+    setErrorStatus(value) {
+      this.errorStatus = value;
+    },
+    setErrorMessage(value) {
+      this.errorMessage = value;
+    },
     setLoading(value) {
       this.loading = value;
+    },
+    setFileLoading(value) {
+      this.fileLoading = value;
     },
     updateAccount(account) {
       this.account = account;
@@ -104,7 +150,7 @@ export const useStore = defineStore({
       this.searchResults.push(...tokens);
     },
     clearSearchResults() {
-      this.searchChainId = 1;
+      this.searchChainId = "all";
       this.searchContract = "";
       this.searchName = "";
       this.searchImage = "";
@@ -122,11 +168,14 @@ export const useStore = defineStore({
     addArbitrumTokens(...tokens) {
       this.arbitrumTokens.push(...tokens);
     },
+    addAvalancheTokens(...tokens) {
+      this.avalancheTokens.push(...tokens);
+    },
     addAnneTokens(...tokens) {
       this.anneTokens.push(...tokens);
     },
-    addKeremTokens(...tokens) {
-      this.keremTokens.push(...tokens);
+    addTrendingTokens(...tokens) {
+      this.trendingTokens.push(...tokens);
     },
     addTopTokens(...tokens) {
       this.topTokens.push(...tokens);
@@ -198,6 +247,69 @@ export const useStore = defineStore({
         order_by,
         page_size,
         page_number
+      );
+      return results;
+    },
+
+    /**
+     * NFT PORT API - Search NFTs by Image URL and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} imageUrl URL that points to the image that returns a Content-Length and Content-Type header or contains the file extension. Supports .JPG, .JPEG, .PNG, .WebP, .PPM, .BMP, .PGM, .TIF, .TIFF file formats.
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
+     * @param {Number} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
+     */
+    async searchNFTImage(
+      contract,
+      imageUrl,
+      page_size,
+      page_number,
+      threshold
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.nftSearchImage(
+        imageUrl,
+        contract,
+        page_size,
+        page_number,
+        threshold
+      );
+      return results;
+    },
+
+    /**
+     * NFT PORT API - Search NFTs by Token Id and filter by Contract Address
+     * @param {String} contract Results will only include NFTs from this contract address.
+     * @param {String} contractFilter NFTs from this contract address will be filtered out. Useful for examples where the whole NFT collection is visually very similar e.g. CryptoPunks.
+     * @param {String} text
+     * @param {String} tokenId A unique uint256 ID inside the contract. The contract address and token ID pair is a globally unique and fully-qualified identifier for a specific NFT on chain.
+     * @param {String} chain Blockchain where the NFT has been minted. Allowed values: polygon / ethereum / all
+     * @param {Integer} page_size Required Search query
+     * @param {Integer} page_number Required Search query
+     * @param {Number} threshold Threshold for classifying an NFT as a counterfeit. >= 0.1 <= 1 Default: 0.9
+     */
+    async searchNFTTokenId(
+      contract,
+      contractFilter,
+      tokenId,
+      text,
+      chain,
+      page_size,
+      page_number,
+      threshold
+    ) {
+      /* NFT Port API Search */
+      const nftPortApi = new nftPort();
+      const results = await nftPortApi.nftSearchTokenId(
+        contract,
+        contractFilter,
+        tokenId,
+        text,
+        chain,
+        page_size,
+        page_number,
+        threshold
       );
       return results;
     },
