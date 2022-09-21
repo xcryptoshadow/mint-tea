@@ -432,7 +432,7 @@ import { useStore } from "../store";
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
-import { nftStorage } from "../services/nftStorage.js";
+// import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
 
 /* Import our deBridge Services */
@@ -442,12 +442,6 @@ import { bridge } from "../services/debridge.js";
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
-// import BubblesOne from "../assets/svgs/BubblesOne.vue?component";
-// import BubblesTwo from "../assets/svgs/BubblesTwo.vue?component";
-// import BubblesThree from "../assets/svgs/BubblesThree.vue?component";
-// import BubblesFour from "../assets/svgs/BubblesFour.vue?component";
-// import BubblesFive from "../assets/svgs/BubblesFive.vue?component";
-// import BrewingBubbles from "../assets/svgs/BrewingBubbles.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
@@ -496,6 +490,7 @@ const fileRef = ref(null);
 /* NFT Form Metadata fields */
 const tokenId = ref("");
 const cid = ref("");
+
 /* Visible on form, above hidden on form */
 const name = ref("");
 const description = ref("");
@@ -504,6 +499,7 @@ const externalUrl = ref("");
 const animationUrl = ref("");
 const youtubeUrl = ref("");
 const attributes = ref([]);
+
 /* Calculated on Mint and IPFS upload */
 const size = ref("");
 const createdAt = ref("");
@@ -537,6 +533,7 @@ const bridgeToOptions = ref([
   // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
   { value: 0, label: "all", text: "All" },
 ]);
+
 /* Bridge NFT Details */
 const tokenIdBridge = ref("");
 const contractAddressBridge = ref("");
@@ -873,26 +870,26 @@ const mintNFT = async () => {
       });
 
       /* Store NFT Metadata on NFT.Storage */
-      const nftStorageTMetadataURI = await nftStorage(
-        name.value,
-        description.value,
-        imageUrl.value,
-        externalUrl.value,
-        animationUrl.value,
-        youtubeUrl.value,
-        attributes.value,
-        audioVideoType.value
-      );
-      const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
-        ";"
-      );
-      console.log(
-        "%c💾 NFT.Storage ipfs:// link :  %s 💾",
-        stylesNFTStorage,
-        nftStorageTMetadataURI
-      );
+      // const nftStorageTMetadataURI = await nftStorage(
+      //   name.value,
+      //   description.value,
+      //   imageUrl.value,
+      //   externalUrl.value,
+      //   animationUrl.value,
+      //   youtubeUrl.value,
+      //   attributes.value,
+      //   audioVideoType.value
+      // );
+      // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
+      //   ";"
+      // );
+      // console.log(
+      //   "%c💾 NFT.Storage ipfs:// link :  %s 💾",
+      //   stylesNFTStorage,
+      //   nftStorageTMetadataURI
+      // );
       /* Check our Transaction results */
-      if (!nftStorageTMetadataURI) return;
+      // if (!nftStorageTMetadataURI) return;
 
       /* Mint our NFT using custom structure */
       // let nftTxn = await contract.safeMint(
@@ -945,11 +942,6 @@ const mintNFT = async () => {
           `%c🧬 NFT Minted on Polygon, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash} %s`,
           stylesPolygon,
           nftTxn.hash
-        );
-
-        /* Remove loading indicator and show success notification */
-        console.log(
-          `🧬 NFT has been minted successfully, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
         );
       }
       return;
@@ -1142,11 +1134,11 @@ section#mint {
     }
     @include breakpoint($break-sm) {
       width: 100%;
-      padding: 2em 1em;
+      padding: 0;
     }
     @include breakpoint($break-xs) {
       width: 100%;
-      padding: 1.5em 1em;
+      padding: 0;
     }
   }
 }
@@ -1242,7 +1234,6 @@ section#content {
   }
 
   .form-container.home {
-    width: 428px;
     height: auto;
   }
 
