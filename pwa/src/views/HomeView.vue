@@ -1675,7 +1675,7 @@ section#content {
 }
 
 .bubbles-brewing {
-  background-image: url("./brewingbubbles.svg");
+  background-image: url("./brewingbubbles.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;
@@ -1694,36 +1694,6 @@ section#content {
     background-repeat: no-repeat;
     background-size: 100%;
   }
-}
-.bubbles-one {
-  background-image: url("./bubbles1.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-two {
-  background-image: url("./bubbles2.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-three {
-  background-image: url("./bubbles3.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-four {
-  background-image: url("./bubbles4.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-five {
-  background-image: url("./bubbles5.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
 }
 
 section#nft-modal {
