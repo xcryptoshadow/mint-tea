@@ -10,7 +10,7 @@ Browse through our marketplace to list and trade NFT collections for art, music,
 
 Mint Tea aims to become a truly cross-chain platform that opens up new markets in the blockchain space. We aim to bridge as many chains as possible starting with Ethereum, Polygon and Optimism. As our core technologies expand then we will grow with them incorporating more chains in the future.
 
-Please visit <https://mint-tea-kqg2oj.spheron.app/> to view the 🍵 Mint Tea web3 application, feel free to connect your metamask wallet and enjoy!
+Please visit <https://mint-tea.netlify.app/> to view the 🍵 Mint Tea web3 application, feel free to connect your metamask wallet and enjoy!
 
 ETHOnline Showcase: <https://ethglobal.com/showcase/mint-tea-2nn7k>
 Github Repo: <https://github.com/Mint-Tea-ETHOnline/mint-tea>
@@ -40,7 +40,6 @@ The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test pu
 Tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
 
 mainTable name is: Mint_TEA_80001_1913
-
 attributestable name is: Mint_TEA_80001_1914
 
 View our Tableland table as NFTS on opensea.io testnet
