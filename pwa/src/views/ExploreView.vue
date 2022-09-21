@@ -143,7 +143,7 @@
         </h2>
       </div>
       <div class="row token-list">
-        <template v-for="token in latestTokens" :key="token.tokenId">
+        <template v-for="token in trendingTokens" :key="token.tokenId">
           <NftCard
             v-if="token.metadata && token.metadata.image"
             :token="token"
@@ -171,7 +171,7 @@
         </h2>
       </div>
       <div class="row token-list">
-        <template v-for="token in trendingTokens" :key="token.tokenId">
+        <template v-for="token in latestTokens" :key="token.tokenId">
           <NftCard
             v-if="token.metadata && token.metadata.image"
             :token="token"

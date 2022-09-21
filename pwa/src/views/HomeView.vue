@@ -56,7 +56,7 @@
                 @change="updateBridgeFrom($event)"
               >
                 <option
-                  v-for="option in options"
+                  v-for="option in bridgeFromOptions"
                   :value="option.label"
                   :key="option.key"
                 >
@@ -70,9 +70,13 @@
             </div>
             <div class="select-row">
               <label class="black">Bridge To</label>
-              <select class="bridge-to-chain" v-model="bridgeTo">
+              <select
+                class="bridge-to-chain"
+                v-model="bridgeTo"
+                @change="updateBridgeTo($event)"
+              >
                 <option
-                  v-for="option in options"
+                  v-for="option in bridgeToOptions"
                   :value="option.label"
                   :key="option.key"
                 >
@@ -97,6 +101,7 @@
                 back
               </button>
             </div>
+            <div class="tx-hash-messages">{{ txHashKey + ":" + txHash }}</div>
           </div>
           <!-- END Bridge Tab -->
 
@@ -241,10 +246,7 @@
             v-if="!imageUrlBridge && showBridgeTokens && formTab === 'bridge'"
             class="nft-bridge-tokens"
           >
-            <div
-              v-if="bridgeFrom === 'ethereum' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'ethereum'" class="row">
               <div class="row-header">
                 <h2>Ethereum <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -258,10 +260,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'polygon' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'polygon'" class="row">
               <div class="row-header">
                 <h2>Polygon <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -275,10 +274,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'optimism' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'optimism'" class="row">
               <div class="row-header">
                 <h2>Optimism <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -292,10 +288,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'arbitrum' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'arbitrum'" class="row">
               <div class="row-header">
                 <h2>Arbitrum <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -309,10 +302,7 @@
                 </template>
               </div>
             </div>
-            <div
-              v-if="bridgeFrom === 'avalanche' || bridgeFrom === 'all'"
-              class="row"
-            >
+            <div v-if="bridgeFrom === 'avalanche'" class="row">
               <div class="row-header">
                 <h2>Avalanche <ArrowDownBlue class="arrow-down" /></h2>
               </div>
@@ -407,22 +397,6 @@
           />
         </template>
       </div>
-      <div class="row token-list">
-        <template v-for="token in latestTokens" :key="token.token_id">
-          <NftCard
-            v-if="token.metadata && token.metadata.image"
-            :token="token"
-          />
-        </template>
-      </div>
-      <div class="row token-list">
-        <template v-for="token in topTokens" :key="token.token_id">
-          <NftCard
-            v-if="token.metadata && token.metadata.image"
-            :token="token"
-          />
-        </template>
-      </div>
     </section>
     <CollectionSection />
     <AboutSection />
@@ -431,7 +405,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 /* Import Libraries */
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 // import { BigNumber } from "bignumber.js";
 import moment from "moment";
 
@@ -442,19 +416,19 @@ import { useStore } from "../store";
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
-import { nftStorage } from "../services/nftStorage.js";
+// import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
+
+/* Import our deBridge Services */
+import { bridge } from "../services/debridge.js";
 
 /* Import SVGs */
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
-// import BubblesOne from "../assets/svgs/BubblesOne.vue?component";
-// import BubblesTwo from "../assets/svgs/BubblesTwo.vue?component";
-// import BubblesThree from "../assets/svgs/BubblesThree.vue?component";
-// import BubblesFour from "../assets/svgs/BubblesFour.vue?component";
-// import BubblesFive from "../assets/svgs/BubblesFive.vue?component";
-// import BrewingBubbles from "../assets/svgs/BrewingBubbles.vue?component";
+// import BrewingBubbles from "../assets/brewingbubbles.png";
+// import BrewBubbles from "../assets/brewingbubbles.svg";
+// import BrewTube from "../assets/brewtube.svg";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
@@ -463,21 +437,8 @@ import AboutSection from "@/components/AboutSection.vue";
 
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiEthereum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiPolygon from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiOptimism from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiArbitrum from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-import bridgeContractAbiAvalanche from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
 const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
-const bridgeContractAddressEthereum = "";
-const bridgeContractAddressOptimism = "";
-const bridgeContractAddressPolygon =
-  "0x320Af97E6E8C580D6850890C81fd7161a3332C71";
-const bridgeContractAddressAvalanche =
-  "0xb2C3a5d2296b4d6BCb272E60f4Ce10d17Afcf32a";
-const bridgeContractAddressArbitrum =
-  "0x195a17f9e714a79A9D4E1757Fe59a01a7B59Ea23";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -492,10 +453,10 @@ console.log("%c🧭 Contract ABI Source %s", stylesAbi, contractAbi.sourceName);
 /* Init Pinia Store Values and Methods */
 const store = useStore();
 const {
+  txHashKey,
+  txHash,
   loading,
   account,
-  topTokens,
-  latestTokens,
   trendingTokens,
   ethereumTokens,
   polygonTokens,
@@ -514,6 +475,7 @@ const fileRef = ref(null);
 /* NFT Form Metadata fields */
 const tokenId = ref("");
 const cid = ref("");
+
 /* Visible on form, above hidden on form */
 const name = ref("");
 const description = ref("");
@@ -522,25 +484,41 @@ const externalUrl = ref("");
 const animationUrl = ref("");
 const youtubeUrl = ref("");
 const attributes = ref([]);
+
 /* Calculated on Mint and IPFS upload */
 const size = ref("");
 const createdAt = ref("");
 const audioVideoType = ref("");
 
 /* Bridge Fields and Data */
-const bridgeFrom = ref("all");
-const bridgeTo = ref("all");
-const options = ref([
-  { value: 1, label: "ethereum", text: "Ethereum Mainnet" },
+const bridgeFrom = ref("ethereum");
+const bridgeFromOptions = ref([
+  { value: 1, label: "ethereum", text: "Ethereum" },
   // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon Mainnet" },
+  { value: 137, label: "polygon", text: "Polygon" },
   // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism Mainnet" },
+  { value: 10, label: "optimism", text: "Optimism" },
   // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum Mainnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum" },
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 43114, label: "avalanche", text: "Avalanche" },
+  // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
+]);
+const bridgeTo = ref("all");
+const bridgeToOptions = ref([
+  { value: 1, label: "ethereum", text: "Ethereum" },
+  // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
+  { value: 137, label: "polygon", text: "Polygon" },
+  // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
+  { value: 10, label: "optimism", text: "Optimism" },
+  // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
+  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
+  { value: 43114, label: "avalanche", text: "Avalanche" },
+  // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
   { value: 0, label: "all", text: "All" },
 ]);
+
 /* Bridge NFT Details */
 const tokenIdBridge = ref("");
 const contractAddressBridge = ref("");
@@ -602,7 +580,7 @@ async function fetchTokens() {
         );
         store.addPolygonTokens(...polygonTokens);
         let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-          80001,
+          0x13881,
           account.value
         );
         store.addPolygonTokens(...polygonTestnetTokens);
@@ -877,26 +855,26 @@ const mintNFT = async () => {
       });
 
       /* Store NFT Metadata on NFT.Storage */
-      const nftStorageTMetadataURI = await nftStorage(
-        name.value,
-        description.value,
-        imageUrl.value,
-        externalUrl.value,
-        animationUrl.value,
-        youtubeUrl.value,
-        attributes.value,
-        audioVideoType.value
-      );
-      const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
-        ";"
-      );
-      console.log(
-        "%c💾 NFT.Storage ipfs:// link :  %s 💾",
-        stylesNFTStorage,
-        nftStorageTMetadataURI
-      );
+      // const nftStorageTMetadataURI = await nftStorage(
+      //   name.value,
+      //   description.value,
+      //   imageUrl.value,
+      //   externalUrl.value,
+      //   animationUrl.value,
+      //   youtubeUrl.value,
+      //   attributes.value,
+      //   audioVideoType.value
+      // );
+      // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
+      //   ";"
+      // );
+      // console.log(
+      //   "%c💾 NFT.Storage ipfs:// link :  %s 💾",
+      //   stylesNFTStorage,
+      //   nftStorageTMetadataURI
+      // );
       /* Check our Transaction results */
-      if (!nftStorageTMetadataURI) return;
+      // if (!nftStorageTMetadataURI) return;
 
       /* Mint our NFT using custom structure */
       // let nftTxn = await contract.safeMint(
@@ -950,11 +928,6 @@ const mintNFT = async () => {
           stylesPolygon,
           nftTxn.hash
         );
-
-        /* Remove loading indicator and show success notification */
-        console.log(
-          `🧬 NFT has been minted successfully, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
-        );
       }
       return;
     } else {
@@ -975,89 +948,31 @@ const bridgeNFT = async () => {
   try {
     const { ethereum } = window;
     if (ethereum) {
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
+      const chainIdFrom = bridgeFromOptions.value.find((chain) => {
+        return chain.label === bridgeFrom.value;
+      })?.value;
 
-      /* Get correct Contract Address and ABI for the chain */
-      let contractAddress = null;
-      let contractABI = null;
+      const chainIdTo = bridgeToOptions.value.find((chain) => {
+        return chain.label === bridgeTo.value;
+      })?.value;
 
-      if (bridgeFrom.value === "ethereum") {
-        /* Ethereum */
-        contractAddress = bridgeContractAddressEthereum;
-        contractABI = bridgeContractAbiEthereum.abi;
-      } else if (bridgeFrom.value === "optimism") {
-        /* Optimism */
-        contractAddress = bridgeContractAddressOptimism;
-        contractABI = bridgeContractAbiOptimism.abi;
-      } else if (bridgeFrom.value === "polygon") {
-        /* Polygon */
-        contractAddress = bridgeContractAddressPolygon;
-        contractABI = bridgeContractAbiPolygon.abi;
-      } else if (bridgeFrom.value === "arbitrum") {
-        /* Arbitrum */
-        contractAddress = bridgeContractAddressArbitrum;
-        contractABI = bridgeContractAbiArbitrum.abi;
-      } else if (bridgeFrom.value === "avalanche") {
-        /* Avalanche */
-        contractAddress = bridgeContractAddressAvalanche;
-        contractABI = bridgeContractAbiAvalanche.abi;
-      }
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: BigNumber.from(chainIdFrom).toHexString() }],
+      });
 
-      const contract = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        signer
-      );
-
-      const styles = ["color: black", "background: green"].join(";");
-      console.log(
-        "%c🍵 Mint Tea Bridge Contract Address:  %s ",
-        styles,
-        contractAddress
-      );
-
-      let nftTxn = await contract.safeMint(
-        signer.getAddress(),
-        name.value,
-        description.value,
-        imageUrl.value,
-        externalUrl.value
-      );
-
-      const stylesMining = ["color: black", "background: yellow"].join(";");
-      console.log("%c⛏ Mining...please wait!  %s ⛏", stylesMining, nftTxn.hash);
-
-      // The OpenZeppelin base ERC721 contract emits a Transfer event
-      // when a token is issued. tx.wait() will wait until a block containing
-      // our transaction has been mined and confirmed. The transaction receipt
-      // contains events emitted while processing the transaction.
-      const receipt = await nftTxn.wait();
-
-      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
-      console.log(
-        "%c💎 We just mined another gem! %s 💎",
-        stylesReceipt,
-        nftTxn.hash
+      const nftContractAddress = contractAddressBridge.value;
+      const tokenId = tokenIdBridge.value;
+      const receipt = await bridge(
+        nftContractAddress,
+        tokenId,
+        chainIdFrom,
+        chainIdTo
       );
 
       /* Check our Transaction results */
       if (receipt.status === 1) {
-        /**
-         * @dev NOTE: Switch up these links once we go to Production
-         * Currently set to use Polygon Mumbai Testnet
-         */
-        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
-        console.log(
-          `%c🧬 NFT Minted on Polygon, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash} %s`,
-          stylesPolygon,
-          nftTxn.hash
-        );
-
-        /* Remove loading indicator and show success notification */
-        console.log(
-          `🧬 NFT has been minted successfully, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
-        );
+        console.log("ok");
       }
       return;
     } else {
@@ -1069,13 +984,23 @@ const bridgeNFT = async () => {
 };
 
 /**
- * Approve Bridge Transfer
+ * Update Bridge From Chain
  */
 const updateBridgeFrom = (event) => {
   console.log("bridgeFrom.value:", event.target.value);
   console.log("Bridge From:", bridgeFrom.value);
   bridgeFrom.value = event.target.value;
   console.log("Bridge From:", bridgeFrom.value);
+};
+
+/**
+ * Update Bridge To Chain
+ */
+const updateBridgeTo = (event) => {
+  console.log("bridgeTo.value:", event.target.value);
+  console.log("Bridge To:", bridgeTo.value);
+  bridgeTo.value = event.target.value;
+  console.log("Bridge To:", bridgeTo.value);
 };
 
 /**
@@ -1098,6 +1023,10 @@ const CancelBridge = () => {
 };
 
 onMounted(async () => {
+  window.document.getElementById("bg-gradient").style.backgroundImage =
+    "url('/brewtube.png')";
+  window.document.getElementById("nft-modal").style.backgroundImage =
+    "url('/brewingbubbles.svg')";
   window.scrollTo({
     top: 0,
     left: 0,
@@ -1194,11 +1123,11 @@ section#mint {
     }
     @include breakpoint($break-sm) {
       width: 100%;
-      padding: 2em 1em;
+      padding: 0;
     }
     @include breakpoint($break-xs) {
       width: 100%;
-      padding: 1.5em 1em;
+      padding: 0;
     }
   }
 }
@@ -1294,7 +1223,6 @@ section#content {
   }
 
   .form-container.home {
-    width: 428px;
     height: auto;
   }
 
@@ -1675,7 +1603,7 @@ section#content {
 }
 
 .bubbles-brewing {
-  background-image: url("./brewingbubbles.png");
+  // background-image: url("./brewingbubbles.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;

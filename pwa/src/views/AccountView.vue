@@ -51,10 +51,10 @@
             </div>
             <div class="button-container">
               <button class="home-button">
-                <router-link :to="{ name: 'home' }">Home</router-link>
+                <router-link :to="{ name: 'home' }">home</router-link>
               </button>
               <button class="explore-button">
-                <router-link :to="{ name: 'explore' }">Explore</router-link>
+                <router-link :to="{ name: 'explore' }">explore</router-link>
               </button>
             </div>
           </div>
@@ -64,7 +64,7 @@
         <section id="explore">
           <div class="row">
             <div class="row-header">
-              <h2>Ethereum<ArrowDownBlue class="arrow-down" /></h2>
+              <h2>ethereum<ArrowDownBlue class="arrow-down" /></h2>
             </div>
             <div v-if="ethereumTokens.length > 0" class="row token-list">
               <template v-for="token in ethereumTokens" :key="token.tokenId">
@@ -74,7 +74,7 @@
           </div>
           <div class="row">
             <div class="row-header">
-              <h2>Polygon <ArrowDownBlue class="arrow-down" /></h2>
+              <h2>polygon <ArrowDownBlue class="arrow-down" /></h2>
             </div>
             <div v-if="polygonTokens.length > 0" class="row token-list">
               <template v-for="token in polygonTokens" :key="token.tokenId">
@@ -84,7 +84,7 @@
           </div>
           <div class="row">
             <div class="row-header">
-              <h2>Optimism <ArrowDownBlue class="arrow-down" /></h2>
+              <h2>optimism <ArrowDownBlue class="arrow-down" /></h2>
             </div>
             <div v-if="optimismTokens.length > 0" class="row token-list">
               <template v-for="token in optimismTokens" :key="token.tokenId">
@@ -94,7 +94,7 @@
           </div>
           <div class="row">
             <div class="row-header">
-              <h2>Arbitrum <ArrowDownBlue class="arrow-down" /></h2>
+              <h2>arbitrum <ArrowDownBlue class="arrow-down" /></h2>
             </div>
             <div v-if="arbitrumTokens.length > 0" class="row token-list">
               <template v-for="token in arbitrumTokens" :key="token.tokenId">
@@ -104,7 +104,7 @@
           </div>
           <div class="row">
             <div class="row-header">
-              <h2>Avalanche <ArrowDownBlue class="arrow-down" /></h2>
+              <h2>avalanche <ArrowDownBlue class="arrow-down" /></h2>
             </div>
             <div v-if="avalancheTokens.length > 0" class="row token-list">
               <template v-for="token in avalancheTokens" :key="token.tokenId">
@@ -534,7 +534,7 @@ section#mint {
         text-decoration: none;
         border-bottom: none;
         &:hover {
-          color: $black;
+          color: $mint-blue;
         }
       }
     }
@@ -591,7 +591,7 @@ section#mint {
       }
       h2 {
         width: 100%;
-        color: $mint-blue;
+        color: $mint-black;
         font-style: normal;
         font-weight: 700;
         font-size: 36px;
@@ -605,6 +605,7 @@ section#mint {
     }
 
     .row {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-content: center;

@@ -11,6 +11,8 @@ import nftPort from "../services/nftPort.js";
 export const useStore = defineStore({
   id: "store",
   state: () => ({
+    txHashKey: null,
+    txHash: null,
     errorCode: null,
     errorStatus: null,
     errorMessage: "",
@@ -34,6 +36,12 @@ export const useStore = defineStore({
     latestTokens: [],
   }),
   getters: {
+    getTxHashKey(state) {
+      return state.txHashKey;
+    },
+    getTxHash(state) {
+      return state.txHash;
+    },
     isErrorCode(state) {
       return state.errorCode;
     },
@@ -99,6 +107,12 @@ export const useStore = defineStore({
     },
   },
   actions: {
+    setTxHashKey(value) {
+      this.txHashKey = value;
+    },
+    setTxHash(value) {
+      this.txHash = value;
+    },
     setErrorCode(value) {
       this.errorCode = value;
     },

@@ -112,7 +112,7 @@
       >
         <div class="nft">
           <div class="nft-image">
-            <img src="/06.png" alt="#06 HOT&SPICY CRISPS" />
+            <img src="/06.png" alt="#06 HOT&amp;SPICY CRISPS" />
           </div>
           <div class="nft-title">#06 HOT&amp;SPICY CRISPS</div>
           <div class="nft-description">
@@ -439,11 +439,12 @@ section#artists {
       }
       @include breakpoint($break-sm) {
         width: 94%;
-        height: 600px;
+        height: auto;
         margin: 0 3% 20px;
       }
       @include breakpoint($break-xs) {
         width: 100%;
+        height: auto;
         margin: 0;
       }
 
