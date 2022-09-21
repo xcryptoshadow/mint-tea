@@ -939,6 +939,187 @@ const mintNFT = async () => {
 };
 
 /**
+ * add new attribute to an NFT
+ */
+ const newAttribute = async () => {
+  
+  if (!_tokenId.value) {
+      console.log(`Please enter a tokenId to continue!`);
+      return;
+  }
+
+  if (!_trait_type.value) {
+      console.log(`Please enter a trait type to continue!`);
+      return;
+  }
+
+  if (!_value.value) {
+      console.log(`Please enter a value for the trait to continue!`);
+      return;
+  }
+  try {
+    
+
+    let tx = await contract.add_new_attribute(
+        _tokenId, 
+        _trait_type, 
+        _value
+        );
+    const stylesMining = ["color: black", "background: yellow"].join(";");
+    console.log("%c adding new attribute ...please wait!  %s", stylesMining, tx.hash);
+
+    
+    //wait until a block containing our transaction has been mined and confirmed.
+    //new_attribute_added event has been emitted .
+    const receipt = await tx.wait();
+
+    const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+    console.log(
+        "%c🍵 just added new attribute %s ",
+        stylesReceipt,
+        tx.hash);
+    /* Check our Transaction results */
+    if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT added new attribute, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+    }
+    return;
+    
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+
+/**
+ * update trait type of an NFT
+ */
+ const updateTraitType = async () => {
+  
+  if (!_tokenId.value) {
+      console.log(`Please enter a tokenId to continue!`);
+      return;
+  }
+  //this is the attribute number in attribute_table, an NFT can have many attributes
+  if (!_trait_id.value) {
+      console.log(`Please enter a trait id to continue!`);
+      return;
+  }
+
+  if (!_trait_type.value) {
+      console.log(`Please enter a trait type to continue!`);
+      return;
+  }
+  try {
+    
+
+    let tx = await contract.update_trait_type(
+      _tokenId,
+      _trait_id,
+      _trait_type
+    )
+    const stylesMining = ["color: black", "background: yellow"].join(";");
+    console.log("%c updating a trait type...please wait!  %s", stylesMining, tx.hash);
+
+    
+    //wait until a block containing our transaction has been mined and confirmed.
+    //trait_type_updated event has been emitted .
+    const receipt = await tx.wait();
+
+    const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+    console.log(
+        "%c🍵 just updated a trait type %s ",
+        stylesReceipt,
+        tx.hash);
+    /* Check our Transaction results */
+    if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+    }
+    return;
+    
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+/**
+ * update trait value of an NFT
+ */
+ const updateValue = async () => {
+  
+  if (!_tokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+  //this is the attribute number in attribute_table, an NFT can have many attributes
+  if (!_trait_id.value) {
+    console.log(`Please enter a trait id to continue!`);
+    return;
+  }
+
+  if (!_value.value) {
+    console.log(`Please enter a value for the trait to continue!`);
+    return;
+  }
+  try {
+    
+
+    let tx = await contract.update_value(
+      _tokenId,
+      _trait_id,
+      _value
+    )
+    const stylesMining = ["color: black", "background: yellow"].join(";");
+    console.log("%c updating value ...please wait!  %s", stylesMining, tx.hash);
+
+    
+    //wait until a block containing our transaction has been mined and confirmed.
+    //trait_type_updated event has been emitted .
+    const receipt = await tx.wait();
+
+    const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+    console.log(
+        "%c🍵 just updated value %s ",
+        stylesReceipt,
+        tx.hash);
+    /* Check our Transaction results */
+    if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated value, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+    }
+    return;
+    
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+/**
  * Bridge NFT
  */
 const bridgeNFT = async () => {
