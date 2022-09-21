@@ -73,6 +73,7 @@
               <select
                 class="bridge-to-chain"
                 v-model="bridgeTo"
+                :disabled="!approvedBridge"
                 @change="updateBridgeTo($event)"
               >
                 <option
@@ -101,7 +102,9 @@
                 back
               </button>
             </div>
-            <div class="tx-hash-messages">{{ txHashKey + ":" + txHash }}</div>
+            <div v-if="txHashKey && txHash" class="tx-hash-messages">
+              Claiming deBridge transaction<br />{{ txHashKey + ":" + txHash }}
+            </div>
           </div>
           <!-- END Bridge Tab -->
 
@@ -120,16 +123,31 @@
               <span class="loading">{{ loading ? "loading..." : "" }}</span>
             </div>
             <div class="input-row">
-              <label for="name">Name</label>
-              <input type="text" name="name" v-model="name" />
+              <label for="name">Name *</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter a name"
+                v-model="name"
+              />
             </div>
             <div class="input-row">
-              <label for="description">Description</label>
-              <textarea type="text" name="description" v-model="description" />
+              <label for="description">Description *</label>
+              <textarea
+                type="text"
+                name="description"
+                placeholder="Enter a short description..."
+                v-model="description"
+              />
             </div>
             <div class="input-row mb-10">
               <label for="externalUrl">External URL</label>
-              <input type="text" name="externalUrl" v-model="externalUrl" />
+              <input
+                type="text"
+                name="externalUrl"
+                placeholder="Enter an external link"
+                v-model="externalUrl"
+              />
             </div>
             <div class="input-row mb-10 hidden">
               <label for="animationUrl">Animation URL</label>
@@ -145,7 +163,7 @@
             <div class="button-container">
               <button
                 v-if="!tokenId"
-                :disabled="!account"
+                :disabled="!approvedMint"
                 class="mint-button"
                 @click="mintNFT()"
               >
@@ -224,21 +242,21 @@
                 </div>
               </template>
             </div>
-            <div class="nft-modal-image-url">
-              <div class="file-copy-url">
-                <a
-                  title="Copy to clipboard"
-                  target="_blank"
-                  @click="copyFileLink(imageUrl)"
-                >
-                  Copy link
-                </a>
-              </div>
-              <div class="file-image-url">
+            <div class="nft-modal-approve">
+              <button
+                :class="!approvedMint ? 'approve-button' : 'approved-button'"
+                @click="ConfirmApprovedMint(true)"
+              >
+                {{ !approvedMint ? "Approve" : "Ready" }}
+              </button>
+              <div class="file-image-link">
                 <a :href="imageUrl" title="Open in new tab" target="_blank">
-                  Open link
+                  IPFS link
                 </a>
               </div>
+              <button class="cancel-button" @click="CancelMint()">
+                Cancel
+              </button>
             </div>
           </div>
           <!-- Pull Tokens by Account to Bridge -->
@@ -415,7 +433,7 @@ import { useStore } from "../store";
 
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
-import { fileSize, copyToClipboard, generateLink } from "../services/helpers";
+import { fileSize, generateLink } from "../services/helpers";
 // import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
 
@@ -489,6 +507,7 @@ const attributes = ref([]);
 const size = ref("");
 const createdAt = ref("");
 const audioVideoType = ref("");
+const approvedMint = ref(false);
 
 /* Bridge Fields and Data */
 const bridgeFrom = ref("ethereum");
@@ -637,15 +656,6 @@ const switchTab = (value) => {
   formTab.value = value;
   if (value === "mint") showBridgeTokens.value = false;
   if (value === "bridge") showBridgeTokens.value = true;
-};
-
-/**
- * Copy to Clipboard function
- */
-const copyFileLink = (url) => {
-  copyToClipboard(url);
-  // notyf.success("Link copied to clipboard!");
-  console.log("Link copied to clipboard!");
 };
 
 /**
@@ -936,6 +946,28 @@ const mintNFT = async () => {
   } catch (error) {
     console.log("error", error);
   }
+};
+
+/**
+ * Cancel NFT Mint
+ */
+const CancelMint = () => {
+  name.value = "";
+  description.value = "";
+  imageUrl.value = null;
+  externalUrl.value = "";
+  animationUrl.value = "";
+  youtubeUrl.value = "";
+  attributes.value = [];
+  approvedMint.value = false;
+  showBridgeTokens.value = true;
+};
+
+/**
+ * Approve Mint
+ */
+const ConfirmApprovedMint = (value) => {
+  approvedMint.value = value;
 };
 
 /**
@@ -1478,6 +1510,11 @@ section#content {
     border: 1px solid $mint-black;
     outline: none;
   }
+  select.bridge-to-chain:disabled {
+    background: #c6c6c6;
+    color: #101010;
+    cursor: not-allowed;
+  }
 
   .button-container {
     width: 100%;
@@ -1678,7 +1715,7 @@ section#nft-modal {
   }
 
   .nft-modal-card {
-    width: 600px;
+    width: 500px;
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -1756,17 +1793,62 @@ section#nft-modal {
     margin: 10px auto 0;
   }
 
-  .nft-modal-image-url {
-    width: 50%;
-    margin: 0 auto 10px;
+  .nft-modal-approve {
+    width: 100%;
     display: flex;
-    flex-flow: row;
-    justify-content: space-evenly;
-    .file-image-url {
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    .approve-button {
+      color: $white;
+      background-color: $mint-blue;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
+      border-radius: 30px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
+      cursor: pointer;
+      &:hover {
+        color: $mint-black;
+      }
+    }
+    .approved-button {
+      color: $black;
+      background-color: $mint-green;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
+      border-radius: 30px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
+      cursor: not-allowed;
+      &:hover {
+        color: $mint-black;
+      }
+    }
+    .file-image-link {
       background: $mint-blue;
       border: none;
       border-radius: 30px;
-      padding: 2px 12px;
+      padding: 4px 12px;
       cursor: pointer;
       a {
         color: $white;
@@ -1783,25 +1865,26 @@ section#nft-modal {
         }
       }
     }
-    .file-copy-url {
-      background: $mint-black;
-      border: none;
+    .cancel-button {
+      color: $white;
+      background-color: $mint-black;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 100px;
       border-radius: 30px;
-      padding: 2px 12px;
+      padding: 4px 12px;
+      height: auto;
+      border: 0;
+      margin: 10px;
+      transition: 0.4s;
       cursor: pointer;
-      a {
-        color: $white;
-        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-          "Droid Sans", "Helvetica Neue", sans-serif;
-        font-style: normal;
-        font-weight: 800;
-        font-size: 14px;
-        line-height: 24px;
-        text-align: center;
-        transition: 0.4s;
-        &:hover {
-          color: $mint-blue;
-        }
+      &:hover {
+        color: $mint-blue;
       }
     }
   }
@@ -1820,7 +1903,7 @@ section#nft-modal {
   border: 4px solid var(--gradient-100);
   box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
   border-radius: 10px;
-  padding: 20px 20px 10px 20px;
+  padding: 0 20px 10px 20px;
   overflow: scroll;
 
   @include breakpoint($break-lg) {
@@ -1919,7 +2002,7 @@ section#nft-modal {
 }
 
 .nft-bridge-modal-card {
-  width: 600px;
+  width: 500px;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -1974,7 +2057,7 @@ section#nft-modal {
   .nft-bridge-modal-title {
     width: 100%;
     color: $mint-black;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
     font-weight: 400;
     text-align: center;
     margin: 10px auto 0;

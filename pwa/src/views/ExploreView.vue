@@ -558,7 +558,7 @@ section#search-bar {
     .search {
       width: 100%;
       display: flex;
-      flex-direction: row;
+      flex-direction: row wrap;
       align-content: center;
       justify-content: center;
       align-items: center;
