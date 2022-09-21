@@ -1598,7 +1598,7 @@ section#content {
 }
 
 .bubbles-brewing {
-  background-image: url("/brewingbubbles.svg?raw");
+  background-image: url("./brewingbubbles.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;
