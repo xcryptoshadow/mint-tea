@@ -397,22 +397,6 @@
           />
         </template>
       </div>
-      <div class="row token-list">
-        <template v-for="token in latestTokens" :key="token.token_id">
-          <NftCard
-            v-if="token.metadata && token.metadata.image"
-            :token="token"
-          />
-        </template>
-      </div>
-      <div class="row token-list">
-        <template v-for="token in topTokens" :key="token.token_id">
-          <NftCard
-            v-if="token.metadata && token.metadata.image"
-            :token="token"
-          />
-        </template>
-      </div>
     </section>
     <CollectionSection />
     <AboutSection />
@@ -442,6 +426,8 @@ import { bridge } from "../services/debridge.js";
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
+// import BrewBubbles from "../assets/brewingbubbles.svg";
+// import BrewTube from "../assets/brewtube.svg";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
@@ -470,8 +456,6 @@ const {
   txHash,
   loading,
   account,
-  topTokens,
-  latestTokens,
   trendingTokens,
   ethereumTokens,
   polygonTokens,
@@ -1614,7 +1598,7 @@ section#content {
 }
 
 .bubbles-brewing {
-  background-image: url("./brewingbubbles.svg");
+  background-image: url("/brewingbubbles.svg?raw");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 700px;
@@ -1633,36 +1617,6 @@ section#content {
     background-repeat: no-repeat;
     background-size: 100%;
   }
-}
-.bubbles-one {
-  background-image: url("./bubbles1.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-two {
-  background-image: url("./bubbles2.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-three {
-  background-image: url("./bubbles3.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-four {
-  background-image: url("./bubbles4.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
-}
-.bubbles-five {
-  background-image: url("./bubbles5.svg");
-  background-position: center left;
-  background-repeat: no-repeat;
-  background-size: 700px;
 }
 
 section#nft-modal {
