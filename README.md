@@ -187,7 +187,7 @@ npx hardhat run scripts/deploy.js --network polygon-mumbai
 You will need to verify your contracts as below, replace the first address with your new contract address
 
 ```shell
-npx hardhat verify --network polygon-mumbai "0xbE3601f014e0A861bc837bD1f24822cE23592422"
+npx hardhat verify --network polygon-mumbai
 ```
 
 ## Basic Vue 3 Front-end using Vite and Pinia
