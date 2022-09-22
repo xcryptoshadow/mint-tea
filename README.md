@@ -33,7 +33,21 @@ Mourad Bouabdallah - Solidity & Smart Contracts
 LinkedIn: <https://www.linkedin.com/in/mourad-bouabdallah/>
 GitHub: <https://github.com/mourad96>
 
+## What is 🍵 Mint Tea?
+
+### The Problem
+
+Currently, typical ERC-20 token bridges don't care about the original metadata of a fungible token, but when bridging an ERC-721 NFT, we should always follow the original metadata to uphold the rarity of the non-fungible token.
+
+Usually when you bridge an NFT through a typical bridge, the NFT on the new chain is practically a new one and the bridge follows the mint/burn approach. The big issue is that you can't actually trace that NFT back to the original chain, because when it is bridged, all the other non-vital information like collection name and similar information can be lost in the process. The cross-chain NFT has become a new form of non-fungible token or NFT and deserves a standard of it's own. With recent developments in General Message Passing, if you bridge an NFT, then the dApp on the new chain would be able to trace the cross-chain NFT back to it's chain of origin or minting chain, to make sure that it is actually the correct and true NFT and not a duplicate or fake.
+
+### The Mint Tea Solution
+
+For example, let's say you own an NFT on Ethereum and you take it cross-chain to Avalanche for example. The data of the NFT – the collection, the metadata – will be carried forwards, meaning that the dApp on Avalanche would be able to confirm that the NFT on Avalanche is indeed coming from Ethereum. This novel solution using General Message Passing opens up unlimited possibilities in the blockchain space. For example, let's say you can use your very valuable Ape NFT on Ethereum as collateral on another blockchain and still hold it's value', or you can create a dApp that utilises NFTs from multiple chains, without worrying about the license or royalty fees problem or similar issues. This new form of NFT deserves further exploration as it opens up many use cases, especially in the gaming industry, music and arts. We believe that by using the Tableland NFT as a building block, soon we will be able to create entire game characters as NFTs and then attached game items, which are also dynamic NFTs that can change over time or skill levels, etc.
+
 ## Tableland Example
+
+Tableland is a composable data network that brings SQL to smart contracts on Ethereum and other EVM-compatible chains. Read and write structured data to the blockchain to supercharge NFTs, games, metaverse experiences, and all of web3.
 
 The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test purposes at: 0xbE3601f014e0A861bc837bD1f24822cE23592422
 
