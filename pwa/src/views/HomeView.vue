@@ -231,16 +231,83 @@
             <div class="nft-modal-attributes">
               <template v-for="(index, attr) in attributes" :key="index">
                 <div class="nft-attribute">
-                  <div class="nft-attribute-icon">{{ attr.icon }}</div>
+                  <div class="nft-attribute-icon">
+                    {{ attr.icon }}
+                    <button
+                      class="'edit-button'"
+                      @click="updateTraitIcon(attr)"
+                    >
+                      Edit
+                    </button>
+                  </div>
                   <div class="nft-attribute-display-type">
                     {{ attr.display_type }}
+                    <button
+                      class="'edit-button'"
+                      @click="updateTraitDisplayType(attr)"
+                    >
+                      Edit
+                    </button>
                   </div>
                   <div class="nft-attribute-trait-type">
                     {{ attr.trait_type }}
+                    <button
+                      class="'edit-button'"
+                      @click="updateTraitType(attr)"
+                    >
+                      Edit
+                    </button>
                   </div>
-                  <div class="nft-attribute-value">{{ attr.value }}</div>
+                  <div class="nft-attribute-value">
+                    {{ attr.value
+                    }}<button class="'edit-button'" @click="updateValue(attr)">
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </template>
+            </div>
+            <div class="nft-modal-attributes">
+              <div class="nft-attribute">
+                <div class="nft-attribute-icon"></div>
+                <div class="nft-attribute-display-type">
+                  <input
+                    type="text"
+                    name="traitIcon"
+                    placeholder="Enter an icon url"
+                    v-model="traitIcon"
+                  />
+                </div>
+                <div class="nft-attribute-trait-type">
+                  <input
+                    type="text"
+                    name="traitDisplayType"
+                    placeholder="Enter a trait display type"
+                    v-model="traitDisplayType"
+                  />
+                </div>
+                <div class="nft-attribute-trait-type">
+                  <input
+                    type="text"
+                    name="traitType"
+                    placeholder="Enter a trait type"
+                    v-model="traitType"
+                  />
+                </div>
+                <div class="nft-attribute-value">
+                  <input
+                    type="text"
+                    name="traitValue"
+                    placeholder="Enter a trait value"
+                    v-model="traitValue"
+                  />
+                </div>
+                <div class="button-container">
+                  <button class="add-button" @click="AddNewAttribute()">
+                    Add
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="nft-modal-approve">
               <button
@@ -456,7 +523,7 @@ import AboutSection from "@/components/AboutSection.vue";
 /* Import Smart Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
-const contractAddress = "0xbE3601f014e0A861bc837bD1f24822cE23592422";
+const contractAddress = "0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68";
 
 /* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
@@ -502,6 +569,16 @@ const externalUrl = ref("");
 const animationUrl = ref("");
 const youtubeUrl = ref("");
 const attributes = ref([]);
+
+const traitTableId = ref(null);
+const traitTokenId = ref(null);
+const traitId = ref(null);
+const traitIcon = ref("");
+const traitDisplayType = ref("");
+const traitType = ref("");
+const traitValue = ref("");
+const traitCreatedAt = ref("");
+const traitUpdatedAt = ref("");
 
 /* Calculated on Mint and IPFS upload */
 const size = ref("");
@@ -964,10 +1041,499 @@ const CancelMint = () => {
 };
 
 /**
- * Approve Mint
+ * Approve Tableland NFT Mint
  */
 const ConfirmApprovedMint = (value) => {
   approvedMint.value = value;
+};
+
+/**
+ * Add a new attribute to a Tableland NFT
+ */
+const AddNewAttribute = async () => {
+  if (!traitTokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+
+  if (!traitIcon.value) {
+    console.log(`Please enter a trait icon to continue!`);
+    return;
+  }
+
+  if (!traitDisplayType.value) {
+    console.log(`Please enter a trait display type to continue!`);
+    return;
+  }
+
+  if (!traitType.value) {
+    console.log(`Please enter a trait type to continue!`);
+    return;
+  }
+
+  if (!traitValue.value) {
+    console.log(`Please enter a value for the trait to continue!`);
+    return;
+  }
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractAbi.abi,
+        signer
+      );
+
+      /**
+       *  Receive Emitted Event from Smart Contract
+       *  @dev See newAttributeAdded emitted from our smart contract add_new_attribute function
+       */
+      contract.on(
+        "newAttributeAdded",
+        (receiver, timestamp, token_id, trait_id) => {
+          console.log("Receiver :", receiver);
+
+          traitCreatedAt.value = moment.unix(timestamp).toString();
+          console.log("Trait Created At :", traitCreatedAt.value);
+
+          traitTokenId.value = token_id.toNumber();
+          console.log("Trait TokenId :", traitTokenId.value);
+
+          traitId.value = trait_id.toNumber();
+          console.log("Trait Id :", traitId.value);
+        }
+      );
+
+      let tx = await contract.add_new_attribute(
+        traitTokenId.value,
+        traitIcon.value,
+        traitDisplayType.value,
+        traitType.value,
+        traitValue.value
+      );
+
+      const stylesMining = ["color: black", "background: yellow"].join(";");
+      console.log(
+        "%c Adding new trait attribute... please wait!  %s",
+        stylesMining,
+        tx.hash
+      );
+
+      //wait until a block containing our transaction has been mined and confirmed.
+      //new_attribute_added event has been emitted .
+      const receipt = await tx.wait();
+
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log(
+        "%c🍵 We just added new attribute %s ",
+        stylesReceipt,
+        tx.hash
+      );
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT added new attribute, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+/**
+ * Update trait icon of a Tableland NFT
+ */
+const updateTraitIcon = async (attribute) => {
+  console.log("attribute", attribute);
+  if (!traitTokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+  /* This is the attribute number in attribute_table, an NFT can have many attributes */
+  if (!traitId.value) {
+    console.log(`Please enter a trait id to continue!`);
+    return;
+  }
+  if (!traitIcon.value) {
+    console.log(`Please enter a trait icon url to continue!`);
+    return;
+  }
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractAbi.abi,
+        signer
+      );
+      /**
+       *  Receive Emitted Event from Smart Contract
+       *  @dev See traitDisplayTypeUpdated emitted from our smart contract update_display_type function
+       */
+      contract.on(
+        "traitIconUpdated",
+        (
+          receiver,
+          timestamp,
+          attributes_table_id,
+          icon,
+          token_id,
+          trait_id
+        ) => {
+          console.log("Receiver :", receiver);
+
+          traitUpdatedAt.value = moment.unix(timestamp).toString();
+          console.log("Trait Updated At :", traitUpdatedAt.value);
+
+          traitTableId.value = attributes_table_id.toNumber();
+          console.log("Trait Attributes Table Id :", traitTableId.value);
+
+          traitIcon.value = icon.toString();
+          console.log("Trait Icon Url :", traitIcon.value);
+
+          traitTokenId.value = token_id.toNumber();
+          console.log("Trait Token Id :", traitTokenId.value);
+
+          traitId.value = trait_id.toNumber();
+          console.log("Trait Id :", traitId.value);
+        }
+      );
+
+      let tx = await contract.update_icon(
+        traitTokenId.value,
+        traitId.value,
+        traitIcon.value
+      );
+
+      const receipt = await tx.wait();
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log(
+        "%c🍵 We just updated a trait icon url %s ",
+        stylesReceipt,
+        tx.hash
+      );
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+/**
+ * Update trait display type of a Tableland NFT
+ */
+const updateTraitDisplayType = async (attribute) => {
+  console.log("attribute", attribute);
+  if (!traitTokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+  /* This is the attribute number in attribute_table, an NFT can have many attributes */
+  if (!traitId.value) {
+    console.log(`Please enter a trait id to continue!`);
+    return;
+  }
+  if (!traitDisplayType.value) {
+    console.log(`Please enter a trait display type to continue!`);
+    return;
+  }
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractAbi.abi,
+        signer
+      );
+      /**
+       *  Receive Emitted Event from Smart Contract
+       *  @dev See traitDisplayTypeUpdated emitted from our smart contract update_display_type function
+       */
+      contract.on(
+        "traitDisplayTypeUpdated",
+        (
+          receiver,
+          timestamp,
+          attributes_table_id,
+          display_type,
+          token_id,
+          trait_id
+        ) => {
+          console.log("Receiver :", receiver);
+
+          traitUpdatedAt.value = moment.unix(timestamp).toString();
+          console.log("Trait Created At :", traitUpdatedAt.value);
+
+          traitTableId.value = attributes_table_id.toNumber();
+          console.log("Trait Attributes Table Id :", traitTableId.value);
+
+          traitDisplayType.value = display_type.toString();
+          console.log("Trait Display Type :", traitDisplayType.value);
+
+          traitTokenId.value = token_id.toNumber();
+          console.log("Trait Token Id :", traitTokenId.value);
+
+          traitId.value = trait_id.toNumber();
+          console.log("Trait Id :", traitId.value);
+        }
+      );
+
+      let tx = await contract.update_display_type(
+        traitTokenId.value,
+        traitId.value,
+        traitDisplayType.value
+      );
+
+      const receipt = await tx.wait();
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log(
+        "%c🍵 just updated a trait display type %s ",
+        stylesReceipt,
+        tx.hash
+      );
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+/**
+ * Update trait type of a Tableland NFT
+ */
+const updateTraitType = async (attribute) => {
+  console.log("attribute", attribute);
+  if (!traitTokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+  /* This is the attribute number in attribute_table, an NFT can have many attributes */
+  if (!traitId.value) {
+    console.log(`Please enter a trait id to continue!`);
+    return;
+  }
+  if (!traitType.value) {
+    console.log(`Please enter a trait type to continue!`);
+    return;
+  }
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractAbi.abi,
+        signer
+      );
+      /**
+       *  Receive Emitted Event from Smart Contract
+       *  @dev See traitTypeUpdated emitted from our smart contract update_trait_type function
+       */
+      contract.on(
+        "traitTypeUpdated",
+        (
+          receiver,
+          timestamp,
+          attributes_table_id,
+          trait_type,
+          token_id,
+          trait_id
+        ) => {
+          console.log("Receiver :", receiver);
+
+          traitUpdatedAt.value = moment.unix(timestamp).toString();
+          console.log("Trait Created At :", traitUpdatedAt.value);
+
+          traitTableId.value = attributes_table_id.toNumber();
+          console.log("Trait Table Id :", traitTableId.value);
+
+          traitType.value = trait_type.toString();
+          console.log("Trait Type :", traitType.value);
+
+          traitTokenId.value = token_id.toNumber();
+          console.log("Trait TokenId :", traitTokenId.value);
+
+          traitId.value = trait_id.toNumber();
+          console.log("Trait Id :", traitId.value);
+        }
+      );
+
+      let tx = await contract.update_trait_type(
+        traitTokenId.value,
+        traitId.value,
+        traitType.value
+      );
+
+      const receipt = await tx.wait();
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log("%c🍵 just updated a trait type %s ", stylesReceipt, tx.hash);
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+/**
+ * Update trait value of a Tableland NFT
+ */
+const updateValue = async (attribute) => {
+  console.log("Attribute:", attribute);
+
+  if (!traitTokenId.value) {
+    console.log(`Please enter a tokenId to continue!`);
+    return;
+  }
+  /* This is the attribute number in attribute_table, an NFT can have many attributes */
+  if (!traitId.value) {
+    console.log(`Please enter a trait id to continue!`);
+    return;
+  }
+  if (!traitValue.value) {
+    console.log(`Please enter a value for the trait to continue!`);
+    return;
+  }
+  try {
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractAbi.abi,
+        signer
+      );
+
+      /**
+       *  Receive Emitted Event from Smart Contract
+       *  @dev See valueUpdated emitted from our smart contract update_value function
+       */
+      contract.on(
+        "valueUpdated",
+        (
+          receiver,
+          timestamp,
+          attributes_table_id,
+          trait_value,
+          token_id,
+          trait_id
+        ) => {
+          console.log("Receiver :", receiver);
+
+          traitUpdatedAt.value = moment.unix(timestamp).toString();
+          console.log("Trait Updated At :", traitUpdatedAt.value);
+
+          traitTableId.value = attributes_table_id.toNumber();
+          console.log("Trait Table Id :", traitTableId.value);
+
+          traitValue.value = trait_value.toString();
+          console.log("Trait Value :", traitValue.value);
+
+          traitTokenId.value = token_id.toNumber();
+          console.log("Trait TokenId :", traitTokenId.value);
+
+          traitId.value = trait_id.toNumber();
+          console.log("Trait Id :", traitId.value);
+        }
+      );
+
+      let tx = await contract.update_value(
+        traitTokenId.value,
+        traitId.value,
+        traitValue.value
+      );
+
+      const receipt = await tx.wait();
+      const stylesReceipt = ["color: black", "background: #e9429b"].join(";");
+      console.log("%c🍵 just updated value %s ", stylesReceipt, tx.hash);
+
+      /* Check our Transaction results */
+      if (receipt.status === 1) {
+        /**
+         * @dev NOTE: Switch up these links once we go to Production
+         * Currently set to use Polygon Mumbai Testnet
+         */
+        const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
+        console.log(
+          `%c🧬 NFT updated value, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          stylesPolygon,
+          tx.hash
+        );
+      }
+      return;
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 /**

@@ -21,11 +21,19 @@ const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
 // contract instance
 const mint_tea = new ethers.Contract(CONTRACT_ADDRESS, contract.abi, signer);
-//const mint_tea = new web3.eth.Contract(contract.abi, CONTRACT_ADDRESS);
 
 async function main() {
+    /*const tokenid = await mint_tea.safeMint( signer.address, "nft", "test nft table","image url","external url","icon","15h30","duration","15" );
+    console.log(`tokenid is: ${tokenid.value}`);*/
+    //tokenid.wait();
+    //await mint_tea.update_trait_type(1,2,"update new attribute");
+    
     const tokenidstring = await mint_tea.tokenURI(1);
     console.log(`tokenidstring is: ${tokenidstring}`);
+
+    /*const trait_id = await mint_tea.add_new_attribute(1,"new attribute3","18");
+    console.log(`trait_id is: ${trait_id.value}`);*/
+    
 }
 
 main();

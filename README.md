@@ -71,6 +71,18 @@ We minted these NFTs during testing using the 🍵 Mint Tea app for the #ETHOnli
 <https://testnets.opensea.io/assets/mumbai/0x8d57ffb931426aaa612591f846bd00d6c580a59c/2>
 <https://testnets.opensea.io/assets/mumbai/0xbe3601f014e0a861bc837bd1f24822ce23592422/1>
 
+### Final Mumbai Test
+
+Deploying to network 'polygon-mumbai' with account 0x09c0377BAdCa7349b20569f45f2D94398179Db0c
+tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
+
+Mint Tea NFT contract deployed on polygon-mumbai at: 0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68
+
+mainTable name is: Mint_TEA_80001_2644
+attributestable name is: Mint_TEA_80001_2645
+
+<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2644%20JOIN%20Mint_TEA_80001_2645%20ON%20Mint_TEA_80001_2644%2Etokenid%20%3D%20Mint_TEA_80001_2645%2Emaintable_tokenid%20WHERE%20tokenid%3D6%20group%20by%20tokenid>
+
 ## deBridge Example
 
 Deployed Bridge contracts on Polygon, Arbitrum and Avalanche. Optimism not supported yet but coming soon. We aim to include Optimism in our target chains.
@@ -187,7 +199,7 @@ npx hardhat run scripts/deploy.js --network polygon-mumbai
 You will need to verify your contracts as below, replace the first address with your new contract address
 
 ```shell
-npx hardhat verify --network polygon-mumbai "0xbE3601f014e0A861bc837bD1f24822cE23592422"
+npx hardhat verify --network polygon-mumbai
 ```
 
 ## Basic Vue 3 Front-end using Vite and Pinia
