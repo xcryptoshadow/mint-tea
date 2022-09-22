@@ -38,7 +38,7 @@ contract MTEA is ERC721, AccessControl {
       uint256 tokenId
     );
 
-    event trait_type_updated(
+    event traitTypeUpdated(
         address indexed from, 
         uint256 timestamp, 
         uint256 _attributesTableId,
@@ -47,7 +47,7 @@ contract MTEA is ERC721, AccessControl {
         uint256 _trait_id
     );
 
-    event value_updated(
+    event valueUpdated(
         address indexed from, 
         uint256 timestamp, 
         uint256 _attributesTableId,
@@ -56,7 +56,7 @@ contract MTEA is ERC721, AccessControl {
         uint256 _trait_id
     );
 
-    event new_attribute_added(
+    event newAttributeAdded(
       address indexed from,
       uint256 timestamp,
       uint256 tokenId,
@@ -183,8 +183,8 @@ contract MTEA is ERC721, AccessControl {
         return tokenId;
     }
 
-     /*
-     * add new attribute to an NFT
+    /*
+     * Add a new attribute to a Tableland NFT
      */
     function add_new_attribute(
         uint256 _tokenId, 
@@ -196,9 +196,10 @@ contract MTEA is ERC721, AccessControl {
         /* Check Ownership */
         require(this.ownerOf(_tokenId) == msg.sender, "Invalid owner");
         
-        //this counter begins from 1 not 0 
+        /* This counter begins from 1 not 0 */
         uint256 counter_trait = nb_of_attributes[_tokenId] ;
-         //insert into attributesTable
+        
+        /* Insert into attributesTable */
         _tableland.runSQL(
             address(this),
             _attributesTableId,
@@ -219,12 +220,12 @@ contract MTEA is ERC721, AccessControl {
         //NOTE: SafeMath is no longer needed starting with Solidity 0.8. 
         //The compiler now has built in overflow checking.
         nb_of_attributes[_tokenId] = counter_trait + 1;
-        emit new_attribute_added(msg.sender, block.timestamp,  _tokenId, counter_trait + 1);
+        emit newAttributeAdded(msg.sender, block.timestamp,  _tokenId, counter_trait + 1);
         return counter_trait + 1 ;
     }
 
-     /*
-     * update an attribute trait_type
+    /*
+     * Update an attribute trait_type
      */
     function update_trait_type(
         uint256 tokenId,
@@ -251,7 +252,7 @@ contract MTEA is ERC721, AccessControl {
             )
         );
         /* Emit Event */
-       emit trait_type_updated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId, _trait_id);
+        emit traitTypeUpdated(msg.sender, block.timestamp, _attributesTableId, _trait_type, tokenId, _trait_id);
     }
 
      /*
@@ -282,7 +283,7 @@ contract MTEA is ERC721, AccessControl {
             )
         );
         /* Emit Event */
-       emit value_updated(msg.sender, block.timestamp, _attributesTableId, _value, tokenId, _trait_id);
+       emit valueUpdated(msg.sender, block.timestamp, _attributesTableId, _value, tokenId, _trait_id);
     }
 
     /**
@@ -292,7 +293,7 @@ contract MTEA is ERC721, AccessControl {
         string memory base = _baseURI();
         return string.concat(
             base,
-            "mode=list&s=", 
+            "unwrap=true&extract=false&s=", 
             "SELECT%20*%20FROM%20",
             mainTable
         );
@@ -305,7 +306,7 @@ contract MTEA is ERC721, AccessControl {
         string memory base = _baseURI();
         return string.concat(
             base,
-            "mode=list&s=", 
+            "unwrap=true&extract=false&s=", 
             "SELECT%20*%20FROM%20",
             attributesTable
         );
@@ -353,12 +354,12 @@ contract MTEA is ERC721, AccessControl {
             )
         );
         // Return the baseURI with a query string, which looks up the token id in a row.
-        // `&mode=list` formats into the proper JSON object expected by metadata standards.
+        // `unwrap=true&extract=true` formats into the proper JSON object expected by metadata standards.
         return
             string(
                 abi.encodePacked(
                     baseURI,
-                    "mode=list&s=",
+                    "unwrap=true&extract=true&s=",
                     query,
                     Strings.toString(_tokenId),
                     "%20group%20by%20tokenid"
