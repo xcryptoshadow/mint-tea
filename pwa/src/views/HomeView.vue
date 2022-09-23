@@ -253,10 +253,11 @@
             </div> -->
             <div v-show="attributes" class="nft-modal-edit-attributes">
               <template v-for="attr in attributes" :key="attr.trait_id">
-                <div class="nft-attribute-cards">
+                <div v-if="attr.trait_value" class="nft-attribute-cards">
                   <div class="nft-attribute-card">
                     <div class="nft-attribute-card-icon">
-                      {{ attr.icon }} {{ attr.display_type }}
+                      #{{ attr.trait_id }} {{ attr.icon }}
+                      {{ attr.display_type }}
                     </div>
                     <div class="nft-attribute-card-trait">
                       {{ attr.trait_type }} : {{ attr.trait_value }}
@@ -265,8 +266,9 @@
                 </div>
               </template>
               <template v-for="attr in attributes" :key="attr.trait_id">
-                <div class="nft-attribute hidden">
+                <div v-if="attr.trait_value" class="nft-attribute">
                   <div class="nft-attribute-icon">
+                    #{{ attr.trait_id }}
                     <input
                       type="text"
                       name="traitIcon"
@@ -574,7 +576,7 @@ import AboutSection from "@/components/AboutSection.vue";
 
 /* Mint Tea Contract Address and Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-const contractAddress = "0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68";
+const contractAddress = "0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48";
 
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
@@ -1168,18 +1170,15 @@ const AddNewAttribute = async () => {
           console.log("Trait Id :", traitId.value);
 
           /* Add new Trait to our Array for UI */
-          attributes.value = [
-            ...attributes.value,
-            {
-              token_id: traitTokenId.value,
-              trait_id: traitId.value,
-              icon: traitIcon.value,
-              display_type: traitDisplayType.value,
-              trait_type: traitType.value,
-              trait_value: traitValue.value,
-              created_at: traitCreatedAt.value,
-            },
-          ];
+          attributes.value = attributes.value.concat({
+            token_id: traitTokenId.value,
+            trait_id: traitId.value,
+            icon: traitIcon.value,
+            display_type: traitDisplayType.value,
+            trait_type: traitType.value,
+            trait_value: traitValue.value,
+            created_at: traitCreatedAt.value,
+          });
           traitTokenId.value = null;
           traitId.value = null;
           traitIcon.value = "";
