@@ -65,7 +65,7 @@ header {
     height: 100%;
     display: flex;
     justify-content: flex-end;
-    padding: 4em 0 2em;
+    padding: 3em 0 1.5em;
     @include breakpoint($break-md) {
       width: 100%;
       padding: 1em 0;

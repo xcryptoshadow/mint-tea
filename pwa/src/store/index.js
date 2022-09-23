@@ -17,6 +17,8 @@ export const useStore = defineStore({
     errorStatus: null,
     errorMessage: "",
     loading: false,
+    minting: false,
+    bridging: false,
     fileLoading: false,
     account: null,
     balance: null,
@@ -53,6 +55,12 @@ export const useStore = defineStore({
     },
     isLoading(state) {
       return state.loading;
+    },
+    isMinting(state) {
+      return state.minting;
+    },
+    isBridging(state) {
+      return state.bridging;
     },
     isFileLoading(state) {
       return state.fileLoading;
@@ -124,6 +132,12 @@ export const useStore = defineStore({
     },
     setLoading(value) {
       this.loading = value;
+    },
+    setMinting(value) {
+      this.minting = value;
+    },
+    setBridging(value) {
+      this.bridging = value;
     },
     setFileLoading(value) {
       this.fileLoading = value;

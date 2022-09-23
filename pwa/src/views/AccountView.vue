@@ -44,9 +44,9 @@
             <h1>Account NFTs</h1>
             <div class="input-row">
               <p>
-                Browse all your NFTs across all the best blockchains like
-                Ethereum, Polygon, Optimism, Avalanche, Arbitrum and more coming
-                soon...
+                View all your account NFTs from all the top blockchains
+                including Ethereum, Polygon, Optimism, Arbitrum and Avalanche
+                with more coming soon...
               </p>
             </div>
             <div class="button-container">
@@ -124,7 +124,7 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
 
-/* Import our IPFS and NftStorage Services */
+/* Import our IPFS and Nft.Storage Services */
 import authNFT from "../services/authNFT.js";
 
 /* Import SVG */
@@ -180,8 +180,10 @@ const getAccount = async () => {
   try {
     const { ethereum } = window;
     if (!ethereum) return;
+
     /* Get our Account Details */
     const accounts = await ethereum.request({ method: "eth_accounts" });
+
     if (accounts.length !== 0) {
       store.updateAccount(accounts[0]);
 
@@ -430,7 +432,7 @@ section#mint {
 
         img,
         svg {
-          width: 220px;
+          width: 260px;
           margin: 10px auto 20px;
           object-fit: contain;
           overflow: hidden;
@@ -450,7 +452,7 @@ section#mint {
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;
-        margin: 0 auto 15px;
+        margin: 20px auto 15px;
         span.emoji {
           font-size: 2.2rem;
         }
