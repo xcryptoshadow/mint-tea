@@ -13,13 +13,13 @@
             type="text"
             v-model="contract"
             class="search-contract"
-            placeholder="Filter by contract"
+            placeholder="filter by contract"
           />
           <input
             type="text"
             v-model="name"
             class="search-name"
-            placeholder="Search by name"
+            placeholder="search by NFT name"
           />
           <select class="search-chain" v-model="chain">
             <option
@@ -35,7 +35,7 @@
             @click="searchTokens('name')"
             title="Search"
           >
-            Search
+            search
           </button>
           <button
             v-if="showAdvancedSearch"
@@ -60,13 +60,6 @@
           >
             X
           </button>
-          <button
-            class="search-clear-button-mobile"
-            @click="clearSearch()"
-            title="Clear search"
-          >
-            Clear
-          </button>
         </div>
         <!-- Advanced Search Options Panel -->
         <div v-if="showAdvancedSearch" class="advanced-search">
@@ -74,13 +67,13 @@
             type="text"
             v-model="contractFilter"
             class="search-advanced-contract"
-            placeholder="Filter out contract address"
+            placeholder="filter out contract address"
           />
           <input
             type="text"
             v-model="tokenId"
             class="search-tokenId"
-            placeholder="Find duplicate by token id"
+            placeholder="find duplicate by token id"
           />
           <button
             class="search-button-advanced"
@@ -88,13 +81,13 @@
             title="Find duplicates"
             :disabled="!tokenId"
           >
-            Go
+            go
           </button>
           <input
             type="text"
             v-model="duplicateUrl"
             class="search-duplicates"
-            placeholder="Find duplicate NFTS by url"
+            placeholder="find duplicate NFTS by image url"
           />
           <button
             class="search-button-advanced"
@@ -102,11 +95,67 @@
             title="Find duplicates"
             :disabled="!duplicateUrl"
           >
-            Go
+            go
           </button>
         </div>
         <!-- END Advanced Search Options Panel -->
+        <!-- Mobile Buttons Row -->
+        <div class="search-mobile-buttons">
+          <button
+            :class="!show ? 'show-button-mobile' : 'hide-button-mobile'"
+            @click="show = !show"
+          >
+            {{ !show ? "show" : "hide" }}
+          </button>
+          <button
+            v-if="showAdvancedSearch"
+            class="show-advanced-button-mobile"
+            @click="showAdvancedSearch = !showAdvancedSearch"
+            title="Show advanced search"
+          >
+            advanced
+          </button>
+          <button
+            v-if="!showAdvancedSearch"
+            class="hide-advanced-button-mobile"
+            @click="showAdvancedSearch = !showAdvancedSearch"
+            title="Hide advanced search"
+          >
+            advanced
+          </button>
+          <button
+            class="search-button-name-mobile"
+            @click="searchTokens('name')"
+            title="Search"
+          >
+            search name
+          </button>
+          <button
+            class="search-button-advanced-mobile"
+            @click="searchTokens('tokenId')"
+            title="Find duplicates"
+            :disabled="!tokenId"
+          >
+            search id
+          </button>
+          <button
+            class="search-button-advanced-mobile"
+            @click="searchTokens('image')"
+            title="Find duplicates"
+            :disabled="!duplicateUrl"
+          >
+            search url
+          </button>
+          <button
+            class="search-clear-button-mobile"
+            @click="clearSearch()"
+            title="Clear search"
+          >
+            clear
+          </button>
+        </div>
       </div>
+      <!-- END Mobile Buttons Row -->
     </section>
     <Transition name="slide-fade">
       <section v-show="show" id="search-results">
@@ -210,16 +259,16 @@ const {
 
 const chain = ref("all");
 const options = ref([
-  { value: 0, label: "all", text: "All" },
-  { value: 1, label: "ethereum", text: "Ethereum" },
+  { value: 0, label: "all", text: "all" },
+  { value: 1, label: "ethereum", text: "ethereum" },
   // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon" },
+  { value: 137, label: "polygon", text: "polygon" },
   // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism" },
+  { value: 10, label: "optimism", text: "optimism" },
   // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  { value: 42161, label: "arbitrum", text: "arbitrum" },
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
-  { value: 43114, label: "avalanche", text: "Avalanche" },
+  { value: 43114, label: "avalanche", text: "avalanche" },
   // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
 ]);
 
@@ -558,7 +607,7 @@ section#search-bar {
     .search {
       width: 100%;
       display: flex;
-      flex-direction: row wrap;
+      flex-direction: row;
       align-content: center;
       justify-content: center;
       align-items: center;
@@ -574,11 +623,13 @@ section#search-bar {
       }
       @include breakpoint($break-sm) {
         width: 100%;
+        flex-direction: column;
         height: auto;
         margin: 0 auto;
       }
       @include breakpoint($break-xs) {
         width: 100%;
+        flex-direction: column;
         height: auto;
         margin: 0 auto;
       }
@@ -599,11 +650,11 @@ section#search-bar {
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
       }
@@ -635,11 +686,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
       }
@@ -668,11 +719,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
       }
@@ -701,11 +752,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1%;
         }
       }
@@ -736,8 +787,7 @@ section#search-bar {
           color: $mint-black;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 10px;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -764,8 +814,7 @@ section#search-bar {
           color: $mint-black;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 10px;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -791,7 +840,7 @@ section#search-bar {
           color: $mint-blue;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -808,7 +857,7 @@ section#search-bar {
         border-radius: 100px;
         letter-spacing: 1px;
         font-size: 14px;
-        padding: 7px 7px 4px 7px;
+        padding: 7px 9px 4px 9px;
         text-align: center;
         margin: 0;
         transition: 0.4s;
@@ -818,8 +867,7 @@ section#search-bar {
           color: $mint-blue;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 10px;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -839,7 +887,6 @@ section#search-bar {
           }
         }
       }
-
       .hide-advanced-button {
         color: $white;
         background-color: $mint-blue;
@@ -847,7 +894,7 @@ section#search-bar {
         border-radius: 100px;
         letter-spacing: 1px;
         font-size: 14px;
-        padding: 7px 7px 4px 7px;
+        padding: 7px 9px 4px 9px;
         text-align: center;
         margin: 0;
         transition: 0.4s;
@@ -857,7 +904,7 @@ section#search-bar {
           color: $mint-black;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -879,61 +926,6 @@ section#search-bar {
           }
         }
       }
-      /* END Desktopn & Tablet Versions */
-      /* Mobile Versions */
-      .show-button-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        width: 48%;
-        padding: 1%;
-        margin: 1% 0.5% 1% 0.5%;
-        text-align: center;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: none;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-        }
-      }
-      .hide-button-mobile {
-        color: $white;
-        background-color: $mint-orange;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        width: 48%;
-        padding: 1%;
-        margin: 1% 0.5% 1% 0.5%;
-        text-align: center;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: none;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-        }
-      }
-      /* END Mobile Versions */
       .search-clear-button {
         color: $white;
         background-color: $mint-orange;
@@ -948,6 +940,9 @@ section#search-bar {
         &:hover {
           color: $mint-black;
         }
+        @include breakpoint($break-md) {
+          display: none;
+        }
         @include breakpoint($break-sm) {
           display: none;
         }
@@ -955,22 +950,64 @@ section#search-bar {
           display: none;
         }
       }
+    }
+    .search-mobile-buttons {
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      margin: 10px auto;
 
-      .search-clear-button-mobile {
+      .search-button-name-mobile {
         color: $white;
         background-color: $mint-blue;
         border: 0;
         border-radius: 30px;
         letter-spacing: 1px;
         font-size: 14px;
-        width: 49%;
-        padding: 1%;
-        margin: 1% 0 1% 0.5%;
+        min-width: 100px;
+        padding: 10px;
         text-align: center;
+        margin: 0 5px;
+        transition: 0.4s;
         cursor: pointer;
         display: none;
+        &:hover {
+          color: $mint-black;
+        }
         @include breakpoint($break-md) {
-          display: none;
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+        }
+      }
+
+      .search-button-advanced-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 25px;
+        padding: 10px;
+        text-align: center;
+        margin: 0 0 0 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
         }
         @include breakpoint($break-sm) {
           display: inline-block;
@@ -979,7 +1016,188 @@ section#search-bar {
           display: inline-block;
         }
       }
+      .search-button-advanced-mobile:disabled {
+        background: #c6c6c6;
+        color: #101010;
+        cursor: not-allowed;
+      }
+
+      .show-advanced-button-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 100px;
+        padding: 10px;
+        text-align: center;
+        margin: 0 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        .arrow-down-small {
+          width: 15px;
+          height: 15px;
+          img,
+          svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            overflow: hidden;
+          }
+        }
+      }
+
+      .hide-advanced-button-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 100px;
+        padding: 10px;
+        text-align: center;
+        margin: 0 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        .arrow-down-small {
+          width: 15px;
+          height: 15px;
+          -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
+          filter: invert(1);
+          img,
+          svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            overflow: hidden;
+          }
+        }
+      }
+
+      /* Mobile Versions */
+      .show-button-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 70px;
+        padding: 10px;
+        text-align: center;
+        margin-right: 5px;
+        transition: 0.4s;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+      }
+      .hide-button-mobile {
+        color: $white;
+        background-color: $mint-black;
+        border: 0;
+        border-radius: 30px;
+        letter-spacing: 1px;
+        font-size: 14px;
+        min-width: 70px;
+        padding: 10px;
+        text-align: center;
+        margin-right: 5px;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-blue;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+      }
+      .search-clear-button-mobile {
+        color: $white;
+        background-color: $mint-orange;
+        border-radius: 100px;
+        border: 0;
+        font-size: 14px;
+        min-width: 70px;
+        padding: 10px;
+        margin: 0 5px 0 5px;
+        text-align: center;
+        cursor: pointer;
+        display: none;
+        &:hover {
+          color: $mint-black;
+        }
+        @include breakpoint($break-md) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-sm) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+        @include breakpoint($break-xs) {
+          display: inline-block;
+          margin: 0 5px 0 5px;
+        }
+      }
     }
+
     /*Advanced Serach Options */
     .advanced-search {
       display: flex;
@@ -995,18 +1213,21 @@ section#search-bar {
       }
       @include breakpoint($break-md) {
         width: 100%;
+        flex-direction: column;
         height: auto;
-        margin: 10px auto;
+        margin: 0 auto;
       }
       @include breakpoint($break-sm) {
         width: 100%;
+        flex-direction: column;
         height: auto;
-        margin: 10px auto;
+        margin: 0 auto;
       }
       @include breakpoint($break-xs) {
         width: 100%;
+        flex-direction: column;
         height: auto;
-        margin: 10px auto;
+        margin: 0 auto;
       }
       /* Filter by Contract */
       input.search-advanced-contract {
@@ -1027,11 +1248,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
       }
@@ -1060,11 +1281,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1% 1% 1%;
         }
       }
@@ -1093,11 +1314,11 @@ section#search-bar {
           min-width: 200px;
         }
         @include breakpoint($break-sm) {
-          width: 98%;
+          width: 80%;
           margin: 0 1%;
         }
         @include breakpoint($break-xs) {
-          width: 98%;
+          width: 80%;
           margin: 0 1%;
         }
       }
@@ -1128,8 +1349,7 @@ section#search-bar {
           color: $mint-blue;
         }
         @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 10px;
+          display: none;
         }
         @include breakpoint($break-sm) {
           display: none;
@@ -1178,7 +1398,7 @@ section#search-results {
     margin: 0 auto;
 
     h2 {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       text-align: center;
       text-decoration: none;
     }

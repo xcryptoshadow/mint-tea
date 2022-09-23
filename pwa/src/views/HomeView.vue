@@ -4,22 +4,23 @@
       <article>
         <!-- Left Side -->
         <section id="content">
-          <!-- Connect Tab -->
+          <!-- Introduction & Connect Tab -->
           <div v-if="!account" class="form-container home">
             <div class="header-logo">
               <BlueLogo />
             </div>
             <p>
-              Brew up some fresh cross-chain NFTs and port your favourite NFTs
-              to all the top chains and maximise your exposure.
+              Brew up some dynamic cross-chain NFTs with Mint Tea. Port your
+              best NFTs to all the top chains and maximise your exposure.
             </p>
             <p>
-              Mint Tableland NFTs with mutable metadata all stored in relational
-              data tables on chain.
+              Mint dynamic Tableland NFTs with mutable metadata, all stored in
+              relational data ERC721-based tables on chain, that are powered by
+              smart contracts.
             </p>
             <p>
-              Search and verify your NFTs for rarity by name, description and
-              image across all blockchains.
+              Search and verify NFTs for rarity by name, description and image
+              url across top blockchains using AI from NFT Port's API.
             </p>
             <div class="button-container">
               <button
@@ -102,9 +103,6 @@
                 back
               </button>
             </div>
-            <div v-if="txHashKey && txHash" class="tx-hash-messages">
-              Claiming deBridge transaction<br />{{ txHashKey + ":" + txHash }}
-            </div>
           </div>
           <!-- END Bridge Tab -->
 
@@ -120,7 +118,6 @@
                 placeholder="PNG, JPG, GIF, SVG or MP4"
                 @change="uploadFileHandler()"
               />
-              <span class="loading">{{ loading ? "loading..." : "" }}</span>
             </div>
             <div class="input-row">
               <label for="name">Name *</label>
@@ -169,24 +166,50 @@
               >
                 mint
               </button>
+              <button
+                v-if="tokenId"
+                class="mint-done-button"
+                @click="CancelMint()"
+              >
+                done
+              </button>
               <button class="bridge-button-right" @click="switchTab('bridge')">
                 bridge
               </button>
             </div>
           </div>
           <!-- END Mint Tab -->
+          <!-- Show loading if we uploading a file or minting, etc. -->
+          <div
+            v-show="loading || minting || bridging || tokenId || txHashKey"
+            class="loading-message"
+          >
+            <div v-show="loading" class="loading">loading, please wait...</div>
+            <div v-show="minting" class="loading">
+              minting NFT, please wait...
+            </div>
+            <div
+              v-if="!loading && !minting && !bridging && !txHashKey && tokenId"
+              class="loading"
+            >
+              NFT brewed successfully...you can now add your additonal attribute
+              traits
+            </div>
+            <div v-show="bridging" class="loading">
+              bridging NFT, please wait...
+            </div>
+            <div v-if="txHashKey" class="mint-message">
+              Your NFT has been bridged successfully! {{ txHashKey }} :
+              {{ txHash }}
+            </div>
+          </div>
         </section>
         <!-- END Left Side -->
       </article>
       <aside>
         <!-- Right Side -->
         <section id="nft-modal" class="bubbles-brewing">
-          <!-- Show loading if we uploading a file -->
-          <div v-if="loading && formTab === 'mint'" class="nft-modal-loading">
-            <div class="loading">loading ...</div>
-          </div>
-
-          <!-- Once file loaded, we can enter Name and Description -->
+          <!-- STEP 1 : Once user uploads an asset and the file is loaded onto IPFS, we can enter a Name, Description and external URL to NFT -->
           <div
             v-if="imageUrl && !showBridgeTokens && formTab === 'mint'"
             class="nft-modal-card"
@@ -228,61 +251,72 @@
             <!-- <div class="nft-modal-description">
               {{ youtubeUrl }}
             </div> -->
-            <div class="nft-modal-attributes">
-              <template v-for="(index, attr) in attributes" :key="index">
-                <div class="nft-attribute">
+            <div v-show="attributes" class="nft-modal-edit-attributes">
+              <template v-for="attr in attributes" :key="attr.trait_id">
+                <div class="nft-attribute-cards">
+                  <div class="nft-attribute-card">
+                    <div class="nft-attribute-card-icon">
+                      {{ attr.icon }} {{ attr.display_type }}
+                    </div>
+                    <div class="nft-attribute-card-trait">
+                      {{ attr.trait_type }} : {{ attr.trait_value }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-for="attr in attributes" :key="attr.trait_id">
+                <div class="nft-attribute hidden">
                   <div class="nft-attribute-icon">
-                    {{ attr.icon }}
-                    <button
-                      class="'edit-button'"
-                      @click="updateTraitIcon(attr)"
-                    >
-                      Edit
-                    </button>
+                    <input
+                      type="text"
+                      name="traitIcon"
+                      v-model.lazy="attr.icon"
+                      @change="updateTraitIcon(attr)"
+                    />
                   </div>
                   <div class="nft-attribute-display-type">
-                    {{ attr.display_type }}
-                    <button
-                      class="'edit-button'"
-                      @click="updateTraitDisplayType(attr)"
-                    >
-                      Edit
-                    </button>
+                    <input
+                      type="text"
+                      name="traitDisplayType"
+                      v-model.lazy="attr.display_type"
+                      @change="updateTraitDisplayType(attr)"
+                    />
                   </div>
                   <div class="nft-attribute-trait-type">
-                    {{ attr.trait_type }}
-                    <button
-                      class="'edit-button'"
-                      @click="updateTraitType(attr)"
-                    >
-                      Edit
-                    </button>
+                    <input
+                      type="text"
+                      name="traitType"
+                      v-model.lazy="attr.trait_type"
+                      @change="updateTraitType(attr)"
+                    />
                   </div>
                   <div class="nft-attribute-value">
-                    {{ attr.value
-                    }}<button class="'edit-button'" @click="updateValue(attr)">
-                      Edit
-                    </button>
+                    <input
+                      type="text"
+                      name="traitValue"
+                      v-model.lazy="attr.trait_value"
+                      @change="updateTraitValue(attr)"
+                    />
                   </div>
                 </div>
               </template>
             </div>
-            <div class="nft-modal-attributes">
+            <!-- STEP 2 : Show Add attribute form once NFT minted -->
+            <div v-show="tokenId" class="nft-modal-add-attributes">
               <div class="nft-attribute">
-                <div class="nft-attribute-icon"></div>
-                <div class="nft-attribute-display-type">
+                <div class="nft-attribute-icon">
                   <input
                     type="text"
                     name="traitIcon"
-                    placeholder="Enter an icon url"
+                    placeholder="enter an icon"
                     v-model="traitIcon"
                   />
                 </div>
-                <div class="nft-attribute-trait-type">
+                <div class="nft-attribute-display-type">
                   <input
                     type="text"
                     name="traitDisplayType"
-                    placeholder="Enter a trait display type"
+                    placeholder="enter a display type, eg. boost_number"
                     v-model="traitDisplayType"
                   />
                 </div>
@@ -290,7 +324,7 @@
                   <input
                     type="text"
                     name="traitType"
-                    placeholder="Enter a trait type"
+                    placeholder="enter a trait type, eg. Stamina Increase"
                     v-model="traitType"
                   />
                 </div>
@@ -298,31 +332,52 @@
                   <input
                     type="text"
                     name="traitValue"
-                    placeholder="Enter a trait value"
+                    placeholder="enter a trait value, eg. 10"
                     v-model="traitValue"
                   />
-                </div>
-                <div class="button-container">
-                  <button class="add-button" @click="AddNewAttribute()">
-                    Add
-                  </button>
                 </div>
               </div>
             </div>
             <div class="nft-modal-approve">
+              <div v-show="tokenId" class="button-container">
+                <button class="add-button" @click="AddNewAttribute()">
+                  add new attribute
+                </button>
+              </div>
               <button
+                v-show="!tokenId"
                 :class="!approvedMint ? 'approve-button' : 'approved-button'"
                 @click="ConfirmApprovedMint(true)"
               >
-                {{ !approvedMint ? "Approve" : "Ready" }}
+                {{ !approvedMint ? "approve" : "let's mint" }}
               </button>
               <div class="file-image-link">
                 <a :href="imageUrl" title="Open in new tab" target="_blank">
-                  IPFS link
+                  ipfs://
                 </a>
               </div>
-              <button class="cancel-button" @click="CancelMint()">
-                Cancel
+              <div v-show="tokenId" class="file-table-link">
+                <a
+                  :href="`https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2644%20JOIN%20Mint_TEA_80001_2645%20ON%20Mint_TEA_80001_2644%2Etokenid%20%3D%20Mint_TEA_80001_2645%2Emaintable_tokenid%20WHERE%20tokenid%3D${tokenId}%20group%20by%20tokenid`"
+                  title="View Tableland table"
+                  target="_blank"
+                >
+                  tableland
+                </a>
+              </div>
+              <button
+                v-show="!tokenId"
+                class="cancel-button"
+                @click="CancelMint()"
+              >
+                cancel
+              </button>
+              <button
+                v-show="tokenId"
+                class="cancel-button"
+                @click="CancelMint()"
+              >
+                reset
               </button>
             </div>
           </div>
@@ -455,7 +510,7 @@
                 :class="!approvedBridge ? 'approve-button' : 'approved-button'"
                 @click="ConfirmApprovedBridge(true)"
               >
-                {{ !approvedBridge ? "Approve" : "Locked" }}
+                {{ !approvedBridge ? "approve" : "locked" }}
               </button>
               <button class="cancel-button" @click="CancelBridge()">
                 Cancel
@@ -501,31 +556,26 @@ import { useStore } from "../store";
 /* Import our IPFS and NftStorage Services */
 import { uploadBlob } from "../services/ipfs.js";
 import { fileSize, generateLink } from "../services/helpers";
-// import { nftStorage } from "../services/nftStorage.js";
+import { nftStorage } from "../services/nftStorage.js";
 import authNFT from "../services/authNFT.js";
 
 /* Import our deBridge Services */
 import { bridge } from "../services/debridge.js";
 
 /* Import SVGs */
+import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
 import ArrowDownWhite from "../assets/svgs/ArrowDownWhite.vue?component";
 import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
-import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
-// import BrewingBubbles from "../assets/brewingbubbles.png";
-// import BrewBubbles from "../assets/brewingbubbles.svg";
-// import BrewTube from "../assets/brewtube.svg";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
 import CollectionSection from "@/components/CollectionSection.vue";
 import AboutSection from "@/components/AboutSection.vue";
 
-/* Import Smart Contract ABI */
+/* Mint Tea Contract Address and Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-/* Mint Tea Contract Address */
 const contractAddress = "0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68";
 
-/* Console log with some style */
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
   "%c🍵 Mint Tea Contract Address %s",
@@ -541,6 +591,8 @@ const {
   txHashKey,
   txHash,
   loading,
+  minting,
+  bridging,
   account,
   trendingTokens,
   ethereumTokens,
@@ -587,32 +639,32 @@ const audioVideoType = ref("");
 const approvedMint = ref(false);
 
 /* Bridge Fields and Data */
-const bridgeFrom = ref("ethereum");
+const bridgeFrom = ref("polygon");
 const bridgeFromOptions = ref([
-  { value: 1, label: "ethereum", text: "Ethereum" },
+  { value: 1, label: "ethereum", text: "ethereum" },
   // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon" },
+  { value: 137, label: "polygon", text: "polygon" },
   // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism" },
+  { value: 10, label: "optimism", text: "optimism" },
   // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  { value: 42161, label: "arbitrum", text: "arbitrum" },
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
-  { value: 43114, label: "avalanche", text: "Avalanche" },
+  { value: 43114, label: "avalanche", text: "avalanche" },
   // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
 ]);
-const bridgeTo = ref("all");
+const bridgeTo = ref("arbitrum");
 const bridgeToOptions = ref([
-  { value: 1, label: "ethereum", text: "Ethereum" },
+  { value: 1, label: "ethereum", text: "ethereum" },
   // { value: 5, label: "ethereum-testnet", text: "Ethereum Testnet" },
-  { value: 137, label: "polygon", text: "Polygon" },
+  { value: 137, label: "polygon", text: "polygon" },
   // { value: 80001, label: "polygon-testnet", text: "Mumbai Testnet" },
-  { value: 10, label: "optimism", text: "Optimism" },
+  { value: 10, label: "optimism", text: "optimism" },
   // { value: 69, label: "optimism-testnet", text: "Optimism Testnet" },
-  { value: 42161, label: "arbitrum", text: "Arbitrum" },
+  { value: 42161, label: "arbitrum", text: "arbitrum" },
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
-  { value: 43114, label: "avalanche", text: "Avalanche" },
+  { value: 43114, label: "avalanche", text: "avalanche" },
   // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
-  { value: 0, label: "all", text: "All" },
+  { value: 0, label: "all", text: "all" },
 ]);
 
 /* Bridge NFT Details */
@@ -785,7 +837,6 @@ const getAccount = async () => {
 /* Connect Wallet */
 async function connectWallet() {
   const { ethereum } = window;
-  store.setLoading(true);
   try {
     if (!ethereum) {
       alert("Please connect 🦊 Metamask to continue!");
@@ -797,14 +848,13 @@ async function connectWallet() {
     console.log("Account Address", accountAddress);
     if (accountAddress) {
       store.updateAccount(accountAddress);
-      store.setLoading(false);
     }
   } catch (error) {
     console.log("Error", error);
-    store.setLoading(false);
   }
 }
 
+/* Checks what type of NFT we have image, mp3, mp4, etc. */
 function getUrlProtocol(url) {
   let protocol = url.endsWith("mp4") ? 5 : 0;
   if (protocol == 0) protocol = url.endsWith("mp3") ? 6 : 0;
@@ -846,7 +896,6 @@ const uploadFileHandler = async () => {
 
   store.setLoading(true);
   const uploadResult = await uploadBlob(file[0]);
-  console.log("Upload Result :", uploadResult);
 
   const { error } = uploadResult;
   if (error && error instanceof Error) {
@@ -905,7 +954,8 @@ const mintNFT = async () => {
     console.log(`Description must be longer then 10 characters!`);
     return;
   }
-
+  /* Show loading */
+  store.setMinting(true);
   /**
    * Mint our NFT with metadata on NFT.Storage
    */
@@ -939,48 +989,40 @@ const mintNFT = async () => {
 
         tokenId.value = newTokenId.toNumber();
         console.log("TokenId :", tokenId.value);
+        store.setMinting(false);
       });
 
       /* Store NFT Metadata on NFT.Storage */
-      // const nftStorageTMetadataURI = await nftStorage(
-      //   name.value,
-      //   description.value,
-      //   imageUrl.value,
-      //   externalUrl.value,
-      //   animationUrl.value,
-      //   youtubeUrl.value,
-      //   attributes.value,
-      //   audioVideoType.value
-      // );
-      // const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
-      //   ";"
-      // );
-      // console.log(
-      //   "%c💾 NFT.Storage ipfs:// link :  %s 💾",
-      //   stylesNFTStorage,
-      //   nftStorageTMetadataURI
-      // );
+      const nftStorageTMetadataURI = await nftStorage(
+        name.value,
+        description.value,
+        imageUrl.value,
+        externalUrl.value,
+        "image/*"
+      );
+      const stylesNFTStorage = ["color: black", "background: #f23f3f"].join(
+        ";"
+      );
+      console.log(
+        "%c💾 NFT.Storage ipfs:// link :  %s",
+        stylesNFTStorage,
+        nftStorageTMetadataURI
+      );
       /* Check our Transaction results */
-      // if (!nftStorageTMetadataURI) return;
-
-      /* Mint our NFT using custom structure */
-      // let nftTxn = await contract.safeMint(
-      //   signer.getAddress(),
-      //   nftStorageTMetadataURI
-      // );
+      if (!nftStorageTMetadataURI) return;
 
       const mintDate = new Date();
       const mintDateTimestamp = mintDate.getTime();
       const mintDateString = mintDateTimestamp.toString();
-      // const mintDateBigNo = new BigNumber(mintDateTimestamp);
       console.log("mintDateString", mintDateString);
 
+      /* Mint our Tableland NFT using custom structure */
       let nftTxn = await contract.safeMint(
         signer.getAddress(),
         name.value,
         description.value,
         imageUrl.value,
-        externalUrl.value,
+        externalUrl.value ? externalUrl.value : nftStorageTMetadataURI,
         "https://cloudflare-ipfs.com/ipfs/bafkreibx3akdct6syqhkis3dqsnekukhh5ib5pdwepfki7hf45viv4ylp4",
         "date",
         "Brewed by 🍵 Mint Tea",
@@ -1015,12 +1057,19 @@ const mintNFT = async () => {
           stylesPolygon,
           nftTxn.hash
         );
+        store.setMinting(false);
       }
+      /* Stop loading */
+      store.setMinting(false);
       return;
     } else {
+      /* Stop loading */
+      store.setMinting(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setMinting(false);
     console.log("error", error);
   }
 };
@@ -1029,6 +1078,9 @@ const mintNFT = async () => {
  * Cancel NFT Mint
  */
 const CancelMint = () => {
+  fileRef.value = null;
+  tokenId.value = "";
+  cid.value = "";
   name.value = "";
   description.value = "";
   imageUrl.value = null;
@@ -1036,8 +1088,20 @@ const CancelMint = () => {
   animationUrl.value = "";
   youtubeUrl.value = "";
   attributes.value = [];
+
+  traitTableId.value = null;
+  traitTokenId.value = null;
+  traitId.value = null;
+  traitIcon.value = "";
+  traitDisplayType.value = "";
+  traitType.value = "";
+  traitValue.value = "";
+  traitCreatedAt.value = "";
+  traitUpdatedAt.value = "";
   approvedMint.value = false;
   showBridgeTokens.value = true;
+  store.setLoading(false);
+  store.setMinting(false);
 };
 
 /**
@@ -1051,30 +1115,29 @@ const ConfirmApprovedMint = (value) => {
  * Add a new attribute to a Tableland NFT
  */
 const AddNewAttribute = async () => {
-  if (!traitTokenId.value) {
-    console.log(`Please enter a tokenId to continue!`);
+  if (!tokenId.value) {
+    console.log(`Error, no NFT token id received!`);
     return;
   }
-
   if (!traitIcon.value) {
     console.log(`Please enter a trait icon to continue!`);
     return;
   }
-
   if (!traitDisplayType.value) {
     console.log(`Please enter a trait display type to continue!`);
     return;
   }
-
   if (!traitType.value) {
     console.log(`Please enter a trait type to continue!`);
     return;
   }
-
   if (!traitValue.value) {
     console.log(`Please enter a value for the trait to continue!`);
     return;
   }
+  store.setMinting(false);
+  /* Start loading */
+  store.setLoading(true);
   try {
     const { ethereum } = window;
     if (ethereum) {
@@ -1103,11 +1166,33 @@ const AddNewAttribute = async () => {
 
           traitId.value = trait_id.toNumber();
           console.log("Trait Id :", traitId.value);
+
+          /* Add new Trait to our Array for UI */
+          attributes.value = [
+            ...attributes.value,
+            {
+              token_id: traitTokenId.value,
+              trait_id: traitId.value,
+              icon: traitIcon.value,
+              display_type: traitDisplayType.value,
+              trait_type: traitType.value,
+              trait_value: traitValue.value,
+              created_at: traitCreatedAt.value,
+            },
+          ];
+          traitTokenId.value = null;
+          traitId.value = null;
+          traitIcon.value = "";
+          traitDisplayType.value = "";
+          traitType.value = "";
+          traitValue.value = "";
+          traitCreatedAt.value = "";
+          store.setLoading(false);
         }
       );
 
       let tx = await contract.add_new_attribute(
-        traitTokenId.value,
+        tokenId.value,
         traitIcon.value,
         traitDisplayType.value,
         traitType.value,
@@ -1144,12 +1229,19 @@ const AddNewAttribute = async () => {
           stylesPolygon,
           tx.hash
         );
+        store.setLoading(false);
       }
+      /* Stop loading */
+      store.setLoading(false);
       return;
     } else {
+      /* Stop loading */
+      store.setLoading(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setLoading(false);
     console.log("error", error);
   }
 };
@@ -1159,19 +1251,21 @@ const AddNewAttribute = async () => {
  */
 const updateTraitIcon = async (attribute) => {
   console.log("attribute", attribute);
-  if (!traitTokenId.value) {
+  if (!attribute.token_id) {
     console.log(`Please enter a tokenId to continue!`);
     return;
   }
   /* This is the attribute number in attribute_table, an NFT can have many attributes */
-  if (!traitId.value) {
+  if (!attribute.trait_id) {
     console.log(`Please enter a trait id to continue!`);
     return;
   }
-  if (!traitIcon.value) {
+  if (!attribute.icon) {
     console.log(`Please enter a trait icon url to continue!`);
     return;
   }
+  /* Start loading */
+  store.setLoading(true);
   try {
     const { ethereum } = window;
     if (ethereum) {
@@ -1212,6 +1306,19 @@ const updateTraitIcon = async (attribute) => {
 
           traitId.value = trait_id.toNumber();
           console.log("Trait Id :", traitId.value);
+
+          /* Update our traits Array */
+          const attribute = attributes.value.find((object) => {
+            return object.trait_id === traitId.value;
+          });
+          console.log(attribute);
+          if (attribute !== undefined) {
+            console.log("attribute.icon", attribute.icon);
+            attribute.icon = traitIcon.value;
+            console.log("attribute.icon", attribute.icon);
+          }
+          /* Stop loading */
+          store.setLoading(false);
         }
       );
 
@@ -1241,12 +1348,19 @@ const updateTraitIcon = async (attribute) => {
           stylesPolygon,
           tx.hash
         );
+        store.setLoading(false);
       }
+      /* Stop loading */
+      store.setLoading(false);
       return;
     } else {
+      /* Stop loading */
+      store.setLoading(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setLoading(false);
     console.log("error", error);
   }
 };
@@ -1256,19 +1370,22 @@ const updateTraitIcon = async (attribute) => {
  */
 const updateTraitDisplayType = async (attribute) => {
   console.log("attribute", attribute);
-  if (!traitTokenId.value) {
+
+  if (!attribute.token_id) {
     console.log(`Please enter a tokenId to continue!`);
     return;
   }
   /* This is the attribute number in attribute_table, an NFT can have many attributes */
-  if (!traitId.value) {
+  if (!attribute.trait_id) {
     console.log(`Please enter a trait id to continue!`);
     return;
   }
-  if (!traitDisplayType.value) {
+  if (!attribute.display_type) {
     console.log(`Please enter a trait display type to continue!`);
     return;
   }
+  /* Start loading */
+  store.setLoading(true);
   try {
     const { ethereum } = window;
     if (ethereum) {
@@ -1309,6 +1426,19 @@ const updateTraitDisplayType = async (attribute) => {
 
           traitId.value = trait_id.toNumber();
           console.log("Trait Id :", traitId.value);
+
+          /* Update our traits Array */
+          const attribute = attributes.value.find((object) => {
+            return object.trait_id === traitId.value;
+          });
+          console.log(attribute);
+          if (attribute !== undefined) {
+            console.log("attribute.display_type", attribute.display_type);
+            attribute.display_type = traitDisplayType.value;
+            console.log("attribute.display_type", attribute.display_type);
+          }
+          /* Stop loading */
+          store.setLoading(false);
         }
       );
 
@@ -1338,12 +1468,19 @@ const updateTraitDisplayType = async (attribute) => {
           stylesPolygon,
           tx.hash
         );
+        store.setLoading(false);
       }
+      /* Stop loading */
+      store.setLoading(false);
       return;
     } else {
+      /* Stop loading */
+      store.setLoading(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setLoading(false);
     console.log("error", error);
   }
 };
@@ -1353,19 +1490,21 @@ const updateTraitDisplayType = async (attribute) => {
  */
 const updateTraitType = async (attribute) => {
   console.log("attribute", attribute);
-  if (!traitTokenId.value) {
+  if (!attribute.token_id) {
     console.log(`Please enter a tokenId to continue!`);
     return;
   }
   /* This is the attribute number in attribute_table, an NFT can have many attributes */
-  if (!traitId.value) {
-    console.log(`Please enter a trait id to continue!`);
+  if (!attribute.trait_id) {
+    console.log(`Error, no trait id found!`);
     return;
   }
-  if (!traitType.value) {
+  if (!attribute.trait_type) {
     console.log(`Please enter a trait type to continue!`);
     return;
   }
+  /* Start loading */
+  store.setLoading(true);
   try {
     const { ethereum } = window;
     if (ethereum) {
@@ -1406,6 +1545,19 @@ const updateTraitType = async (attribute) => {
 
           traitId.value = trait_id.toNumber();
           console.log("Trait Id :", traitId.value);
+
+          /* Update our traits Array */
+          const attribute = attributes.value.find((object) => {
+            return object.trait_id === traitId.value;
+          });
+          console.log(attribute);
+          if (attribute !== undefined) {
+            console.log("attribute.trait_type", attribute.trait_type);
+            attribute.trait_type = traitType.value;
+            console.log("attribute.trait_type", attribute.trait_type);
+          }
+          /* Stop loading */
+          store.setLoading(false);
         }
       );
 
@@ -1431,12 +1583,19 @@ const updateTraitType = async (attribute) => {
           stylesPolygon,
           tx.hash
         );
+        store.setLoading(false);
       }
+      /* Stop loading */
+      store.setLoading(false);
       return;
     } else {
+      /* Stop loading */
+      store.setLoading(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setLoading(false);
     console.log("error", error);
   }
 };
@@ -1444,22 +1603,24 @@ const updateTraitType = async (attribute) => {
 /**
  * Update trait value of a Tableland NFT
  */
-const updateValue = async (attribute) => {
+const updateTraitValue = async (attribute) => {
   console.log("Attribute:", attribute);
 
-  if (!traitTokenId.value) {
+  if (!attribute.token_id) {
     console.log(`Please enter a tokenId to continue!`);
     return;
   }
   /* This is the attribute number in attribute_table, an NFT can have many attributes */
-  if (!traitId.value) {
+  if (!attribute.trait_id) {
     console.log(`Please enter a trait id to continue!`);
     return;
   }
-  if (!traitValue.value) {
+  if (!attribute.trait_value) {
     console.log(`Please enter a value for the trait to continue!`);
     return;
   }
+  /* Start loading */
+  store.setLoading(true);
   try {
     const { ethereum } = window;
     if (ethereum) {
@@ -1501,6 +1662,19 @@ const updateValue = async (attribute) => {
 
           traitId.value = trait_id.toNumber();
           console.log("Trait Id :", traitId.value);
+
+          /* Update our traits Array */
+          const attribute = attributes.value.find((object) => {
+            return object.trait_id === traitId.value;
+          });
+          console.log(attribute);
+          if (attribute !== undefined) {
+            console.log("attribute.trait_value", attribute.trait_value);
+            attribute.trait_value = traitValue.value;
+            console.log("attribute.trait_value", attribute.trait_value);
+          }
+          /* Stop loading */
+          store.setLoading(false);
         }
       );
 
@@ -1526,12 +1700,19 @@ const updateValue = async (attribute) => {
           stylesPolygon,
           tx.hash
         );
+        store.setLoading(false);
       }
+      /* Stop loading */
+      store.setLoading(false);
       return;
     } else {
+      /* Stop loading */
+      store.setLoading(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop loading */
+    store.setLoading(false);
     console.log("error", error);
   }
 };
@@ -1540,6 +1721,9 @@ const updateValue = async (attribute) => {
  * Bridge NFT
  */
 const bridgeNFT = async () => {
+  /* Start bridging */
+  store.setLoading(false);
+  store.setBridging(true);
   /**
    * Bridge our NFT with custom deBridge DeNFT contracts
    */
@@ -1572,11 +1756,17 @@ const bridgeNFT = async () => {
       if (receipt.status === 1) {
         console.log("ok");
       }
+      /* Stop bridging */
+      store.setBridging(false);
       return;
     } else {
+      /* Stop bridging */
+      store.setBridging(false);
       console.log("Ethereum object doesn't exist!");
     }
   } catch (error) {
+    /* Stop bridging */
+    store.setBridging(false);
     console.log("error", error);
   }
 };
@@ -1585,20 +1775,14 @@ const bridgeNFT = async () => {
  * Update Bridge From Chain
  */
 const updateBridgeFrom = (event) => {
-  console.log("bridgeFrom.value:", event.target.value);
-  console.log("Bridge From:", bridgeFrom.value);
   bridgeFrom.value = event.target.value;
-  console.log("Bridge From:", bridgeFrom.value);
 };
 
 /**
  * Update Bridge To Chain
  */
 const updateBridgeTo = (event) => {
-  console.log("bridgeTo.value:", event.target.value);
-  console.log("Bridge To:", bridgeTo.value);
   bridgeTo.value = event.target.value;
-  console.log("Bridge To:", bridgeTo.value);
 };
 
 /**
@@ -1618,22 +1802,29 @@ const CancelBridge = () => {
   imageUrlBridge.value = null;
   approvedBridge.value = false;
   showBridgeTokens.value = true;
+  /* Stop bridging */
+  store.setBridging(false);
 };
 
 onMounted(async () => {
+  /* Load our bg images */
   window.document.getElementById("bg-gradient").style.backgroundImage =
     "url('/brewtube.png')";
   window.document.getElementById("nft-modal").style.backgroundImage =
     "url('/brewingbubbles.svg')";
+
+  /* Set scrollto func */
   window.scrollTo({
     top: 0,
     left: 0,
     behavior: "smooth",
   });
+  /* First check our account */
   getAccount();
   await checkIfWalletIsConnected();
   await fetchTokens();
 
+  /* Load some cool NFTs using NFT Port */
   if (trendingTokens.value.length === 0) {
     try {
       let trendingTokens = await store.contractNftSearch(
@@ -1662,7 +1853,7 @@ section#mint {
   display: flex;
   flex-flow: row wrap;
   align-content: center;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 0;
   background: linear-gradient(
@@ -1678,16 +1869,17 @@ section#mint {
   }
   article {
     width: 43%;
+    min-height: 765px;
     flex-grow: 1 100%;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2em 5em 3em;
+    padding: 0 5em 3em;
     @include breakpoint($break-xl) {
-      padding: 1em;
+      padding: 0 1em 1em 1em;
     }
     @include breakpoint($break-lg) {
-      padding: 1em;
+      padding: 0 1em 1em 1em;
     }
     @include breakpoint($break-md) {
       padding: 1em 0.5em;
@@ -1738,7 +1930,7 @@ section#content {
 
   .form-container {
     width: 428px;
-    height: 642px;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -1748,7 +1940,7 @@ section#content {
     border: 4px solid var(--gradient-100);
     box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
     border-radius: 10px;
-    margin: 30px auto;
+    margin: 0 auto 15px;
     padding: 30px 40px;
     z-index: 999;
 
@@ -1777,8 +1969,8 @@ section#content {
 
       img,
       svg {
-        width: 200px;
-        margin: 10px auto 20px;
+        width: 260px;
+        margin: 20px auto 30px;
         object-fit: contain;
         overflow: hidden;
         @include breakpoint($break-md) {
@@ -1811,7 +2003,7 @@ section#content {
     }
 
     p {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       text-align: center;
     }
 
@@ -1824,6 +2016,36 @@ section#content {
     height: auto;
   }
 
+  .loading-message {
+    width: 428px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    background: $mint-black;
+    border: 2px solid $white;
+    box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+    border-radius: 10px;
+    margin: 0 auto 20px;
+    padding: 20px 40px;
+    z-index: 999;
+    .loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      color: $white;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: normal;
+      text-align: center;
+      transition: 0.4s;
+    }
+  }
+
   .input-row-first {
     position: relative;
     display: flex;
@@ -1831,21 +2053,6 @@ section#content {
     justify-content: center;
     align-items: flex-start;
     width: 100%;
-    .loading {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
-      width: 100%;
-      height: 12px;
-      color: $mint-black;
-      font-size: 12px;
-      line-height: 12px;
-      font-weight: normal;
-      text-align: right;
-      padding-right: 25px;
-      transition: 0.4s;
-    }
   }
 
   .input-row {
@@ -2089,8 +2296,8 @@ section#content {
     justify-content: space-between;
   }
   .mint-button {
-    color: $white;
-    background-color: $mint-black;
+    color: $mint-black;
+    background-color: $mint-green;
     font-size: 18px;
     font-weight: bold;
     width: 48%;
@@ -2105,9 +2312,26 @@ section#content {
     }
   }
   .mint-button:disabled {
-    background: #c6c6c6;
-    color: #101010;
+    color: $white;
+    background-color: $mint-black;
     cursor: not-allowed;
+  }
+
+  .mint-done-button {
+    color: $mint-black;
+    background-color: $mint-green;
+    font-size: 18px;
+    font-weight: bold;
+    width: 48%;
+    height: 55px;
+    border: 0;
+    border-radius: 30px;
+    margin: 10px 1% 10px 0;
+    transition: 0.4s;
+    cursor: pointer;
+    &:hover {
+      color: $mint-blue;
+    }
   }
 
   .connect-button {
@@ -2292,7 +2516,8 @@ section#nft-modal {
     border: 4px solid var(--gradient-100);
     box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
     border-radius: 10px;
-    padding: 20px 20px 10px 20px;
+    padding: 20px 20px 20px 20px;
+    margin-bottom: 20px;
     @include breakpoint($break-lg) {
       width: 89%;
       padding: 20px 20px 10px 20px;
@@ -2350,13 +2575,107 @@ section#nft-modal {
     text-align: center;
     margin: 10px auto 0;
   }
-  .nft-modal-contract-address {
+  .nft-modal-external-url {
     color: #1a1a1a;
     width: 100%;
     font-size: 14px;
     font-weight: normal;
     text-align: center;
     margin: 10px auto 0;
+  }
+
+  .nft-modal-edit-attributes {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px auto 0;
+    .nft-attribute-cards {
+      display: flex;
+      flex-direction: row wrap;
+      align-content: flex-start;
+      justify-content: space-between;
+      align-items: flex-start;
+      .nft-attribute-card {
+        width: 30%;
+        color: $mint-black;
+        background-color: #fff;
+        border: 1px solid $mint-blue;
+        border-radius: 10px;
+        letter-spacing: 1px;
+        font-size: 12px;
+        line-height: 20px;
+        margin: 0 5px 5px 0;
+        padding: 10px;
+        text-align: left;
+      }
+    }
+
+    .nft-attribute {
+      input {
+        width: 100%;
+        height: 30px;
+        color: $mint-black;
+        background-color: #fff;
+        // border: 0;
+        border: 1px dashed #e0e0e0;
+        border-bottom: 1px solid #d9d9d9;
+        letter-spacing: 1px;
+        font-size: 12px;
+        line-height: 20px;
+        margin-bottom: 5px;
+        padding: 7px;
+        text-align: center;
+      }
+      input::placeholder {
+        color: #a8a8a8;
+        letter-spacing: 1px;
+      }
+      input:focus {
+        border: 1px dashed $mint-blue;
+        outline: none;
+      }
+    }
+  }
+  .nft-modal-add-attributes {
+    color: #1a1a1a;
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px auto 0;
+    input {
+      width: 100%;
+      height: 30px;
+      color: $mint-black;
+      background-color: #fdfdfd;
+      border: 1px solid #d9d9d9;
+      border-radius: 30px;
+      letter-spacing: 1px;
+      font-size: 12px;
+      line-height: 20px;
+      margin-bottom: 5px;
+      padding: 7px;
+      text-align: center;
+    }
+
+    input::placeholder {
+      color: #a8a8a8;
+      letter-spacing: 1px;
+    }
+
+    input:read-only {
+      color: #1a1a1a;
+      border: 1px dashed #e0e0e0;
+      letter-spacing: 1px;
+      cursor: not-allowed;
+    }
+
+    input:focus {
+      border: 1px dashed $mint-blue;
+      outline: none;
+    }
   }
 
   .nft-modal-approve {
@@ -2366,6 +2685,30 @@ section#nft-modal {
     align-content: center;
     justify-content: center;
     align-items: center;
+    margin-top: 5px;
+
+    .add-button {
+      color: $white;
+      background-color: $mint-blue;
+      font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 24px;
+      text-align: center;
+      width: 200px;
+      border-radius: 30px;
+      padding: 4px;
+      height: auto;
+      border: 0;
+      margin: 0 5px 0 0;
+      transition: 0.4s;
+      cursor: pointer;
+      &:hover {
+        color: $mint-black;
+      }
+    }
     .approve-button {
       color: $white;
       background-color: $mint-blue;
@@ -2381,7 +2724,7 @@ section#nft-modal {
       padding: 4px 12px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 5px 0 5px;
       transition: 0.4s;
       cursor: pointer;
       &:hover {
@@ -2411,10 +2754,11 @@ section#nft-modal {
       }
     }
     .file-image-link {
-      background: $mint-blue;
+      background: $mint-black;
       border: none;
       border-radius: 30px;
       padding: 4px 12px;
+      margin: 0;
       cursor: pointer;
       a {
         color: $white;
@@ -2427,13 +2771,35 @@ section#nft-modal {
         text-align: center;
         transition: 0.4s;
         &:hover {
-          color: $mint-black;
+          color: $mint-blue;
+        }
+      }
+    }
+    .file-table-link {
+      background: $mint-black;
+      border: none;
+      border-radius: 30px;
+      padding: 4px 12px;
+      margin: 0 0 0 5px;
+      cursor: pointer;
+      a {
+        color: $white;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 24px;
+        text-align: center;
+        transition: 0.4s;
+        &:hover {
+          color: $mint-blue;
         }
       }
     }
     .cancel-button {
       color: $white;
-      background-color: $mint-black;
+      background-color: $mint-orange;
       font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
         "Helvetica Neue", sans-serif;
       font-style: normal;
@@ -2446,17 +2812,17 @@ section#nft-modal {
       padding: 4px 12px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 0 0 5px;
       transition: 0.4s;
       cursor: pointer;
       &:hover {
-        color: $mint-blue;
+        color: $mint-black;
       }
     }
   }
 }
 .nft-bridge-tokens {
-  width: 95%;
+  width: 92%;
   height: 700px;
   color: $mint-black;
   display: flex;
@@ -2667,7 +3033,7 @@ section#nft-modal {
       padding: 4px 12px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 5px;
       transition: 0.4s;
       cursor: pointer;
       &:hover {
@@ -2689,7 +3055,7 @@ section#nft-modal {
       padding: 4px 12px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 0 0 5px;
       transition: 0.4s;
       cursor: not-allowed;
       &:hover {
@@ -2698,7 +3064,7 @@ section#nft-modal {
     }
     .cancel-button {
       color: $white;
-      background-color: $mint-black;
+      background-color: $mint-orange;
       font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
         "Helvetica Neue", sans-serif;
       font-style: normal;
@@ -2711,11 +3077,11 @@ section#nft-modal {
       padding: 4px 12px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 0 0 5px;
       transition: 0.4s;
       cursor: pointer;
       &:hover {
-        color: $mint-blue;
+        color: $mint-black;
       }
     }
   }

@@ -12,7 +12,6 @@ export const nftStorage = async (
   description,
   imageUrl,
   externalUrl,
-  attributes,
   audioVideoType
 ) => {
   /*
@@ -27,7 +26,6 @@ export const nftStorage = async (
     description,
     image: blob,
     external_url: externalUrl,
-    attributes: attributes,
   };
 
   /* Init NFT.Storage Client */

@@ -128,6 +128,15 @@ export default {
       height: 100%;
       object-fit: contain;
       overflow: hidden;
+      @include breakpoint($break-md) {
+        width: 360px;
+      }
+      @include breakpoint($break-sm) {
+        width: 320px;
+      }
+      @include breakpoint($break-xs) {
+        width: 300px;
+      }
     }
   }
 

@@ -61,13 +61,8 @@ export default class nftPort {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log("Error Code: ", error.response.data.error.code);
           store.setErrorCode(error.response.data.error.code);
-
-          console.log("Error Status: ", error.response.status);
           store.setErrorStatus(error.response.status);
-
-          console.log("Error Message: ", error.response.data.error.message);
           store.setErrorMessage(error.response.data.error.message);
         } else if (error.request) {
           // The request was made but no response was received
@@ -76,13 +71,8 @@ export default class nftPort {
           console.error("Error Request: ", error.request);
         } else {
           /* Something happened in setting up the request that triggered an Error */
-          console.log("Error Code: ", error.code);
           store.setErrorCode(error.code);
-
-          console.log("Error Status: ", error.status);
           store.setErrorStatus(error.status);
-
-          console.log("Error Message: ", error.message);
           store.setErrorMessage(error.message);
         }
         // console.log("error.config", error.config);
@@ -158,13 +148,8 @@ export default class nftPort {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log("Error Code: ", error.response.data.error.code);
           store.setErrorCode(error.response.data.error.code);
-
-          console.log("Error Status: ", error.response.status);
           store.setErrorStatus(error.response.status);
-
-          console.log("Error Message: ", error.response.data.error.message);
           store.setErrorMessage(error.response.data.error.message);
         } else if (error.request) {
           // The request was made but no response was received
@@ -174,17 +159,10 @@ export default class nftPort {
         } else {
           /* Something happened in setting up the request that triggered an Error */
           /* https://docs.nftport.xyz/docs/nftport/ZG9jOjU5MTMzOTk3-error-codes */
-          console.log("Error Code: ", error.code);
           store.setErrorCode(error.code);
-
-          console.log("Error Status: ", error.status);
           store.setErrorStatus(error.status);
-
-          console.log("Error Message: ", error.message);
           store.setErrorMessage(error.message);
         }
-        // console.log("error.config", error.config);
-        // console.log("error.toJSON()", error.toJSON());
         return error.toJSON();
       });
 
@@ -275,13 +253,8 @@ export default class nftPort {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log("Error Code: ", error.response.data.error.code);
           store.setErrorCode(error.response.data.error.code);
-
-          console.log("Error Status: ", error.response.status);
           store.setErrorStatus(error.response.status);
-
-          console.log("Error Message: ", error.response.data.error.message);
           store.setErrorMessage(error.response.data.error.message);
         } else if (error.request) {
           // The request was made but no response was received
@@ -291,17 +264,10 @@ export default class nftPort {
         } else {
           /* Something happened in setting up the request that triggered an Error */
           /* https://docs.nftport.xyz/docs/nftport/ZG9jOjU5MTMzOTk3-error-codes */
-          console.log("Error Code: ", error.code);
           store.setErrorCode(error.code);
-
-          console.log("Error Status: ", error.status);
           store.setErrorStatus(error.status);
-
-          console.log("Error Message: ", error.message);
           store.setErrorMessage(error.message);
         }
-        // console.log("error.config", error.config);
-        // console.log("error.toJSON()", error.toJSON());
         return error.toJSON();
       });
 
@@ -375,12 +341,13 @@ export default class nftPort {
         return data;
       })
       .catch(function (error) {
+        const store = useStore();
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log("error.response.data", error.response.data);
-          console.log("error.response.status", error.response.status);
-          console.log("error.response.headers", error.response.headers);
+          store.setErrorCode(error.response.data.error.code);
+          store.setErrorStatus(error.response.status);
+          store.setErrorMessage(error.response.data.error.message);
         } else if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -388,10 +355,10 @@ export default class nftPort {
           console.log("error.request", error.request);
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
+          store.setErrorCode(error.code);
+          store.setErrorStatus(error.status);
+          store.setErrorMessage(error.message);
         }
-        // console.log("error.config", error.config);
-        // console.log("error.toJSON()", error.toJSON());
       });
 
     const nftCollection = {
@@ -450,12 +417,13 @@ export default class nftPort {
           return data;
         })
         .catch(function (error) {
+          const store = useStore();
           if (error.response) {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
-            console.log("error.response.data", error.response.data);
-            console.log("error.response.status", error.response.status);
-            console.log("error.response.headers", error.response.headers);
+            store.setErrorCode(error.response.data.error.code);
+            store.setErrorStatus(error.response.status);
+            store.setErrorMessage(error.response.data.error.message);
           } else if (error.request) {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -463,10 +431,10 @@ export default class nftPort {
             console.log("error.request", error.request);
           } else {
             // Something happened in setting up the request that triggered an Error
-            console.log("Error", error.message);
+            store.setErrorCode(error.code);
+            store.setErrorStatus(error.status);
+            store.setErrorMessage(error.message);
           }
-          // console.log("error.config", error.config);
-          // console.log("error.toJSON()", error.toJSON());
         });
 
       const account = {
@@ -512,22 +480,23 @@ export default class nftPort {
     const results = await axios
       .request(options)
       .then(function (response) {
-        console.log(response.data);
-        console.log(response.status);
-        console.log(response.statusText);
-        console.log(response.headers);
-        console.log(response.config);
+        // console.log(response.data);
+        // console.log(response.status);
+        // console.log(response.statusText);
+        // console.log(response.headers);
+        // console.log(response.config);
         const data = response.data;
         // console.log("NFT Port Response Data: ", data);
         return data;
       })
       .catch(function (error) {
+        const store = useStore();
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log("error.response.data", error.response.data);
-          console.log("error.response.status", error.response.status);
-          console.log("error.response.headers", error.response.headers);
+          store.setErrorCode(error.response.data.error.code);
+          store.setErrorStatus(error.response.status);
+          store.setErrorMessage(error.response.data.error.message);
         } else if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -535,10 +504,10 @@ export default class nftPort {
           console.log("error.request", error.request);
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
+          store.setErrorCode(error.code);
+          store.setErrorStatus(error.status);
+          store.setErrorMessage(error.message);
         }
-        // console.log("error.config", error.config);
-        // console.log("error.toJSON()", error.toJSON());
       });
 
     const nft = {
@@ -547,7 +516,6 @@ export default class nftPort {
       owner: results.owner,
       response: results.response,
     };
-    console.log("NFT details :", nft);
     return nft;
   }
 }
