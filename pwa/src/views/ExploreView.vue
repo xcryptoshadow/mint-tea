@@ -161,12 +161,6 @@
       <section v-show="show" id="search-results">
         <div class="search-results-row">
           <h2>Search Results</h2>
-          <div v-if="searchResults" class="row token-list">
-            <template v-for="token in searchResults" :key="token.token_id">
-              <SearchCard :token="token" />
-            </template>
-            <div v-if="loading" class="loading-bar">...loading</div>
-          </div>
           <div
             v-if="(!loading && errorCode) || errorStatus || errorMessage"
             class="row error-box"
@@ -180,6 +174,12 @@
                 or try a different name or image url</template
               >
             </div>
+          </div>
+          <div v-if="searchResults" class="row token-list">
+            <template v-for="token in searchResults" :key="token.token_id">
+              <SearchCard :token="token" />
+            </template>
+            <div v-if="loading" class="loading-bar">...loading</div>
           </div>
         </div>
       </section>
