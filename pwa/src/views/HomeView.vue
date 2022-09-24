@@ -54,6 +54,7 @@
               <select
                 class="bridge-from-chain"
                 v-model="bridgeFrom"
+                :disabled="approvedBridge"
                 @change="updateBridgeFrom($event)"
               >
                 <option
@@ -160,11 +161,11 @@
             <div class="button-container">
               <button
                 v-if="!tokenId"
-                :disabled="!approvedMint"
+                :disabled="!approvedMint || minting"
                 class="mint-button"
                 @click="mintNFT()"
               >
-                mint
+                {{ minting ? "minting" : "mint" }}
               </button>
               <button
                 v-if="tokenId"
@@ -216,7 +217,7 @@
           >
             <div v-if="getUrlProtocol(imageUrl) === 'mp4'" class="nft-video">
               <video width="320" height="240" controls>
-                <source :src="getUrlProtocol(imageUrl)" type="video/mp4" />
+                <source :src="imageUrl" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -255,20 +256,30 @@
               <template v-for="attr in attributes" :key="attr.trait_id">
                 <div v-if="attr.trait_value" class="nft-attribute-cards">
                   <div class="nft-attribute-card">
-                    <div class="nft-attribute-card-icon">
-                      #{{ attr.trait_id }} {{ attr.icon }}
-                      {{ attr.display_type }}
-                    </div>
                     <div class="nft-attribute-card-trait">
-                      {{ attr.trait_type }} : {{ attr.trait_value }}
+                      #{{ attr.trait_id }} {{ attr.icon }}
+                      {{ attr.display_type }} / {{ attr.trait_type }} :
+                      {{ attr.trait_value }}
+                      <button
+                        v-show="attr.trait_id"
+                        class="edit-button"
+                        @click="editTrait(attr.trait_id)"
+                      >
+                        {{
+                          showTrait.value === attr.trait_id ? "done" : "edit"
+                        }}
+                      </button>
                     </div>
                   </div>
                 </div>
               </template>
               <template v-for="attr in attributes" :key="attr.trait_id">
-                <div v-if="attr.trait_value" class="nft-attribute">
+                <div
+                  v-if="showTrait === attr.trait_id && attr.trait_value"
+                  class="nft-attribute"
+                >
+                  Trait #{{ attr.trait_id }}
                   <div class="nft-attribute-icon">
-                    #{{ attr.trait_id }}
                     <input
                       type="text"
                       name="traitIcon"
@@ -353,15 +364,22 @@
               >
                 {{ !approvedMint ? "approve" : "let's mint" }}
               </button>
-              <div class="file-image-link">
+              <div v-show="!tokenId" class="file-image-link">
                 <a :href="imageUrl" title="Open in new tab" target="_blank">
-                  ipfs://
+                  ipfs
                 </a>
               </div>
               <div v-show="tokenId" class="file-table-link">
-                <a
+                <!-- <a
                   :href="`https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2644%20JOIN%20Mint_TEA_80001_2645%20ON%20Mint_TEA_80001_2644%2Etokenid%20%3D%20Mint_TEA_80001_2645%2Emaintable_tokenid%20WHERE%20tokenid%3D${tokenId}%20group%20by%20tokenid`"
                   title="View Tableland table"
+                  target="_blank"
+                >
+                  tableland
+                </a> -->
+                <a
+                  :href="`https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2832%20JOIN%20Mint_TEA_80001_2833%20ON%20Mint_TEA_80001_2832%2Etokenid%20%3D%20Mint_TEA_80001_2833%2Emaintable_tokenid%20WHERE%20tokenid%3D${tokenId}%20group%20by%20tokenid`"
+                  title="View Tableland data"
                   target="_blank"
                 >
                   tableland
@@ -512,10 +530,10 @@
                 :class="!approvedBridge ? 'approve-button' : 'approved-button'"
                 @click="ConfirmApprovedBridge(true)"
               >
-                {{ !approvedBridge ? "approve" : "locked" }}
+                {{ !approvedBridge ? "approve" : "ready" }}
               </button>
               <button class="cancel-button" @click="CancelBridge()">
-                Cancel
+                cancel
               </button>
             </div>
           </div>
@@ -548,7 +566,6 @@
 import { ref, onMounted } from "vue";
 /* Import Libraries */
 import { ethers, BigNumber } from "ethers";
-// import { BigNumber } from "bignumber.js";
 import moment from "moment";
 
 /* Import our Pinia Store & Refs */
@@ -634,6 +651,9 @@ const traitValue = ref("");
 const traitCreatedAt = ref("");
 const traitUpdatedAt = ref("");
 
+/* Traits start at 0 on mint, the date of mint is the first trait added */
+const showTrait = ref(1);
+
 /* Calculated on Mint and IPFS upload */
 const size = ref("");
 const createdAt = ref("");
@@ -666,7 +686,7 @@ const bridgeToOptions = ref([
   // { value: 421611, label: "arbitrum-testnet", text: "Arbitrum Testnet" },
   { value: 43114, label: "avalanche", text: "avalanche" },
   // { value: 421611, label: "avalanche-testnet", text: "Arbitrum Testnet" },
-  { value: 0, label: "all", text: "all" },
+  { value: 0, label: "all", text: "select all" },
 ]);
 
 /* Bridge NFT Details */
@@ -827,7 +847,7 @@ const getAccount = async () => {
       store.updateAccount(accounts[0]);
 
       const stylesAccounts = ["color: black", "background: cyan"].join(";");
-      console.log("%c🧰 Web3 Account %s 🧰", stylesAccounts, account.value);
+      console.log("%c🧰 Web3 Account %s ", stylesAccounts, account.value);
     } else {
       console.log("No authorized MetaMask accounts connected!");
     }
@@ -1100,10 +1120,16 @@ const CancelMint = () => {
   traitValue.value = "";
   traitCreatedAt.value = "";
   traitUpdatedAt.value = "";
-  approvedMint.value = false;
+  tokenIdBridge.value = "";
+  contractAddressBridge.value = "";
+  nameBridge.value = "";
+  imageUrlBridge.value = null;
+  approvedBridge.value = false;
   showBridgeTokens.value = true;
+  /* Stop All Loaders */
   store.setLoading(false);
   store.setMinting(false);
+  store.setBridging(false);
 };
 
 /**
@@ -1191,11 +1217,11 @@ const AddNewAttribute = async () => {
       );
 
       let tx = await contract.add_new_attribute(
-        tokenId.value,
-        traitIcon.value,
-        traitDisplayType.value,
-        traitType.value,
-        traitValue.value
+        BigNumber.from(tokenId.value),
+        traitIcon.value.toString(),
+        traitDisplayType.value.toString(),
+        traitType.value.toString(),
+        traitValue.value.toString()
       );
 
       const stylesMining = ["color: black", "background: yellow"].join(";");
@@ -1242,6 +1268,18 @@ const AddNewAttribute = async () => {
     /* Stop loading */
     store.setLoading(false);
     console.log("error", error);
+  }
+};
+
+/**
+ * Show NFT Metatdata Trait to Edit
+ * Traits start at 0 on mint, the date of mint is the first trait added
+ */
+const editTrait = (value) => {
+  if (showTrait.value === value) {
+    showTrait.value = 1;
+  } else {
+    showTrait.value = value;
   }
 };
 
@@ -1322,9 +1360,9 @@ const updateTraitIcon = async (attribute) => {
       );
 
       let tx = await contract.update_icon(
-        traitTokenId.value,
-        traitId.value,
-        traitIcon.value
+        BigNumber.from(traitTokenId.value),
+        BigNumber.from(traitId.value),
+        traitIcon.value.toString()
       );
 
       const receipt = await tx.wait();
@@ -1442,9 +1480,9 @@ const updateTraitDisplayType = async (attribute) => {
       );
 
       let tx = await contract.update_display_type(
-        traitTokenId.value,
-        traitId.value,
-        traitDisplayType.value
+        BigNumber.from(traitTokenId.value),
+        BigNumber.from(traitId.value),
+        traitDisplayType.value.toString()
       );
 
       const receipt = await tx.wait();
@@ -1561,9 +1599,9 @@ const updateTraitType = async (attribute) => {
       );
 
       let tx = await contract.update_trait_type(
-        traitTokenId.value,
-        traitId.value,
-        traitType.value
+        BigNumber.from(traitTokenId.value),
+        BigNumber.from(traitId.value),
+        traitType.value.toString()
       );
 
       const receipt = await tx.wait();
@@ -1678,9 +1716,9 @@ const updateTraitValue = async (attribute) => {
       );
 
       let tx = await contract.update_value(
-        traitTokenId.value,
-        traitId.value,
-        traitValue.value
+        BigNumber.from(traitTokenId.value),
+        BigNumber.from(traitId.value),
+        traitValue.value.toString()
       );
 
       const receipt = await tx.wait();
@@ -2024,8 +2062,10 @@ section#content {
     align-items: center;
     align-content: center;
     background: $mint-black;
-    border: 2px solid $white;
     box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+    border: 2px solid var(--gradient-100);
+    box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
+    border-radius: 10px;
     border-radius: 10px;
     margin: 0 auto 20px;
     padding: 20px 40px;
@@ -2235,6 +2275,11 @@ section#content {
   select.bridge-from-chain:focus {
     border: 1px solid $mint-black;
     outline: none;
+  }
+  select.bridge-from-chain:disabled {
+    background: #c6c6c6;
+    color: #101010;
+    cursor: not-allowed;
   }
 
   .bridge-step-one {
@@ -2597,7 +2642,7 @@ section#nft-modal {
       justify-content: space-between;
       align-items: flex-start;
       .nft-attribute-card {
-        width: 30%;
+        width: 86%;
         color: $mint-black;
         background-color: #fff;
         border: 1px solid $mint-blue;
@@ -2605,21 +2650,56 @@ section#nft-modal {
         letter-spacing: 1px;
         font-size: 12px;
         line-height: 20px;
-        margin: 0 5px 5px 0;
+        margin: 0 auto 5px;
         padding: 10px;
         text-align: left;
+        .nft-attribute-card-trait {
+          display: flex;
+          flex-direction: row wrap;
+          align-content: flex-start;
+          justify-content: space-between;
+          align-items: flex-start;
+          .edit-button {
+            color: $mint-blue;
+            background-color: $white;
+            font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+              "Droid Sans", "Helvetica Neue", sans-serif;
+            font-style: normal;
+            font-weight: 800;
+            font-size: 11px;
+            line-height: 14px;
+            text-align: right;
+            width: 30px;
+            padding: 4px 5px;
+            height: auto;
+            border: 0;
+            margin: 0 0 0 5px;
+            transition: 0.4s;
+            cursor: pointer;
+            &:hover {
+              color: $mint-black;
+            }
+          }
+        }
       }
     }
 
     .nft-attribute {
+      width: 86%;
+      margin: 0 auto;
+      background: $white;
+      border: 1px solid $mint-black;
+      border-radius: 10px;
+      padding: 5px;
       input {
         width: 100%;
         height: 30px;
         color: $mint-black;
         background-color: #fff;
-        // border: 0;
-        border: 1px dashed #e0e0e0;
-        border-bottom: 1px solid #d9d9d9;
+        border-top: 1px solid $white;
+        border-left: 1px solid $white;
+        border-right: 1px solid $white;
+        border-bottom: 1px solid $mint-black;
         letter-spacing: 1px;
         font-size: 12px;
         line-height: 20px;
@@ -2645,7 +2725,7 @@ section#nft-modal {
     text-align: center;
     margin: 10px auto 0;
     input {
-      width: 100%;
+      width: 86%;
       height: 30px;
       color: $mint-black;
       background-color: #fdfdfd;
@@ -2720,7 +2800,7 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
       margin: 0 5px 0 5px;
@@ -2742,10 +2822,10 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
-      margin: 10px;
+      margin: 0 5px 0 5px;
       transition: 0.4s;
       cursor: not-allowed;
       &:hover {
@@ -2756,7 +2836,7 @@ section#nft-modal {
       background: $mint-black;
       border: none;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       margin: 0;
       cursor: pointer;
       a {
@@ -2778,8 +2858,8 @@ section#nft-modal {
       background: $mint-black;
       border: none;
       border-radius: 30px;
-      padding: 4px 12px;
-      margin: 0 0 0 5px;
+      padding: 4px 12px 5px;
+      margin: 0;
       cursor: pointer;
       a {
         color: $white;
@@ -2808,7 +2888,7 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
       margin: 0 0 0 5px;
@@ -2944,22 +3024,18 @@ section#nft-modal {
   border: 4px solid var(--gradient-100);
   box-shadow: 2px 2px 25px 6px rgba(43, 43, 43, 0.1);
   border-radius: 10px;
-  padding: 20px 20px 10px 20px;
+  padding: 20px;
   @include breakpoint($break-lg) {
     width: 89%;
-    padding: 20px 20px 10px 20px;
   }
   @include breakpoint($break-md) {
     width: 81%;
-    padding: 20px 20px 10px 20px;
   }
   @include breakpoint($break-sm) {
     width: 81%;
-    padding: 20px 20px 10px 20px;
   }
   @include breakpoint($break-xs) {
     width: 100%;
-    padding: 20px 20px 10px 20px;
   }
 
   .nft-bridge-modal-video {
@@ -3029,7 +3105,7 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
       margin: 0 5px;
@@ -3051,7 +3127,7 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
       margin: 0 0 0 5px;
@@ -3073,7 +3149,7 @@ section#nft-modal {
       text-align: center;
       width: 100px;
       border-radius: 30px;
-      padding: 4px 12px;
+      padding: 4px 12px 5px;
       height: auto;
       border: 0;
       margin: 0 0 0 5px;

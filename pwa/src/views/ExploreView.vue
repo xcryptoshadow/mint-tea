@@ -100,59 +100,63 @@
         </div>
         <!-- END Advanced Search Options Panel -->
         <!-- Mobile Buttons Row -->
-        <div class="search-mobile-buttons">
-          <button
-            :class="!show ? 'show-button-mobile' : 'hide-button-mobile'"
-            @click="show = !show"
-          >
-            {{ !show ? "show" : "hide" }}
-          </button>
-          <button
-            v-if="showAdvancedSearch"
-            class="show-advanced-button-mobile"
-            @click="showAdvancedSearch = !showAdvancedSearch"
-            title="Show advanced search"
-          >
-            advanced
-          </button>
-          <button
-            v-if="!showAdvancedSearch"
-            class="hide-advanced-button-mobile"
-            @click="showAdvancedSearch = !showAdvancedSearch"
-            title="Hide advanced search"
-          >
-            advanced
-          </button>
-          <button
-            class="search-button-name-mobile"
-            @click="searchTokens('name')"
-            title="Search"
-          >
-            search name
-          </button>
-          <button
-            class="search-button-advanced-mobile"
-            @click="searchTokens('tokenId')"
-            title="Find duplicates"
-            :disabled="!tokenId"
-          >
-            search id
-          </button>
-          <button
-            class="search-button-advanced-mobile"
-            @click="searchTokens('image')"
-            title="Find duplicates"
-            :disabled="!duplicateUrl"
-          >
-            search url
-          </button>
-          <button
-            class="search-clear-button-mobile"
-            @click="clearSearch()"
-            title="Clear search"
-          >
-            clear
-          </button>
+        <div class="mobile-buttons">
+          <div class="search-mobile-buttons">
+            <button
+              :class="!show ? 'show-button-mobile' : 'hide-button-mobile'"
+              @click="show = !show"
+            >
+              {{ !show ? "show" : "hide" }}
+            </button>
+            <button
+              v-if="showAdvancedSearch"
+              class="show-advanced-button-mobile"
+              @click="showAdvancedSearch = !showAdvancedSearch"
+              title="Show advanced search"
+            >
+              advanced
+            </button>
+            <button
+              v-if="!showAdvancedSearch"
+              class="hide-advanced-button-mobile"
+              @click="showAdvancedSearch = !showAdvancedSearch"
+              title="Hide advanced search"
+            >
+              advanced
+            </button>
+            <button
+              class="search-button-name-mobile"
+              @click="searchTokens('name')"
+              title="Search"
+            >
+              search name
+            </button>
+          </div>
+          <div class="search-mobile-buttons">
+            <button
+              class="search-button-advanced-mobile"
+              @click="searchTokens('tokenId')"
+              title="Find duplicates"
+              :disabled="!tokenId"
+            >
+              search id
+            </button>
+            <button
+              class="search-button-advanced-mobile"
+              @click="searchTokens('image')"
+              title="Find duplicates"
+              :disabled="!duplicateUrl"
+            >
+              search url
+            </button>
+            <button
+              class="search-clear-button-mobile"
+              @click="clearSearch()"
+              title="Clear search"
+            >
+              clear
+            </button>
+          </div>
         </div>
       </div>
       <!-- END Mobile Buttons Row -->
@@ -165,7 +169,7 @@
             v-if="(!loading && errorCode) || errorStatus || errorMessage"
             class="row error-box"
           >
-            <div class="error-status">{{ errorStatus }} : {{ errorCode }}</div>
+            <!-- <div class="error-status">{{ errorCode }} : {{ errorStatus }}</div> -->
             <div class="error-message">
               {{ errorMessage
               }}<template v-if="errorStatus === 404"
@@ -287,7 +291,7 @@ const sort_order = ref("asc");
 const order_by = ref("relevance");
 const page_size = ref(50);
 const page_number = ref(1);
-const threshold = ref(0.9);
+const threshold = ref(0.1);
 
 /**
  * Check if our Wallet is Connected to 🦊 Metamask
@@ -572,8 +576,8 @@ section#search-bar {
   height: auto;
   max-width: 1279px;
   display: inline-block;
-  margin: 3em auto 1em;
-  padding-bottom: 10px;
+  margin: 0 auto;
+  padding-bottom: 5px;
 
   @include breakpoint($break-md) {
     margin: 1em auto;
@@ -644,7 +648,7 @@ section#search-bar {
         padding: 11px 10px 9px;
         margin: 0 5px;
         text-align: center;
-
+        cursor: pointer;
         @include breakpoint($break-md) {
           width: 180px;
           margin: 0 1% 1% 1%;
@@ -951,282 +955,290 @@ section#search-bar {
         }
       }
     }
-    .search-mobile-buttons {
-      display: flex;
-      flex-direction: row;
-      align-content: center;
-      justify-content: center;
-      align-items: center;
-      margin: 10px auto;
-
-      .search-button-name-mobile {
-        color: $white;
-        background-color: $mint-blue;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 100px;
-        padding: 10px;
-        text-align: center;
-        margin: 0 5px;
-        transition: 0.4s;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-black;
-        }
+    .mobile-buttons {
+      width: 100%;
+      padding-bottom: 10px;
+      .search-mobile-buttons {
+        display: flex;
+        flex-direction: row;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        margin: 5px auto 5px;
+        width: 80%;
         @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
+          width: 100%;
         }
         @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
+          width: 100%;
         }
         @include breakpoint($break-xs) {
-          display: inline-block;
+          width: 100%;
         }
-      }
 
-      .search-button-advanced-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 25px;
-        padding: 10px;
-        text-align: center;
-        margin: 0 0 0 5px;
-        transition: 0.4s;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: inline-block;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-        }
-      }
-      .search-button-advanced-mobile:disabled {
-        background: #c6c6c6;
-        color: #101010;
-        cursor: not-allowed;
-      }
-
-      .show-advanced-button-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 100px;
-        padding: 10px;
-        text-align: center;
-        margin: 0 5px;
-        transition: 0.4s;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        .arrow-down-small {
-          width: 15px;
-          height: 15px;
-          img,
-          svg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            overflow: hidden;
+        .search-button-name-mobile {
+          color: $white;
+          background-color: $mint-blue;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 100px;
+          padding: 10px;
+          text-align: center;
+          margin: 0 5px;
+          transition: 0.4s;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-black;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
           }
         }
-      }
 
-      .hide-advanced-button-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 100px;
-        padding: 10px;
-        text-align: center;
-        margin: 0 5px;
-        transition: 0.4s;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        .arrow-down-small {
-          width: 15px;
-          height: 15px;
-          -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
-          filter: invert(1);
-          img,
-          svg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            overflow: hidden;
+        .search-button-advanced-mobile {
+          color: $white;
+          background-color: $mint-black;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 25px;
+          padding: 10px;
+          text-align: center;
+          margin: 0 0 0 5px;
+          transition: 0.4s;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-blue;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
           }
         }
-      }
+        .search-button-advanced-mobile:disabled {
+          background: #c6c6c6;
+          color: #101010;
+          cursor: not-allowed;
+        }
 
-      /* Mobile Versions */
-      .show-button-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 70px;
-        padding: 10px;
-        text-align: center;
-        margin-right: 5px;
-        transition: 0.4s;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
+        .show-advanced-button-mobile {
+          color: $white;
+          background-color: $mint-black;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 100px;
+          padding: 10px;
+          text-align: center;
+          margin: 0 5px;
+          transition: 0.4s;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-blue;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          .arrow-down-small {
+            width: 15px;
+            height: 15px;
+            img,
+            svg {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              overflow: hidden;
+            }
+          }
         }
-        @include breakpoint($break-md) {
-          display: inline-block;
+
+        .hide-advanced-button-mobile {
+          color: $white;
+          background-color: $mint-black;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 100px;
+          padding: 10px;
+          text-align: center;
+          margin: 0 5px;
+          transition: 0.4s;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-blue;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          .arrow-down-small {
+            width: 15px;
+            height: 15px;
+            -webkit-filter: invert(1); /* safari 6.0 - 9.0 */
+            filter: invert(1);
+            img,
+            svg {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              overflow: hidden;
+            }
+          }
+        }
+
+        /* Mobile Versions */
+        .show-button-mobile {
+          color: $white;
+          background-color: $mint-black;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 70px;
+          padding: 10px;
+          text-align: center;
+          margin-right: 5px;
+          transition: 0.4s;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-blue;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+        }
+        .hide-button-mobile {
+          color: $white;
+          background-color: $mint-black;
+          border: 0;
+          border-radius: 30px;
+          letter-spacing: 1px;
+          font-size: 14px;
+          min-width: 70px;
+          padding: 10px;
+          text-align: center;
+          margin-right: 5px;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-blue;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+        }
+        .search-clear-button-mobile {
+          color: $white;
+          background-color: $mint-orange;
+          border-radius: 100px;
+          border: 0;
+          font-size: 14px;
+          min-width: 70px;
+          padding: 10px;
           margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-      }
-      .hide-button-mobile {
-        color: $white;
-        background-color: $mint-black;
-        border: 0;
-        border-radius: 30px;
-        letter-spacing: 1px;
-        font-size: 14px;
-        min-width: 70px;
-        padding: 10px;
-        text-align: center;
-        margin-right: 5px;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-blue;
-        }
-        @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-      }
-      .search-clear-button-mobile {
-        color: $white;
-        background-color: $mint-orange;
-        border-radius: 100px;
-        border: 0;
-        font-size: 14px;
-        min-width: 70px;
-        padding: 10px;
-        margin: 0 5px 0 5px;
-        text-align: center;
-        cursor: pointer;
-        display: none;
-        &:hover {
-          color: $mint-black;
-        }
-        @include breakpoint($break-md) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-sm) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
-        }
-        @include breakpoint($break-xs) {
-          display: inline-block;
-          margin: 0 5px 0 5px;
+          text-align: center;
+          cursor: pointer;
+          display: none;
+          &:hover {
+            color: $mint-black;
+          }
+          @include breakpoint($break-md) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-sm) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
+          @include breakpoint($break-xs) {
+            display: inline-block;
+            margin: 0 5px 0 5px;
+          }
         }
       }
     }
 
     /*Advanced Serach Options */
     .advanced-search {
+      width: 100%;
       display: flex;
       flex-direction: row;
       align-content: center;
       justify-content: center;
       align-items: center;
       margin: 10px auto;
+      height: auto;
       @include breakpoint($break-lg) {
-        width: 100%;
         margin: 10px auto;
         padding-left: 3px;
       }
       @include breakpoint($break-md) {
-        width: 100%;
-        flex-direction: column;
-        height: auto;
         margin: 0 auto;
       }
       @include breakpoint($break-sm) {
-        width: 100%;
         flex-direction: column;
-        height: auto;
         margin: 0 auto;
       }
       @include breakpoint($break-xs) {
-        width: 100%;
         flex-direction: column;
-        height: auto;
         margin: 0 auto;
       }
       /* Filter by Contract */
@@ -1377,7 +1389,7 @@ section#search-results {
   justify-content: flex-start;
   width: 100%;
   min-height: 430px;
-  padding: 30px 0 10px;
+  padding: 30px 0 20px;
 
   img,
   svg {
@@ -1393,6 +1405,7 @@ section#search-results {
     left: 30px;
   }
   .search-results-row {
+    width: 100%;
     max-width: 1279px;
     display: inline-block;
     margin: 0 auto;
@@ -1405,9 +1418,35 @@ section#search-results {
 
     .token-list {
       width: 100%;
-      max-width: 1279px;
-      display: inline-block;
-      margin: 10px auto;
+      max-width: 1280px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      align-content: center;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 20px auto 0;
+      @include breakpoint($break-lg) {
+        width: 100%;
+        margin: 20px auto 0;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      @include breakpoint($break-md) {
+        width: 100%;
+        margin: 20px auto 0;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      @include breakpoint($break-sm) {
+        width: 100%;
+        margin: 20px auto 0;
+        grid-template-columns: repeat(1, 1fr);
+      }
+      @include breakpoint($break-xs) {
+        width: 100%;
+        margin: 20px auto 0;
+        grid-template-columns: repeat(1, 1fr);
+      }
+
       .loading-bar {
         display: flex;
         flex-direction: column;
@@ -1420,7 +1459,7 @@ section#search-results {
     .error-box {
       width: auto;
       display: inline-block;
-      margin: 0 auto;
+      margin: 5px auto;
       display: flex;
       flex-direction: column;
       align-content: center;
@@ -1439,7 +1478,7 @@ section#search-results {
       .error-message {
         color: #fff;
         width: 100%;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: normal;
         text-align: center;
       }
@@ -1536,7 +1575,7 @@ section#marketplace {
       margin: 0 auto;
     }
     @include breakpoint($break-sm) {
-      width: 97%;
+      width: 85%;
       margin: 0 auto;
     }
     @include breakpoint($break-xs) {

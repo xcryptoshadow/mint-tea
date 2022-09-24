@@ -142,11 +142,11 @@ export default {
   display: inline;
   float: left;
   box-sizing: border-box;
-  width: 230px;
+  width: 300px;
   background: #f4f4f4;
   border: 2px solid #f4f4f4;
   border-radius: 15px;
-  margin: 0 13px 25px 13px;
+  margin: 0 auto 25px;
   padding: 10px;
   transition: 0.4s;
   cursor: pointer;
@@ -156,10 +156,10 @@ export default {
     padding: 20px 20px 10px;
   }
   @include breakpoint($break-sm) {
-    width: 380px;
+    width: 100;
   }
   @include breakpoint($break-xs) {
-    width: 380px;
+    width: 100%;
     margin: 0 auto 20px;
   }
 
