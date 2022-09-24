@@ -5,7 +5,7 @@
       class="nft-video"
     >
       <video width="320" height="240" controls>
-        <source :src="getUrlProtocol(token.metadata.image)" type="video/mp4" />
+        <source :src="token.metadata.image" type="video/mp4" />
         <!-- <source :src="`${token.metadata.image}`" type="video/ogg" /> -->
         Your browser does not support the video tag.
       </video>
