@@ -104,6 +104,17 @@
                 back
               </button>
             </div>
+            <!-- Bridge Claim -->
+            <div v-if="waitingClaim" class="button-container">
+              <button
+                class="claim-button"
+                :disabled="claimStatusText !== ''"
+                @click="claimDebridgeTx()"
+              >
+                Claim NFT
+              </button>
+            </div>
+            <!-- END Bridge Claim -->
           </div>
           <!-- END Bridge Tab -->
 
@@ -182,7 +193,9 @@
           <!-- END Mint Tab -->
           <!-- Show loading if we uploading a file or minting, etc. -->
           <div
-            v-show="loading || minting || bridging || tokenId || txHashKey"
+            v-show="
+              loading || minting || bridging || tokenId || claimStatusText
+            "
             class="loading-message"
           >
             <div v-show="loading" class="loading">loading, please wait...</div>
@@ -199,9 +212,12 @@
             <div v-show="bridging" class="loading">
               bridging NFT, please wait...
             </div>
-            <div v-if="txHashKey" class="mint-message">
-              Your NFT has been bridged successfully! {{ txHashKey }} :
-              {{ txHash }}
+            <div v-if="claimStatusText" class="loading">
+              Your NFT has been bridged successfully!<br />
+              {{ claimStatusText }}
+            </div>
+            <div v-show="txHashKey && txHash" class="loading">
+              {{ txHashKey }} : {{ txHash }}
             </div>
           </div>
         </section>
@@ -377,8 +393,15 @@
                 >
                   tableland
                 </a> -->
-                <a
+                <!-- <a
                   :href="`https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2832%20JOIN%20Mint_TEA_80001_2833%20ON%20Mint_TEA_80001_2832%2Etokenid%20%3D%20Mint_TEA_80001_2833%2Emaintable_tokenid%20WHERE%20tokenid%3D${tokenId}%20group%20by%20tokenid`"
+                  title="View Tableland data"
+                  target="_blank"
+                >
+                  tableland
+                </a> -->
+                <a
+                  :href="`https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_137_41%20JOIN%20Mint_TEA_137_42%20ON%20Mint_TEA_137_41%2Etokenid%20%3D%20Mint_TEA_137_42%2Emaintable_tokenid%20WHERE%20tokenid%3D${tokenId}%20group%20by%20tokenid`"
                   title="View Tableland data"
                   target="_blank"
                 >
@@ -465,11 +488,13 @@
           </div>
           <!-- END Pull Tokens by Account to Bridge -->
           <div
-            v-if="tokenIdBridge && imageUrlBridge && formTab === 'bridge'"
+            v-if="
+              tokenIdBridge && contractAddressBridge && formTab === 'bridge'
+            "
             class="nft-bridge-modal-card"
           >
             <div
-              v-if="getUrlProtocol(imageUrlBridge) === 'mp4'"
+              v-if="imageUrlBridge && getUrlProtocol(imageUrlBridge) === 'mp4'"
               class="nft-bridge-video"
             >
               <video width="320" height="240" controls>
@@ -481,7 +506,9 @@
               </video>
             </div>
             <div
-              v-if="getUrlProtocol(imageUrlBridge) === 'mp3'"
+              v-else-if="
+                imageUrlBridge && getUrlProtocol(imageUrlBridge) === 'mp3'
+              "
               class="nft-bridge-modal-video"
             >
               <audio ref="player" width="320" height="240">
@@ -495,7 +522,7 @@
                 Your browser does not support the video tag.
               </video>
             </div>
-            <div v-else-if="imageUrlBridge" class="nft-bridge-modal-image">
+            <div class="nft-bridge-modal-image">
               <img
                 v-if="imageUrlBridge"
                 :src="`${getUrlProtocol(imageUrlBridge)}`"
@@ -549,7 +576,7 @@
   </main>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 /* Import Libraries */
 import { ethers, BigNumber } from "ethers";
 import moment from "moment";
@@ -566,7 +593,7 @@ import authNFT from "../services/authNFT.js";
 import alchemyApi from "../services/alchemyApi.js";
 
 /* Import our deBridge Services */
-import { bridge } from "../services/debridge.js";
+import { bridge, getTxInfo, getTxStatus, claim } from "../services/debridge.js";
 
 /* Import SVGs */
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
@@ -581,7 +608,7 @@ import AboutSection from "@/components/AboutSection.vue";
 
 /* Mint Tea Contract Address and Contract ABI */
 import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
-const contractAddress = "0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48";
+const contractAddress = "0xa4055C7A1f6e898BFA24fCdFac804598388C1f26";
 
 const stylesContract = ["color: black", "background: #e9429b"].join(";");
 console.log(
@@ -684,6 +711,13 @@ const nameBridge = ref("");
 const imageUrlBridge = ref(null);
 const approvedBridge = ref(false);
 
+/* Claim Ref */
+const waitingClaim = ref(false);
+const claimStatusText = ref("");
+
+/* Timer Ref */
+const timer = ref(null);
+
 /* Load our Bridge NFT to approve */
 function loadNFTDetails(token) {
   console.log("Bridge Token Loaded:", token);
@@ -700,11 +734,15 @@ function loadNFTDetails(token) {
     console.log("Contract Address Bridge:", contractAddressBridge.value);
   }
   console.log("Token Metdata:", token.metadata);
-  if (token.metadata.name) {
-    nameBridge.value = token.metadata.name;
-    console.log("Token Name Bridge:", nameBridge.value);
+  if (token && token.title) {
+    nameBridge.value = token.title;
+    console.log("Bridge Token Title :", nameBridge.value);
   }
-  if (token.metadata.image) {
+  if (token.metadata && token.metadata.name) {
+    nameBridge.value = token.metadata.name;
+    console.log("Bridge Token Name :", nameBridge.value);
+  }
+  if (token.metadata && token.metadata.image) {
     imageUrlBridge.value = token.metadata.image;
     console.log("Token Image Bridge:", imageUrlBridge.value);
   }
@@ -964,7 +1002,7 @@ const mintNFT = async () => {
         signer
       );
 
-      const styles = ["color: black", "background: green"].join(";");
+      const styles = ["color: black", "background: #92FFD5"].join(";");
       console.log(
         "%c🍵 Mint Tea Smart Contract Address:  %s ",
         styles,
@@ -1047,7 +1085,7 @@ const mintNFT = async () => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT Minted on Polygon, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash} %s`,
+          `%c🧬 NFT Minted on Polygon, see transaction: https://polygonscan.com/tx/${nftTxn.hash} %s`,
           stylesPolygon,
           nftTxn.hash
         );
@@ -1222,7 +1260,7 @@ const AddNewAttribute = async () => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT added new attribute, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          `%c🧬 NFT added new attribute, see transaction: https://polygonscan.com/tx/${tx.hash} %s`,
           stylesPolygon,
           tx.hash
         );
@@ -1353,7 +1391,7 @@ const updateTraitIcon = async (attribute) => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          `%c🧬 NFT updated a trait type, see transaction: https://polygonscan.com/tx/${tx.hash} %s`,
           stylesPolygon,
           tx.hash
         );
@@ -1473,7 +1511,7 @@ const updateTraitDisplayType = async (attribute) => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          `%c🧬 NFT updated a trait type, see transaction: https://polygonscan.com/tx/${tx.hash} %s`,
           stylesPolygon,
           tx.hash
         );
@@ -1588,7 +1626,7 @@ const updateTraitType = async (attribute) => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT updated a trait type, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          `%c🧬 NFT updated a trait type, see transaction: https://polygonscan.com/tx/${tx.hash} %s`,
           stylesPolygon,
           tx.hash
         );
@@ -1705,7 +1743,7 @@ const updateTraitValue = async (attribute) => {
          */
         const stylesPolygon = ["color: white", "background: #7e44df"].join(";");
         console.log(
-          `%c🧬 NFT updated value, see transaction: https://mumbai.polygonscan.com/tx/${tx.hash} %s`,
+          `%c🧬 NFT updated value, see transaction: https://polygonscan.com/tx/${tx.hash} %s`,
           stylesPolygon,
           tx.hash
         );
@@ -1754,6 +1792,9 @@ const bridgeNFT = async () => {
 
       const nftContractAddress = contractAddressBridge.value;
       const tokenId = tokenIdBridge.value;
+      console.log("Bridge Token Contract Address:", nftContractAddress);
+      console.log("Bridge Token Id:", tokenId);
+
       const receipt = await bridge(
         nftContractAddress,
         tokenId,
@@ -1763,7 +1804,28 @@ const bridgeNFT = async () => {
 
       /* Check our Transaction results */
       if (receipt.status === 1) {
-        console.log("ok");
+        console.log("Bridged ok!");
+        const { txHash, chainIdFrom, chainIdTo } = getTxInfo();
+        waitingClaim.value = true;
+        timer.value = setInterval(async () => {
+          const [signatureNum, requiredNum] = await getTxStatus(
+            txHash,
+            chainIdFrom,
+            chainIdTo
+          );
+          console.log("signatureNum", signatureNum);
+          console.log("requiredNum", requiredNum);
+          if (!requiredNum) {
+            claimStatusText.value = "Wating block confirmation...";
+          } else {
+            claimStatusText.value = `${signatureNum} / ${requiredNum}`;
+            if (signatureNum >= requiredNum) {
+              clearInterval(timer.value);
+              claimStatusText.value = "";
+              console.log("You can claim your NFT!!!");
+            }
+          }
+        }, 1000);
       }
       /* Stop bridging */
       store.setBridging(false);
@@ -1777,6 +1839,27 @@ const bridgeNFT = async () => {
     /* Stop bridging */
     store.setBridging(false);
     console.log("error", error);
+  }
+};
+
+/**
+ * Claim deBridge Transaction
+ */
+const claimDebridgeTx = async () => {
+  const { ethereum } = window;
+  if (!ethereum) {
+    throw Error();
+  }
+  const { txHash, chainIdFrom, chainIdTo } = getTxInfo();
+  await ethereum.request({
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId: BigNumber.from(chainIdTo).toHexString() }],
+  });
+  const receipt = await claim(txHash, chainIdFrom, chainIdTo);
+  /* Check our Transaction results */
+  if (receipt.status === 1) {
+    console.log("ok");
+    waitingClaim.value = false;
   }
 };
 
@@ -1850,6 +1933,37 @@ onMounted(async () => {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const { txHash, chainIdFrom, chainIdTo } = getTxInfo();
+  if (txHash) {
+    waitingClaim.value = true;
+    timer.value = setInterval(async () => {
+      console.log("Polling debridge tx status");
+      console.log(txHash, chainIdFrom, chainIdTo);
+      const [signatureNum, requiredNum] = await getTxStatus(
+        txHash,
+        chainIdFrom,
+        chainIdTo
+      );
+      console.log(signatureNum, requiredNum);
+      if (!requiredNum) {
+        claimStatusText.value = "Wating block confirmation...";
+      } else {
+        claimStatusText.value = `${signatureNum} / ${requiredNum}`;
+        if (signatureNum >= requiredNum) {
+          clearInterval(timer.value);
+          claimStatusText.value = "";
+          console.log("You can claim!!!");
+        }
+      }
+    }, 1000);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (timer.value) {
+    clearInterval(timer.value);
   }
 });
 </script>
@@ -2443,6 +2557,28 @@ section#content {
       color: $mint-blue;
     }
   }
+
+  .claim-button {
+    color: $mint-black;
+    background-color: $mint-green;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    height: 55px;
+    border: 0;
+    border-radius: 30px;
+    margin: 10px 0 10px 0;
+    transition: 0.4s;
+    cursor: pointer;
+    &:hover {
+      color: $mint-blue;
+    }
+  }
+  .claim-button:disabled {
+    background: #c6c6c6;
+    color: #101010;
+    cursor: not-allowed;
+  }
 }
 
 .bubbles-brewing {
@@ -2536,19 +2672,15 @@ section#nft-modal {
     margin-bottom: 20px;
     @include breakpoint($break-lg) {
       width: 89%;
-      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-md) {
       width: 81%;
-      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-sm) {
       width: 81%;
-      padding: 20px 20px 10px 20px;
     }
     @include breakpoint($break-xs) {
       width: 100%;
-      padding: 20px 20px 10px 20px;
     }
   }
 

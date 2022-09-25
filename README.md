@@ -48,6 +48,52 @@ For example, let's say you own an NFT on Ethereum and you take it cross-chain to
 
 Tableland is a composable data network that brings SQL to smart contracts on Ethereum and other EVM-compatible chains. Read and write structured data to the blockchain to supercharge NFTs, games, metaverse experiences, and all of web3.
 
+### Polygon Mainnet Deployment
+
+🍵 Mint Tea NFT contract deployed on polygon at: 0xa4055C7A1f6e898BFA24fCdFac804598388C1f26
+
+Tableland address 0x5c4e6A9e5C1e1BF445A062006faF19EA6c49aFeA
+
+mainTable name is: Mint_TEA_137_41
+attributestable name is: Mint_TEA_137_42
+
+Successfully verified contract MTEA on Etherscan: <https://polygonscan.com/address/0xa4055C7A1f6e898BFA24fCdFac804598388C1f26#code>
+
+Main NFT Table on Opensea
+<https://opensea.io/assets/matic/0x5c4e6a9e5c1e1bf445a062006faf19ea6c49afea/41>
+
+Attributes NFT Table on Opensea
+<https://opensea.io/assets/matic/0x5c4e6a9e5c1e1bf445a062006faf19ea6c49afea/42>
+
+<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_137_41%20JOIN%20Mint_TEA_137_42%20ON%20Mint_TEA_137_41%2Etokenid%20%3D%20Mint_TEA_137_42%2Emaintable_tokenid%20WHERE%20tokenid%3D1%20group%20by%20tokenid>
+
+Opensea Collection
+<https://opensea.io/collection/mint-tea-collection>
+
+### Final Mumbai Deployment
+
+Deploying to network 'polygon-mumbai' with account 0x09c0377BAdCa7349b20569f45f2D94398179Db0c
+tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
+
+Mint Tea NFT contract deployed on polygon-mumbai at: 0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48
+
+mainTable name is: Mint_TEA_80001_2832
+attributestable name is: Mint_TEA_80001_2833
+
+<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2832%20JOIN%20Mint_TEA_80001_2833%20ON%20Mint_TEA_80001_2832%2Etokenid%20%3D%20Mint_TEA_80001_2833%2Emaintable_tokenid%20WHERE%20tokenid%3D16%20group%20by%20tokenid>
+
+### 2nd Mumbai Deployment
+
+Deploying to network 'polygon-mumbai' with account 0x09c0377BAdCa7349b20569f45f2D94398179Db0c
+tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
+
+Mint Tea NFT contract deployed on polygon-mumbai at: 0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68
+
+mainTable name is: Mint_TEA_80001_2644
+attributestable name is: Mint_TEA_80001_2645
+
+<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2644%20JOIN%20Mint_TEA_80001_2645%20ON%20Mint_TEA_80001_2644%2Etokenid%20%3D%20Mint_TEA_80001_2645%2Emaintable_tokenid%20WHERE%20tokenid%3D6%20group%20by%20tokenid>
+
 ### 1st Mumbai Deployment
 
 The 🍵 Mint Tea ERC 721 NFT contract is deployed on polygon-mumbai for test purposes at: 0xbE3601f014e0A861bc837bD1f24822cE23592422
@@ -71,30 +117,6 @@ We minted these NFTs during testing using the 🍵 Mint Tea app for the #ETHOnli
 
 <https://testnets.opensea.io/assets/mumbai/0x8d57ffb931426aaa612591f846bd00d6c580a59c/2>
 <https://testnets.opensea.io/assets/mumbai/0xbe3601f014e0a861bc837bd1f24822ce23592422/1>
-
-### 2nd Mumbai Deployment
-
-Deploying to network 'polygon-mumbai' with account 0x09c0377BAdCa7349b20569f45f2D94398179Db0c
-tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
-
-Mint Tea NFT contract deployed on polygon-mumbai at: 0x92Df98CbcA8d2cEe0cfb8713220a385Ac88D7C68
-
-mainTable name is: Mint_TEA_80001_2644
-attributestable name is: Mint_TEA_80001_2645
-
-<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2644%20JOIN%20Mint_TEA_80001_2645%20ON%20Mint_TEA_80001_2644%2Etokenid%20%3D%20Mint_TEA_80001_2645%2Emaintable_tokenid%20WHERE%20tokenid%3D6%20group%20by%20tokenid>
-
-### Final Mumbai Deployment
-
-Deploying to network 'polygon-mumbai' with account 0x09c0377BAdCa7349b20569f45f2D94398179Db0c
-tableland address 0x4b48841d4b32C4650E4ABc117A03FE8B51f38F68
-
-Mint Tea NFT contract deployed on polygon-mumbai at: 0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48
-
-mainTable name is: Mint_TEA_80001_2832
-attributestable name is: Mint_TEA_80001_2833
-
-<https://testnet.tableland.network/query?mode=list&s=SELECT%20json_object%28%27id%27%2Ctokenid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27external_url%27%2Cexternal_url%2C%27attributes%27%2Cjson_group_array%28json_object%28%27icon%27%2Cicon%2C%27display_type%27%2Cdisplay_type%2C%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20Mint_TEA_80001_2832%20JOIN%20Mint_TEA_80001_2833%20ON%20Mint_TEA_80001_2832%2Etokenid%20%3D%20Mint_TEA_80001_2833%2Emaintable_tokenid%20WHERE%20tokenid%3D16%20group%20by%20tokenid>
 
 ## deBridge Example
 
@@ -177,7 +199,7 @@ Solidity - Smart contracts written using Solidity
 Hardhat - Hardhat takes care of all our deployments and smart contract compilation and testing
 Vue.js - It's green for go
 Pinia - State management using Pinia
-SASS,SCSS - Styled beautifully to match our fabulous designs by Anne Krauwer
+SASS,SCSS - Styled beautifully to match our fabulous designs by Anne Krauwer (Figma protoype: <https://tinyurl.com/bdfxaw8y>
 
 ## Hardhat Project Setup
 

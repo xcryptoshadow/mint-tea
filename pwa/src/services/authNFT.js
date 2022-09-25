@@ -6,8 +6,8 @@ const polygonScapAPI = import.meta.env.VITE_POLYSCAN_API_KEY;
 const infuraKey = import.meta.env.VITE_INFURA_API_KEY;
 const infuraSecret = import.meta.env.VITE_INFURA_API_SECRET;
 
-/* Mint Tea Contract Address */
-const contractAddress = "0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48";
+/* Mint Tea Contract Address Polygon Mainnet */
+const contractAddress = "0xa4055C7A1f6e898BFA24fCdFac804598388C1f26";
 
 export default class authNFT {
   constructor() {

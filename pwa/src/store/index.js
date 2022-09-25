@@ -5,13 +5,13 @@ import nftPort from "../services/nftPort.js";
 /* Import Smart Contract ABI */
 // import contractAbi from "../../../artifacts/contracts/mint_tea_ERC721.sol/MTEA.json";
 /* Mint Tea Contract Address */
-// const contractAddress = "0x39FA9C170B61f8fFb00cBaFc0B6e5A794529cd48";
+// const contractAddress = "0xa4055C7A1f6e898BFA24fCdFac804598388C1f26";
 
 /* LFG */
 export const useStore = defineStore({
   id: "store",
   state: () => ({
-    txHashKey: null,
+    txHashKey: {},
     txHash: null,
     errorCode: null,
     errorStatus: null,
