@@ -28,7 +28,11 @@ const storeTxHash = (txHash) => {
   store.setTxHashKey(TX_HASH_LOCAL_STORAGE_KEY);
   store.setTxHash(txHash);
   /* Use local storage to persist state or reload of browser */
-  localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
+  if (txHash) {
+    localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
+  } else {
+    localStorage.removeItem(TX_HASH_LOCAL_STORAGE_KEY);
+  }
 };
 const getTxHash = () => {
   /* Store this for the Front-end to read txn */
@@ -125,6 +129,36 @@ export const bridge = async (
 };
 
 /**
+ * @param {string} txHash
+ * @param {number} chainIdFrom
+ * @param {number} chainIdTo
+ */
+export const getTxStatus = async (txHash, chainIdFrom, chainIdTo) => {
+  const evmOriginContext = {
+    provider: rpcNodes[chainIdFrom],
+  };
+
+  const submissions = await evm.Submission.findAll(txHash, evmOriginContext);
+
+  const evmDestinationContext = {
+    provider: rpcNodes[chainIdTo],
+  };
+
+  const [submission] = submissions;
+  const claim = await submission.toEVMClaim(evmDestinationContext);
+  const minRequiredSignatures = await claim.getRequiredSignaturesCount();
+
+  const isConfirmed = await submission.hasRequiredBlockConfirmations();
+
+  if (!isConfirmed) {
+    return 0, minRequiredSignatures;
+  }
+
+  const signatures = await claim.getSignatures();
+  return signatures.length, minRequiredSignatures;
+};
+
+/**
  * @param {string} nftContractAddress
  * @param {string} tokenId
  * @param {number} chainIdFrom
@@ -163,7 +197,7 @@ export const claim = async (chainIdFrom, chainIdTo) => {
   const isConfirmed = await submission.hasRequiredBlockConfirmations();
 
   if (!isConfirmed) {
-    throw Error();
+    throw Error("Not yet confirmed!");
   }
 
   const evmDestinationContext = {
@@ -176,10 +210,11 @@ export const claim = async (chainIdFrom, chainIdTo) => {
   const isExecuted = await claim.isExecuted();
 
   if (!isSigned) {
-    throw Error();
+    throw Error("Not yet signed!");
   }
   if (isExecuted) {
-    throw Error();
+    storeTxHash(null);
+    throw Error("Already excuted!");
   }
 
   const provider = new ethers.providers.Web3Provider(ethereum);
@@ -197,6 +232,9 @@ export const claim = async (chainIdFrom, chainIdTo) => {
 
   const tx = await deBridgeGate.claim(...claimArgs);
   await tx.wait();
+
+  // TODO: should clear txHash if succeeded.
+  // storeTxHash(null);
 
   return;
 };
