@@ -98,7 +98,7 @@
             </div>
             <div v-if="arbitrumTokens.length > 0" class="row token-list">
               <template v-for="token in arbitrumTokens" :key="token.tokenId">
-                <NftCard :token="token" />
+                <ArbitrumNftCard :token="token" />
               </template>
             </div>
           </div>
@@ -134,6 +134,7 @@ import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
+import ArbitrumNftCard from "@/components/ArbitrumNftCard.vue";
 
 /* Init Pinia Store Values and Methods */
 const store = useStore();
