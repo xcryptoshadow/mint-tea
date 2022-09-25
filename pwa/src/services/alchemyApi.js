@@ -6,11 +6,6 @@ const ethereumAPI = import.meta.env.VITE_ALCHEMY_ETHEREUM_API_KEY;
 const polygonAPI = import.meta.env.VITE_ALCHEMY_POLYGON_API_KEY;
 const optimismAPI = import.meta.env.VITE_ALCHEMY_OPTIMISM_API_KEY;
 const arbitrumAPI = import.meta.env.VITE_ALCHEMY_ARBITRUM_API_KEY;
-// const avalancheAPI = import.meta.env.VITE_ALCHEMY_AVALANCHE_API_KEY;
-console.log("ethereumAPI: ", ethereumAPI);
-console.log("polygonAPI: ", polygonAPI);
-console.log("optimismAPI: ", optimismAPI);
-console.log("arbitrumAPI: ", arbitrumAPI);
 
 export default class alchemyApi {
   /**
@@ -50,11 +45,10 @@ export default class alchemyApi {
         console.log("Latest Block: ", latestBlock);
 
         /* Get all outbound transfers for a provided address */
-        // Get token balances
+        /* Get token balances */
         const balances = await alchemy.core
-          .getTokenBalances(accountAddress, "DEFAULT_TOKENS")
+          .getTokenBalances(accountAddress)
           .then(console.log);
-
         console.log("balances: ", balances);
 
         // Get all the NFTs owned by an address
@@ -65,18 +59,18 @@ export default class alchemyApi {
         }
 
         // Listen to all new pending transactions
-        // alchemy.ws.on(
-        //   {
-        //     method: "alchemy_pendingTransactions",
-        //     fromAddress: accountAddress,
-        //   },
-        //   (res) => console.log(res)
-        // );
-        return;
+        await alchemy.ws.on(
+          {
+            method: "alchemy_pendingTransactions",
+            fromAddress: accountAddress,
+          },
+          (res) => console.log(res)
+        );
       } catch (error) {
         console.error(error);
         throw error;
       }
     }
+    return;
   }
 }
