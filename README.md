@@ -126,6 +126,8 @@ NFTBridge deployed to address: 0x320Af97E6E8C580D6850890C81fd7161a3332C71
 DeNFT deployed to address: 0x195a17f9e714a79A9D4E1757Fe59a01a7B59Ea23
 deBridgeNFTDeployer deployed to address: 0xb2C3a5d2296b4d6BCb272E60f4Ce10d17Afcf32a
 
+deBridge Test One
+
 Confirmed NFT bridge functionality transaction
 <https://app.debridge.finance/transaction?tx=0x208b423d48c3c4d52a3eeab6a33ce2eed52a0a028614e68eafd41096edab56e6&chainId=137>
 
@@ -134,6 +136,17 @@ Original NFT locked in the bridge contract on Polygon.
 
 Wrapped NFT on Arbitrum
 <https://stratosnft.io/collection/0x9bE599bB2627BDc3221a0A8Cd0Fce620Da981f30>
+
+deBridge Test Two
+
+Original NFT locked in the bridge contract on Polygon.
+<https://opensea.io/assets/matic/0xa4055c7a1f6e898bfa24fcdfac804598388c1f26/2>
+
+Confirmed NFT bridge functionality transaction
+<https://app.debridge.finance/transaction?tx=0xa51b717bd21122f646627eb9232201b1b76a6c99fda22c8923a663cfb238337e&chainId=137>
+
+Wrapped Tableland NFT Bridged from Polygon to Arbitrum
+<https://stratosnft.io/asset/0xe81654276E3394F11965fAE0594015De92d6A238/2>
 
 ## ETHOnline Sponsor Tech Used
 
