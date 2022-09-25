@@ -1,7 +1,9 @@
 <template>
   <div class="search-nft">
     <div
-      v-if="getUrlProtocol(token.cached_file_url) === 'mp4'"
+      v-if="
+        token.cached_file_url && getUrlProtocol(token.cached_file_url) === 'mp4'
+      "
       class="search-nft-video"
     >
       <video width="320" height="240" controls>
@@ -11,7 +13,9 @@
       </video>
     </div>
     <div
-      v-if="getUrlProtocol(token.cached_file_url) === 'mp3'"
+      v-if="
+        token.cached_file_url && getUrlProtocol(token.cached_file_url) === 'mp3'
+      "
       class="search-nft-video"
     >
       <video width="320" height="240" controls>

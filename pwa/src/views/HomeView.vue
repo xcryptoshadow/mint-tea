@@ -412,11 +412,7 @@
               </div>
               <div v-if="ethereumTokens.length > 0" class="row token-list">
                 <template v-for="token in ethereumTokens" :key="token.tokenId">
-                  <NftCard
-                    v-if="token.metadata"
-                    :token="token"
-                    @click="loadNFTDetails(token)"
-                  />
+                  <NftCard :token="token" @click="loadNFTDetails(token)" />
                 </template>
               </div>
             </div>
@@ -426,11 +422,7 @@
               </div>
               <div v-if="polygonTokens.length > 0" class="row token-list">
                 <template v-for="token in polygonTokens" :key="token.tokenId">
-                  <NftCard
-                    v-if="token.metadata"
-                    :token="token"
-                    @click="loadNFTDetails(token)"
-                  />
+                  <NftCard :token="token" @click="loadNFTDetails(token)" />
                 </template>
               </div>
             </div>
@@ -440,11 +432,7 @@
               </div>
               <div v-if="optimismTokens.length > 0" class="row token-list">
                 <template v-for="token in optimismTokens" :key="token.tokenId">
-                  <NftCard
-                    v-if="token.metadata"
-                    :token="token"
-                    @click="loadNFTDetails(token)"
-                  />
+                  <NftCard :token="token" @click="loadNFTDetails(token)" />
                 </template>
               </div>
             </div>
@@ -454,11 +442,7 @@
               </div>
               <div v-if="arbitrumTokens.length > 0" class="row token-list">
                 <template v-for="token in arbitrumTokens" :key="token.tokenId">
-                  <NftCard
-                    v-if="token.metadata"
-                    :token="token"
-                    @click="loadNFTDetails(token)"
-                  />
+                  <NftCard :token="token" @click="loadNFTDetails(token)" />
                 </template>
               </div>
             </div>
@@ -468,11 +452,7 @@
               </div>
               <div v-if="avalancheTokens.length > 0" class="row token-list">
                 <template v-for="token in avalancheTokens" :key="token.tokenId">
-                  <NftCard
-                    v-if="token.metadata"
-                    :token="token"
-                    @click="loadNFTDetails(token)"
-                  />
+                  <NftCard :token="token" @click="loadNFTDetails(token)" />
                 </template>
               </div>
             </div>

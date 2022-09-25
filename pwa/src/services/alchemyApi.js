@@ -53,13 +53,15 @@ export default class alchemyApi {
         const nfts = await alchemy.nft.getNftsForOwner(accountAddress);
 
         // Listen to all new pending transactions
-        await alchemy.ws.on(
-          {
-            method: "alchemy_pendingTransactions",
-            fromAddress: accountAddress,
-          },
-          (res) => console.log(res)
-        );
+        if (chainId !== 10) {
+          await alchemy.ws.on(
+            {
+              method: "alchemy_pendingTransactions",
+              fromAddress: accountAddress,
+            },
+            (res) => console.log(res)
+          );
+        }
         console.log("Nfts : ", nfts);
         if (nfts.totalCount > 0) {
           return nfts.ownedNfts;

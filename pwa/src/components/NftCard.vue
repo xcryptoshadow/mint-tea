@@ -1,7 +1,7 @@
 <template>
   <div class="nft">
     <div
-      v-if="getUrlProtocol(token.metadata.image) === 'mp4'"
+      v-if="token.metadata && getUrlProtocol(token.metadata.image) === 'mp4'"
       class="nft-video"
     >
       <video width="320" height="240" controls>
@@ -11,7 +11,7 @@
       </video>
     </div>
     <div
-      v-if="getUrlProtocol(token.metadata.image) === 'mp3'"
+      v-if="token.metadata && getUrlProtocol(token.metadata.image) === 'mp3'"
       class="nft-video"
     >
       <video width="320" height="240" controls>
@@ -29,6 +29,9 @@
     </div>
     <div v-if="token.metadata && token.metadata.name" class="nft-title">
       {{ token.metadata.name }}
+    </div>
+    <div v-if="token.metadata && token.metadata.title" class="nft-title">
+      {{ token.metadata.title }}
     </div>
     <!-- <div
       v-if="token.metadata && token.metadata.description"
