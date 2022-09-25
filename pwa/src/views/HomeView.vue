@@ -442,7 +442,10 @@
               </div>
               <div v-if="arbitrumTokens.length > 0" class="row token-list">
                 <template v-for="token in arbitrumTokens" :key="token.contract">
-                  <NftCard :token="token" @click="loadNFTDetails(token)" />
+                  <ArbitrumNftCard
+                    :token="token"
+                    @click="loadNFTDetails(token)"
+                  />
                 </template>
               </div>
             </div>
@@ -572,6 +575,7 @@ import ArrowDownBlue from "../assets/svgs/ArrowDownBlue.vue?component";
 
 /* Components */
 import NftCard from "@/components/NftCard.vue";
+import ArbitrumNftCard from "@/components/ArbitrumNftCard.vue";
 import CollectionSection from "@/components/CollectionSection.vue";
 import AboutSection from "@/components/AboutSection.vue";
 
