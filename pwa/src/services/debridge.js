@@ -233,5 +233,8 @@ export const claim = async (chainIdFrom, chainIdTo) => {
   const tx = await deBridgeGate.claim(...claimArgs);
   await tx.wait();
 
+  // TODO: should clear txHash if succeeded.
+  // storeTxHash(null);
+
   return;
 };
