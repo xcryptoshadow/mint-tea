@@ -6,6 +6,7 @@ const ethereumAPI = import.meta.env.VITE_ALCHEMY_ETHEREUM_API_KEY;
 const polygonAPI = import.meta.env.VITE_ALCHEMY_POLYGON_API_KEY;
 const optimismAPI = import.meta.env.VITE_ALCHEMY_OPTIMISM_API_KEY;
 const arbitrumAPI = import.meta.env.VITE_ALCHEMY_ARBITRUM_API_KEY;
+console.log("arbitrumAPI", arbitrumAPI);
 
 export default class alchemyApi {
   /**
@@ -19,22 +20,22 @@ export default class alchemyApi {
       let settings = {};
       if (chainId === 1) {
         settings = {
-          apiKey: ethereumAPI,
+          apiKey: `"${ethereumAPI}"`,
           network: Network.ETH_MAINNET,
         };
       } else if (chainId === 137) {
         settings = {
-          apiKey: polygonAPI,
+          apiKey: `"${polygonAPI}"`,
           network: Network.MATIC_MAINNET,
         };
       } else if (chainId === 10) {
         settings = {
-          apiKey: optimismAPI,
+          apiKey: `${optimismAPI}`,
           network: Network.OPT_MAINNET,
         };
       } else if (chainId === 42161) {
         settings = {
-          apiKey: arbitrumAPI,
+          apiKey: `${arbitrumAPI}`,
           network: Network.ARB_MAINNET,
         };
       }
@@ -46,17 +47,10 @@ export default class alchemyApi {
 
         /* Get all outbound transfers for a provided address */
         /* Get token balances */
-        const balances = await alchemy.core
-          .getTokenBalances(accountAddress)
-          .then(console.log);
-        console.log("balances: ", balances);
+        await alchemy.core.getTokenBalances(accountAddress).then(console.log);
 
         // Get all the NFTs owned by an address
         const nfts = await alchemy.nft.getNftsForOwner(accountAddress);
-        console.log("Nfts : ", nfts);
-        if (nfts.totalCount > 0) {
-          return nfts.ownedNfts;
-        }
 
         // Listen to all new pending transactions
         await alchemy.ws.on(
@@ -66,6 +60,11 @@ export default class alchemyApi {
           },
           (res) => console.log(res)
         );
+        console.log("Nfts : ", nfts);
+        if (nfts.totalCount > 0) {
+          return nfts.ownedNfts;
+        }
+        return;
       } catch (error) {
         console.error(error);
         throw error;
