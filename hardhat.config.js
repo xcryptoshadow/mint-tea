@@ -36,7 +36,7 @@ module.exports = {
           ? [process.env.ETHEREUM_PRIVATE_KEY]
           : [],
     },
-    polygon: {
+    "polygon": {
       url: `https://polygon-mainnet.g.alchemy.com/v2/${
         process.env.POLYGON_API_KEY ?? ""
       }`,

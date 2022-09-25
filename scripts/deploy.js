@@ -21,7 +21,7 @@ async function main() {
   console.log(`\nDeploying to network '${network.name}' with account ${signer.address}`)
   const Mint_tea = await ethers.getContractFactory("MTEA");
   // Connect to Tableland
-	const tableland = await connect({ signer, chain: "polygon-mumbai" })
+	const tableland = await connect({ signer, chain: "polygon" })
   console.log("tableland address", tableland.options.contract);
   const mint_tea = await Mint_tea.deploy(tableland.options.contract);
 

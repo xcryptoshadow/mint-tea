@@ -19,27 +19,31 @@ const isSupported = (chainId) => {
   );
 };
 
-// TODO: how should manage txHash?
-// not the best solution...
-const TX_HASH_LOCAL_STORAGE_KEY = "debridge_tx_hash";
-const storeTxHash = (txHash) => {
+const TX_HASH_LOCAL_STORAGE_KEY = "debridge_tx_info";
+const storeTxInfo = (txHash, chainIdFrom, chainIdTo) => {
   const store = useStore();
   /* Store this for the Front-end to read txn */
   store.setTxHashKey(TX_HASH_LOCAL_STORAGE_KEY);
-  store.setTxHash(txHash);
+  store.setTxHash({ txHash, chainIdFrom, chainIdTo });
   /* Use local storage to persist state or reload of browser */
   if (txHash) {
-    localStorage.setItem(TX_HASH_LOCAL_STORAGE_KEY, txHash);
+    localStorage.setItem(
+      TX_HASH_LOCAL_STORAGE_KEY,
+      JSON.stringify({ txHash, chainIdFrom, chainIdTo })
+    );
   } else {
     localStorage.removeItem(TX_HASH_LOCAL_STORAGE_KEY);
   }
 };
-const getTxHash = () => {
-  /* Store this for the Front-end to read txn */
-  const store = useStore();
-  store.getTxHashKey();
+
+export const getTxInfo = () => {
   /* Use local storage to persist state or reload of browser */
-  return localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
+  const content = localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY);
+  if (content) {
+    return JSON.parse(localStorage.getItem(TX_HASH_LOCAL_STORAGE_KEY));
+  } else {
+    return { txHash: null, chainIdFrom: null, chainIdTo: null };
+  }
 };
 
 /**
@@ -123,9 +127,9 @@ export const bridge = async (
     }
   );
 
-  const result = await tx.wait();
-  storeTxHash(result.transactionHash);
-  return result;
+  const receipt = await tx.wait();
+  storeTxInfo(receipt.transactionHash, chainIdFrom, chainIdTo);
+  return receipt;
 };
 
 /**
@@ -134,47 +138,56 @@ export const bridge = async (
  * @param {number} chainIdTo
  */
 export const getTxStatus = async (txHash, chainIdFrom, chainIdTo) => {
-  const evmOriginContext = {
-    provider: rpcNodes[chainIdFrom],
-  };
+  console.log(txHash, chainIdFrom, chainIdTo);
+  // TODO:
+  try {
+    const evmOriginContext = {
+      provider: rpcNodes[chainIdFrom],
+    };
 
-  const submissions = await evm.Submission.findAll(txHash, evmOriginContext);
+    const submissions = await evm.Submission.findAll(txHash, evmOriginContext);
 
-  const evmDestinationContext = {
-    provider: rpcNodes[chainIdTo],
-  };
+    const evmDestinationContext = {
+      provider: rpcNodes[chainIdTo],
+    };
 
-  const [submission] = submissions;
-  const claim = await submission.toEVMClaim(evmDestinationContext);
-  const minRequiredSignatures = await claim.getRequiredSignaturesCount();
+    const [submission] = submissions;
+    const isConfirmed = await submission.hasRequiredBlockConfirmations();
+    if (!isConfirmed) {
+      // TODO
+      return [0, 0];
+    }
+    // TODO: CORS error on arbitrum rpc node.
+    const claim = await submission.toEVMClaim(evmDestinationContext);
+    const minRequiredSignatures = await claim.getRequiredSignaturesCount();
 
-  const isConfirmed = await submission.hasRequiredBlockConfirmations();
+    if (!isConfirmed) {
+      return [0, minRequiredSignatures];
+    }
 
-  if (!isConfirmed) {
-    return 0, minRequiredSignatures;
+    const signatures = await claim.getSignatures();
+    return [signatures.length, minRequiredSignatures];
+  } catch {
+    return [0, 0];
   }
-
-  const signatures = await claim.getSignatures();
-  return signatures.length, minRequiredSignatures;
 };
 
 /**
- * @param {string} nftContractAddress
- * @param {string} tokenId
+ * @param {string} txHash
  * @param {number} chainIdFrom
  * @param {number} chainIdTo
  */
-export const claim = async (chainIdFrom, chainIdTo) => {
+export const claim = async (txHash, chainIdFrom, chainIdTo) => {
   const { ethereum } = window;
-  if (!ethereum) {
+  if (!ethereum || !txHash || !chainIdFrom || !chainIdTo) {
     throw Error();
   }
 
-  if (isSupported(chainIdFrom)) {
+  if (!isSupported(chainIdFrom)) {
     throw Error(`chain Id: ${chainIdFrom} is not supported`);
   }
 
-  if (isSupported(chainIdTo)) {
+  if (!isSupported(chainIdTo)) {
     throw Error(`chain Id: ${chainIdTo} is not supported`);
   }
 
@@ -182,13 +195,8 @@ export const claim = async (chainIdFrom, chainIdTo) => {
     provider: rpcNodes[chainIdFrom],
   };
 
-  const txHash = getTxHash();
-  if (!txHash) {
-    throw Error();
-  }
-
   const submissions = await evm.Submission.findAll(txHash, evmOriginContext);
-
+  console.log(submissions);
   if (submissions.length === 0 || submissions.length > 1) {
     throw Error();
   }
@@ -213,7 +221,7 @@ export const claim = async (chainIdFrom, chainIdTo) => {
     throw Error("Not yet signed!");
   }
   if (isExecuted) {
-    storeTxHash(null);
+    storeTxInfo(null, null, null);
     throw Error("Already excuted!");
   }
 
@@ -231,10 +239,10 @@ export const claim = async (chainIdFrom, chainIdTo) => {
   );
 
   const tx = await deBridgeGate.claim(...claimArgs);
-  await tx.wait();
+  const receipt = await tx.wait();
 
-  // TODO: should clear txHash if succeeded.
-  // storeTxHash(null);
-
-  return;
+  if (receipt.status === 1) {
+    storeTxInfo(null, null, null);
+  }
+  return receipt;
 };
