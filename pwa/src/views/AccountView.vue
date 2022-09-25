@@ -124,8 +124,9 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "../store";
 
-/* Import our IPFS and Nft.Storage Services */
+/* Import our Services and APIs */
 import authNFT from "../services/authNFT.js";
+import alchemyApi from "../services/alchemyApi.js";
 
 /* Import SVG */
 import BlueLogo from "../assets/svgs/BlueLogo.vue?component";
@@ -233,11 +234,11 @@ async function fetchTokens() {
           account.value
         );
         store.addEthereumTokens(...ethereumTokens);
-        let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-          5,
-          account.value
-        );
-        store.addEthereumTokens(...ethereumTestnetTokens);
+        // let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
+        //   5,
+        //   account.value
+        // );
+        // store.addEthereumTokens(...ethereumTestnetTokens);
       }
       if (polygonTokens.value.length === 0) {
         /* Polygon */
@@ -246,38 +247,45 @@ async function fetchTokens() {
           account.value
         );
         store.addPolygonTokens(...polygonTokens);
-        let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-          80001,
+        // let polygonTestnetTokens = await authAccount.fetchAccountNfts(
+        //   80001,
+        //   account.value
+        // );
+        // store.addPolygonTokens(...polygonTestnetTokens);
+      }
+
+      /* We use Alchemy API for these */
+      const authAlchemyAccount = new alchemyApi();
+      /* Optimism */
+      if (optimismTokens.value.length === 0) {
+        let optimismTokens = await authAlchemyAccount.fetchAccountNfts(
+          10,
           account.value
         );
-        store.addPolygonTokens(...polygonTestnetTokens);
+        console.log("optimismTokens:", optimismTokens);
+        store.addOptimismTokens(...optimismTokens);
+        // let optimismTestnetTokens = await authAlchemyAccount.fetchAccountNfts(
+        //   69,
+        //   account.value
+        // );
+        // store.addOptimismTokens(...optimismTestnetTokens);
       }
-      /* Optimism */
-      // if (optimismTokens.value.length === 0) {
-      //   let optimismTokens = await authAccount.fetchAccountNfts(
-      //     10,
-      //     account.value
-      //   );
-      //   store.addOptimismTokens(...optimismTokens);
-      //   let optimismTestnetTokens = await authAccount.fetchAccountNfts(
-      //     69,
-      //     account.value
-      //   );
-      //   store.addOptimismTokens(...optimismTestnetTokens);
-      // }
+
       /* Arbitrum */
-      // if (arbitrumTokens.value.length === 0) {
-      //   let arbitrumTokens = await authAccount.fetchAccountNfts(
-      //     42161,
-      //     account.value
-      //   );
-      //   store.addArbitrumTokens(...arbitrumTokens);
-      //   let arbitrumTestnetTokens = await authAccount.fetchAccountNfts(
-      //     42161,
-      //     account.value
-      //   );
-      //   store.addArbitrumTokens(...arbitrumTestnetTokens);
-      // }
+      if (arbitrumTokens.value.length === 0) {
+        let arbitrumTokens = await authAlchemyAccount.fetchAccountNfts(
+          42161,
+          account.value
+        );
+        console.log("arbitrumTokens:", arbitrumTokens);
+        store.addArbitrumTokens(...arbitrumTokens);
+        // let arbitrumTestnetTokens = await authAlchemyAccount.fetchAccountNfts(
+        //   42161,
+        //   account.value
+        // );
+        // store.addArbitrumTokens(...arbitrumTestnetTokens);
+      }
+
       /* Avalanche */
       // if (avalancheTokens.value.length === 0) {
       //   let avalancheTokens = await authAccount.fetchAccountNfts(
