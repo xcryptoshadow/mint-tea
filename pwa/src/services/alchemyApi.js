@@ -6,7 +6,6 @@ const ethereumAPI = import.meta.env.VITE_ALCHEMY_ETHEREUM_API_KEY;
 const polygonAPI = import.meta.env.VITE_ALCHEMY_POLYGON_API_KEY;
 const optimismAPI = import.meta.env.VITE_ALCHEMY_OPTIMISM_API_KEY;
 const arbitrumAPI = import.meta.env.VITE_ALCHEMY_ARBITRUM_API_KEY;
-console.log("arbitrumAPI", arbitrumAPI);
 
 export default class alchemyApi {
   /**
@@ -42,12 +41,12 @@ export default class alchemyApi {
       const alchemy = new Alchemy(settings);
       try {
         /* Get the latest block */
-        const latestBlock = await alchemy.core.getBlockNumber();
-        console.log("Latest Block: ", latestBlock);
+        // const latestBlock = await alchemy.core.getBlockNumber();
+        // console.log("Latest Block: ", latestBlock);
 
         /* Get all outbound transfers for a provided address */
         /* Get token balances */
-        await alchemy.core.getTokenBalances(accountAddress).then(console.log);
+        // await alchemy.core.getTokenBalances(accountAddress).then(console.log);
 
         // Get all the NFTs owned by an address
         const nfts = await alchemy.nft.getNftsForOwner(accountAddress);
@@ -62,11 +61,10 @@ export default class alchemyApi {
             (res) => console.log(res)
           );
         }
-        console.log("Nfts : ", nfts);
         if (nfts.totalCount > 0) {
           return nfts.ownedNfts;
         }
-        return;
+        return nfts;
       } catch (error) {
         console.error(error);
         throw error;

@@ -1,21 +1,21 @@
 # 🍵 Mint Tea
 
-Brew up some fresh cross-chain NFTs with the 🍵 Mint Tea web3 application. Port your best NFTs to all the top chains to maximise your exposure using our NFT bridge. Mint Tableland NFTs with mutable metadata all stored in relational data tables on chain.
+Brew up some fresh cross-chain NFTs with the Mint Tea dApp. Port your best NFTs to all the top chains to maximise your exposure using our NFT bridge. Mint Tableland NFTs with mutable metadata all stored in relational data tables on chain.
 
-Mint Tea NFT holders can bridge their dynamic NFTs cross-chain to trade, stake or use on different blockchains and their local dapps. We've included a standard bridge using the IOU approach so users can bridge normal tokens or our custom NFTs to the different blockchains.
+NFT holders can bridge their NFTs cross-chain to trade, stake or use on different blockchains and their local dapps. We've included a standard bridge using the IOU approach so users can bridge standard ERC-721 token or our dynamic Tableland NFTs to the different blockchains.
 
 Search and verify your NFTs for rarity by name, description and image across all chains using NFT Ports api. Search by image url to verify your NFT artworks and images are true before purchasing your favourite works.
 
 Browse through our marketplace to list and trade NFT collections for art, music, game items and so much more.
 
-Mint Tea aims to become a truly cross-chain platform that opens up new markets in the blockchain space. We aim to bridge as many chains as possible starting with Ethereum, Polygon and Optimism. As our core technologies expand then we will grow with them incorporating more chains in the future.
+Mint Tea aims to become a truly cross-chain platform that opens up new markets in the blockchain space. We aim to bridge as many chains as possible starting with Ethereum, Polygon, Optimism, Arbitrum and Avalanche. As our core technologies expand then we will grow with them incorporating more chains in the future.
 
 Please visit <https://mint-tea.netlify.app/> to view the 🍵 Mint Tea web3 application, feel free to connect your metamask wallet and enjoy!
 
 ETHOnline Showcase: <https://ethglobal.com/showcase/mint-tea-2nn7k>
 Github Repo: <https://github.com/Mint-Tea-ETHOnline/mint-tea>
 
-Freshly brewed by team 🍵 Mint Tea
+Freshly brewed by team 🍵
 
 Craig Moss - Web3 Software Engineer / Project Manager
 Twitter: [@webmoss](https://twitter.com/webmoss)
@@ -36,13 +36,13 @@ GitHub: <https://github.com/mourad96>
 
 ### Let's begin with the Problem
 
-Currently, typical ERC-20 token bridges don't care about the original metadata of a fungible token, but when bridging an ERC-721 NFT, we should always follow the original metadata to uphold the rarity of the non-fungible token.
+Currently, typical ERC-20 token bridges don't care about the original metadata of a fungible token, but when bridging an ERC-721 NFT token, we should always follow the original metadata to uphold the rarity and value of the non-fungible token.
 
 Usually when you bridge an NFT through a typical bridge, the NFT on the new chain is practically a new one and the bridge follows the mint/burn approach. The big issue is that you can't actually trace that NFT back to the original chain, because when it is bridged, all the other non-vital information like collection name and similar information can be lost in the process. The cross-chain NFT has become a new form of non-fungible token or NFT and deserves a standard of it's own. With recent developments in General Message Passing, if you bridge an NFT, then the dApp on the new chain would be able to trace the cross-chain NFT back to it's chain of origin or minting chain, to make sure that it is actually the correct and true NFT and not a duplicate or fake.
 
 ### The Mint Tea Solution
 
-For example, let's say you own an NFT on Ethereum and you take it cross-chain to Avalanche for example. The data of the NFT – the collection, the metadata – will be carried forwards, meaning that the dApp on Avalanche would be able to confirm that the NFT on Avalanche is indeed coming from Ethereum. This novel solution using General Message Passing opens up unlimited possibilities in the blockchain space. For example, let's say you can use your very valuable Ape NFT on Ethereum as collateral on another blockchain and still hold it's value', or you can create a dApp that utilises NFTs from multiple chains, without worrying about the license or royalty fees problem or similar issues. This new form of NFT deserves further exploration as it opens up many use cases, especially in the gaming industry, music and arts. We believe that by using the Tableland NFT as a building block, soon we will be able to create entire game characters as NFTs and then attached game items, which are also dynamic NFTs that can change over time or skill levels, etc.
+For example, let's say you own an NFT on Ethereum and you take it cross-chain to Avalanche for example. The data of the NFT – the collection, the metadata – will be carried forwards, meaning that the dApp on Avalanche would be able to confirm that the NFT on Avalanche is indeed coming from Ethereum. This novel solution using General Message Passing opens up unlimited possibilities in the blockchain space. For example, let's say you can use your very valuable Ape NFT on Ethereum as collateral on another blockchain and still hold it's value, or you can create a dApp that utilises NFTs from multiple chains, without worrying about the license or royalty fee problems and similar issues. This new form of cross-chain NFT deserves further exploration as it opens up many use cases, especially in the gaming industry, music and arts. We believe that by using the Tableland NFT as a building block, soon we will be able to create entire game characters as NFTs and then attached game items, which are also dynamic NFTs that can change over time or skill levels.
 
 ## Tableland Example
 
@@ -115,13 +115,17 @@ Wrapped NFT on Arbitrum
 
 ## ETHOnline Sponsor Tech Used
 
-### Ethereum, Polygon and Optimism
+### Ethereum, Polygon, Optimism, Arbitrum and Avalanche
 
 Ethereum is the community-run technology powering the cryptocurrency ether (ETH) and thousands of decentralized applications.
 
 Polygon believes in Web3 for all. Polygon is a decentralised Ethereum scaling platform that enables developers to build scalable user-friendly dApps with low transaction fees without ever sacrificing on security.
 
 Optimism is a low-cost and lightning-fast Ethereum L2 blockchain.
+
+Arbitrum is next generation layer 2 for Ethereum dApps
+
+Avalanche is an open, programmable smart contracts platform for decentralized applications.
 
 ### Tableland
 
@@ -168,11 +172,11 @@ NFT.Storage is a long-term storage service designed for off-chain NFT data (like
 
 ## Technology Stack
 
-The 🍵 Mint Tea web3 application uses the following technologies in it's software life cycle:
+The Mint Tea web3 application uses the following technologies in it's software life cycle:
 Solidity - Smart contracts written using Solidity
 Hardhat - Hardhat takes care of all our deployments and smart contract compilation and testing
-Vue.js - It's green for go ;)
-Pinia - State management using Pinia store
+Vue.js - It's green for go
+Pinia - State management using Pinia
 SASS,SCSS - Styled beautifully to match our fabulous designs by Anne Krauwer
 
 ## Hardhat Project Setup

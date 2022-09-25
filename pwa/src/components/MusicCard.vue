@@ -1,5 +1,14 @@
 <template>
-  <div class="music-nft">
+  <div
+    v-if="
+      token.metadata ||
+      token.metadata.title ||
+      token.metadata.name ||
+      token.metadata.image ||
+      token.metadata.description
+    "
+    class="music-nft"
+  >
     <div v-if="token.metadata && token.metadata.name" class="music-nft-title">
       {{ token.metadata.name }}
     </div>

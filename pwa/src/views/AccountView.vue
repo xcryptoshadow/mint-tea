@@ -234,41 +234,27 @@ async function fetchTokens() {
           account.value
         );
         store.addEthereumTokens(...ethereumTokens);
-        let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-          5,
-          account.value
-        );
-        store.addEthereumTokens(...ethereumTestnetTokens);
       }
+
+      /* Polygon */
       if (polygonTokens.value.length === 0) {
-        /* Polygon */
         let polygonTokens = await authAccount.fetchAccountNfts(
           137,
           account.value
         );
         store.addPolygonTokens(...polygonTokens);
-        let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-          0x13881,
-          account.value
-        );
-        store.addPolygonTokens(...polygonTestnetTokens);
       }
 
-      /* We use Alchemy API for these */
+      /* We use Alchemy API for Optimisim and Arbitrum */
       const authAlchemyAccount = new alchemyApi();
+
       /* Optimism */
       if (optimismTokens.value.length === 0) {
         let optimismTokens = await authAlchemyAccount.fetchAccountNfts(
           10,
           account.value
         );
-        console.log("optimismTokens:", optimismTokens);
         store.addOptimismTokens(...optimismTokens);
-        // let optimismTestnetTokens = await authAlchemyAccount.fetchAccountNfts(
-        //   69,
-        //   account.value
-        // );
-        // store.addOptimismTokens(...optimismTestnetTokens);
       }
 
       /* Arbitrum */
@@ -277,13 +263,7 @@ async function fetchTokens() {
           42161,
           account.value
         );
-        console.log("arbitrumTokens:", arbitrumTokens);
         store.addArbitrumTokens(...arbitrumTokens);
-        // let arbitrumTestnetTokens = await authAlchemyAccount.fetchAccountNfts(
-        //   42161,
-        //   account.value
-        // );
-        // store.addArbitrumTokens(...arbitrumTestnetTokens);
       }
 
       /* Avalanche */
@@ -293,11 +273,6 @@ async function fetchTokens() {
       //     account.value
       //   );
       //   store.addAvalancheTokens(...avalancheTokens);
-      //   let avalancheTestnetTokens = await authAccount.fetchAccountNfts(
-      //     42161,
-      //     account.value
-      //   );
-      //   store.addAvalancheTokens(...avalancheTestnetTokens);
       // }
     } catch (error) {
       console.log(`Error fetching tokens, please refresh to try again!`);

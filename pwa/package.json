@@ -7,7 +7,6 @@
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
-  "type": "module",
   "dependencies": {
     "@debridge-finance/desdk": "^1.0.0",
     "alchemy-sdk": "^2.0.5-rc1",

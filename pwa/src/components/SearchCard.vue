@@ -1,5 +1,16 @@
 <template>
-  <div class="search-nft">
+  <div
+    v-if="
+      (token && token.cached_file_url) ||
+      token.mint_date ||
+      token.name ||
+      token.description ||
+      token.chain ||
+      token.contract ||
+      token.contract_address
+    "
+    class="search-nft"
+  >
     <div
       v-if="
         token.cached_file_url && getUrlProtocol(token.cached_file_url) === 'mp4'
