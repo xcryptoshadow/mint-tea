@@ -738,11 +738,11 @@ async function fetchTokens() {
           account.value
         );
         store.addEthereumTokens(...ethereumTokens);
-        // let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
-        //   5,
-        //   account.value
-        // );
-        // store.addEthereumTokens(...ethereumTestnetTokens);
+        let ethereumTestnetTokens = await authAccount.fetchAccountNfts(
+          5,
+          account.value
+        );
+        store.addEthereumTokens(...ethereumTestnetTokens);
       }
       if (polygonTokens.value.length === 0) {
         /* Polygon */
@@ -751,11 +751,11 @@ async function fetchTokens() {
           account.value
         );
         store.addPolygonTokens(...polygonTokens);
-        // let polygonTestnetTokens = await authAccount.fetchAccountNfts(
-        //   0x13881,
-        //   account.value
-        // );
-        // store.addPolygonTokens(...polygonTestnetTokens);
+        let polygonTestnetTokens = await authAccount.fetchAccountNfts(
+          0x13881,
+          account.value
+        );
+        store.addPolygonTokens(...polygonTestnetTokens);
       }
 
       /* We use Alchemy API for these */
